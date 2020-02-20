@@ -51,6 +51,12 @@ app.get("/", function (req, res){
     res.render("index");
 })
 
+app.get("/new", function(req, res){
+    res.render("posts/new", {
+        defaultImg: "/img/post/default.jpeg"
+    })
+})
+
 const server = app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server partito!");
 })

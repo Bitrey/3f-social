@@ -52,3 +52,19 @@
 .links > a:nth-of-type(9):hover ~ .line { --index: 9; }
 .links > a:nth-of-type(10):hover ~ .line { --index: 10; }
 .links > a:last-of-type:hover ~ .line { --index: var(--items); }
+
+.post-img {
+	width: 100%;
+	max-width: 300px;
+	border: 5px solid #f8f9fa;
+	border-radius: 5%;
+	box-shadow: 0 0 5px #ddd;
+}
+
+.post-submit {
+	justify-content: space-evenly;
+}
+
+.post-submit div {
+	justify-content: space-evenly;
+}
