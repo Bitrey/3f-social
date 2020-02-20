@@ -9,6 +9,7 @@
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
                             <img src="<%= defaultImg %>" alt="Immagine post" class="post-img">
+                            <input type='hidden' id= 'hiddenImgField' name='img' value='' />
                         </div>
                         <div class="col-6 col-lg-12 mt-3">
                             <button id="change-post-img" type="button" class="btn btn-light"><i class="fas fa-edit"></i> Cambia immagine</button>
@@ -36,8 +37,6 @@
     </form>
 </div>
 
-<script>
-    $( document ).ready(function(){$("#titolo").focus()})
-</script>
+<script src="/js/newPost.js"></script>
 
 <%- include("../partials/footer") %>

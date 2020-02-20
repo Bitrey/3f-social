@@ -20,6 +20,7 @@ app.set("view engine", "ejs");
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 // CONNECT TO MONGODB
 mongoose.connect(process.env.MONGODB_URI, function(){
@@ -53,7 +54,14 @@ app.use(function (req, res, next){
 });
 
 app.get("/", function (req, res){
-    res.render("index");
+    Post.find({}, function(err, posts){
+        if(err){
+            console.log(err);
+            res.status(400).send("Si è verificato un errore nel caricamento, mannaggia alla Peppina");
+        } else {
+            res.render("index", {posts: posts.reverse()});
+        }
+    });
 })
 
 app.get("/new", function(req, res){
@@ -63,7 +71,6 @@ app.get("/new", function(req, res){
 })
 
 app.post("/", function(req, res){
-    req.flash("success", "Hai postato!");
     var newPost = new Post({
         titolo: req.body.titolo,
         contenuto: req.body.contenuto,
@@ -71,10 +78,16 @@ app.post("/", function(req, res){
         commenti: [],
         like: 0,
         dislike: 0,
-        immagine: "/img/post/default.jpeg"
+        immagine: req.body.img
     });
-    newPost.save(function(err){if(err){console.log(err);}});
-    res.redirect("/");
+    newPost.save(function(err){
+        if(err){
+            console.log(err);
+            res.status(400).send("Si è verificato un errore nel salvataggio, mannaggia alla Peppina");
+        } else {
+            res.redirect("/");
+        }
+    });
 })
 
 const server = app.listen(process.env.PORT, process.env.IP, function(){

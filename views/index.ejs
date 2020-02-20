@@ -1,3 +1,20 @@
 <%- include ('./partials/header') %>
 
+<% posts.forEach(function(post){ %>
+<div class="card bg-light m-3" style="display: inline-block;">
+    <img style="float: left;" class="post-img my-1 ml-1 mr-3" src="<%= post.immagine %>" alt="Immagine del post">
+    <div class="card-body">
+        <h5 class="card-title"><%= post.titolo %></h5>
+        <p class="card-text"><%= post.contenuto %></p>
+        <p class="card-text">
+            <small class="text-muted">
+                <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
+                <%= ("0" + post.dataCreazione.getDay()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
+            </small>
+        </p>
+    </div>
+</div>
+</div>
+<% }) %>
+
 <%- include ('./partials/footer') %>
