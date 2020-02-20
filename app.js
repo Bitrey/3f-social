@@ -21,6 +21,11 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
+// CONNECT TO MONGODB
+mongoose.connect(process.env.MONGODB_URI, function(){
+    console.log("Database connesso!");
+});
+
 // BODY PARSER SETUP
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -55,6 +60,21 @@ app.get("/new", function(req, res){
     res.render("posts/new", {
         defaultImg: "/img/post/default.jpeg"
     })
+})
+
+app.post("/", function(req, res){
+    req.flash("success", "Hai postato!");
+    var newPost = new Post({
+        titolo: req.body.titolo,
+        contenuto: req.body.contenuto,
+        soloFermi: false,
+        commenti: [],
+        like: 0,
+        dislike: 0,
+        immagine: "/img/post/default.jpeg"
+    });
+    newPost.save(function(err){if(err){console.log(err);}});
+    res.redirect("/");
 })
 
 const server = app.listen(process.env.PORT, process.env.IP, function(){
