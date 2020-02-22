@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
 const cookieSession = require("cookie-session");
+var socket = require("socket.io");
 
 // Modelli da richiedere
 const User = require("./models/user");
@@ -44,6 +45,7 @@ app.use(cookieSession({
 
 // CONNECT FLASH MESSAGES
 app.use(flash());
+
 
 // GLOBAL
 app.use(function (req, res, next){
@@ -93,3 +95,46 @@ app.post("/", function(req, res){
 const server = app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server partito!");
 })
+
+// Socket setup
+var io = socket(server);
+
+io.on("connection", function(socket){
+    console.log("Nuova connessione da " + socket.id);
+    Message.find({}, function(err, messages){
+        if(err){
+            socket.emit("err", err);
+        } else {
+            socket.emit("pastMsg", messages);
+        }
+    });
+    socket.on("chat", function(data){
+        // DEBUG: !!! RISOLVI AD AUTORE DA PRENDERE DA USER PASSPORT AUTHENTICATION
+        let messageObj = new Message({
+            username_autore: data.username,
+            id_autore: data.id,
+            contenuto: data.message,
+            dataCreazione:  Date.now()
+        });
+        messageObj.save(function(err){if(err){console.log(err);}});
+        io.sockets.emit("chat", messageObj);
+    });
+
+    socket.on("typing", function(data){
+        socket.broadcast.emit("typing", data);
+    })
+
+    socket.on("notyping", function(){
+        socket.broadcast.emit("notyping");
+    })
+
+    socket.on("cancella", function(data){
+        Message.findOneAndRemove({date: data}, function(err, deleted){
+            if(err){
+                console.log(err);
+            } else {
+                io.emit("cancella", deleted);
+            }
+        });
+    })
+});
