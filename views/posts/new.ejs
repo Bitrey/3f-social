@@ -1,0 +1,42 @@
+<%- include("../partials/header") %>
+
+<div class="container">
+    <h1 class="text-center mt-3 mb-4">Nuovo Post</h1>
+    <form action="/" method="post">
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <div class="form-group">
+                    <div class="row" style="align-content: center; justify-content: center; align-items: center;">
+                        <div class="col-6 col-lg-12">
+                            <img src="<%= defaultImg %>" alt="Immagine post" class="post-img">
+                            <input type='hidden' id= 'hiddenImgField' name='img' value='' />
+                        </div>
+                        <div class="col-6 col-lg-12 mt-3">
+                            <button id="change-post-img" type="button" class="btn btn-light"><i class="fas fa-edit"></i> Cambia immagine</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="form-group">
+                    <label for="titolo">Titolo</label>
+                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="titolo" id="titolo" minlength="5" maxlength="30">
+                    <small id="titoloHelp" class="form-text text-muted text-center">Inserisci il titolo del post, da 5 a 30 caratteri</small>
+                </div>
+                <div class="form-group">
+                    <label for="contenuto">Contenuto</label>
+                    <textarea class="form-control" aria-describedby="contenutoHelp" name="contenuto" maxlength="1500" minlength="30" autocomplete="off" id="contenuto" rows="5"></textarea>
+                    <small id="contenutoHelp" class="form-text text-muted text-center">Inserisci il contenuto del post, da 30 a 1500 caratteri</small>
+                </div>
+            </div>
+        </div>
+        <div class="post-submit mt-3 mb-3 d-flex">
+            <div><a role="button" class="btn btn-light" href="/"><i class="fas fa-window-close"></i> Annulla</a></div>
+            <div><button type="submit" class="btn btn-dark"><i class="fas fa-plus"></i> Posta</button></div>
+        </div>
+    </form>
+</div>
+
+<script src="/js/newPost.js"></script>
+
+<%- include("../partials/footer") %>
