@@ -53,6 +53,7 @@
 	border: 5px solid #f8f9fa;
 	border-radius: 5%;
 	box-shadow: 0 0 5px #ddd;
+	float: left;
 }
 
 .card-title {
