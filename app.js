@@ -13,6 +13,7 @@ const User = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
 const Message = require("./models/message");
+var fileUploader = require("./routes/file-upload");
 
 // Auth
 const cookieSession = require('cookie-session');
@@ -27,6 +28,8 @@ app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000,
     keys: [process.env.COOKIE_SECRET]
 }))
+
+app.use('/fileupload',fileUploader)
 
 // initialize passport
 app.use(passport.initialize());
@@ -61,14 +64,14 @@ app.use('/profile', profileRoutes);
 app.use(flash());
 
 // GLOBAL
-app.use(function (req, res, next){
+app.use(function(req, res, next){
     res.locals.utente = req.user;
     res.locals.error = req.flash("error");
     res.locals.success = req.flash("success");
     next();
 });
 
-app.get("/", function (req, res){
+app.get("/", function(req, res){
     Post.find({}, function(err, posts){
         if(err){
             console.log(err);
@@ -93,7 +96,8 @@ app.post("/", function(req, res){
         commenti: [],
         like: 0,
         dislike: 0,
-        immagine: req.body.img
+        immagine: req.body.img,
+        allegati: []
     });
     newPost.save(function(err){
         if(err){

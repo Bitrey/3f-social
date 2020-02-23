@@ -14,7 +14,10 @@ var postSchema = new mongoose.Schema({
     like: { type: Number, default: 0 },
     dataCreazione: { type: Date, default: Date.now },
     dislike: { type: Number, default: 0 },
-    immagine: { type: String, default: "/img/post/default.jpeg" }
+    immagine: { type: String, default: "/img/post/default.jpeg" },
+    allegati: [{
+        indirizzo: String
+    }]
 })
 
 module.exports = mongoose.model("Post", postSchema);

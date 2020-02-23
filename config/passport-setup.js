@@ -27,7 +27,7 @@ passport.use(
         User.findOne({ googleId: profile.id }).then((currentUser) => {
             if (currentUser) {
                 // already have this user
-                console.log('user is: ', currentUser);
+                console.log('Nuovo login: ', currentUser.username);
                 done(null, currentUser);
             } else {
                 // Utente da registrare
@@ -42,7 +42,7 @@ passport.use(
                     messaggi: []
                 })
                 user.save().then((newUser) => {
-                    console.log('created new user: ', newUser);
+                    console.log('Nuova registrazione: ', newUser.username);
                     done(null, newUser);
                 });
             }

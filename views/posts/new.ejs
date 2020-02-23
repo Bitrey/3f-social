@@ -1,5 +1,29 @@
 <%- include("../partials/header") %>
 
+<div class="modal fade" id="allegato-modal" aria-labelledby="allegato-modal-label" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="allegato-modal-label">Nuovo allegato</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" action="fileupload" method="post" enctype="multipart/form-data">
+                    <input type="file" id="filetoupload" name="filetoupload"><br>
+                    <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-paperclip"></i> Aggiungi</button>
+                    <span id="status"></span>
+                </form>
+                <p>Clicca il tasto qua sotto per inserire nuovi allegati</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" id="close-modal" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <h1 class="text-center mt-3 mb-4">Nuovo Post</h1>
     <form action="/" method="post">
@@ -27,6 +51,11 @@
                     <label for="contenuto">Contenuto</label>
                     <textarea class="form-control" aria-describedby="contenutoHelp" name="contenuto" maxlength="1500" minlength="30" autocomplete="off" id="contenuto" rows="5"></textarea>
                     <small id="contenutoHelp" class="form-text text-muted text-center">Inserisci il contenuto del post, da 30 a 1500 caratteri</small>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#allegato-modal">
+                        <i class="fas fa-paperclip"></i> Nuovo allegato
+                    </button>
                 </div>
             </div>
         </div>
