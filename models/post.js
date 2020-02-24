@@ -14,9 +14,15 @@ var postSchema = new mongoose.Schema({
     like: { type: Number, default: 0 },
     dataCreazione: { type: Date, default: Date.now },
     dislike: { type: Number, default: 0 },
-    immagine: { type: String, default: "/img/post/default.jpeg" },
+    immagine: {
+        tipo: { type: String, default: "local" },
+        indirizzo: { type: String, default: "/img/post/default.jpeg" }
+    },
     allegati: [{
-        indirizzo: String
+        indirizzo: String,
+        nome: String,
+        dimensione: Number,
+        estensione: String
     }]
 })
 

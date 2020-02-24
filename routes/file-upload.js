@@ -1,24 +1,27 @@
 const router = require('express').Router();
-var path = require("path");
-var multer = require("multer");
+const multer = require("multer");
+const path = require("path");
 
 var storage = multer.diskStorage({
     destination: function(req, file, callback){
         callback(null, './uploads');
     },
     filename: function(req, file, callback){
-        callback(null, Date.now() + "-" + file.originalname);
+        callback(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
     }
 });
 
-var upload = multer({ storage: storage }).single('filetoupload');
+const upload = multer({ storage: storage, limits: {fileSize: 10000000} }).single('attachment');
 
 router.post('/', function(req, res){
     upload(req, res, function(err){
-        if (err){
-            return res.end("Errore nel caricamento del file");
+        if(err){
+            return res.json({msg: err.toString()});
         }
-        res.end("File caricato!");
+        if(req.file == undefined){
+            return res.json({msg: "Nessun file selezionato"});
+        }
+        res.json({msg: "File caricato!", name: String(req.file.filename), originalName: req.file.originalname, size: Number(req.file.size), ext: String(path.extname(req.file.originalname))});
     });
 });
 

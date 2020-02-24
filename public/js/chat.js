@@ -2,6 +2,10 @@ var socket = io.connect();
 $(".alert").hide();
 // Query DOM
 
+socket.on("connect", function(){
+    $("#chat-buttons").css("display", "block");
+})
+
 var chat_window = document.getElementById("chat-window");
 
 var message = document.getElementById("message"),
@@ -124,6 +128,16 @@ socket.on("pastMsg", function(messages){
     for(let i = 0; i < messages.length; i++){
         unread++;
         document.title = "(" + unread + ") 3F Chat";
+        if(i > 1){
+            // Stampa differenza di giorni, se presente
+            let currentDay = new Date(Date.parse(messages[i].dataCreazione));
+            let pastDay = new Date(Date.parse(messages[i - 1].dataCreazione)).getDate();
+            if(currentDay.getDate() > pastDay){
+                let month = currentDay.getMonth() + 1;
+                let year = currentDay.getFullYear();
+                output.innerHTML += `<p class="date-separator">${currentDay.getDate()}/${month}/${year}</p>`;
+            }
+        }
         output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong>" + messages[i].usernameAutore + "</strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
     }
     chat_window.scrollTop = chat_window.scrollHeight;
@@ -217,3 +231,11 @@ $(".navbar-brand").on("click", function(){
     output.innerHTML += `<p><strong>Dio</strong> ${dio[Math.floor(Math.random()*dio.length)]}</p>`;
     chat_window.scrollTop = chat_window.scrollHeight;
 });
+
+socket.on("error", function(message){
+    if(message == "User not authorized through passport. (User Property not found)"){
+        $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-user-slash"></i> Chi sei?</h5><p>Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p></div>');
+    } else {
+        $("#inner-output").html(`<div class="p-3"><h5><i class="fas fa-times"></i> Errore</h5><p>${err}</p></div>`);
+    }
+})

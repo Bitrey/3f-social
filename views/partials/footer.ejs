@@ -7,12 +7,18 @@
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
     <script>
+        // Cerca pagina attuale e metti underline a quell'header
         $(".nav-link").each(function(){
             if($(this).attr("href") == window.location.pathname){
                 $(this).parent().addClass('active-link');
                 return false;
             }
         });
+
+        // Se non ti trovi nella homepage, metti tasto per tornare alla homepage
+        if(window.location.pathname != "/"){
+            $("#back-div").css("display", "block");
+        }
     </script>
 </body>
 

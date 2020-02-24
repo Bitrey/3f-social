@@ -10,27 +10,36 @@
                         Scrivi lo username e il messaggio!
                     </div>
                     <div id="output">
-                        <div class="text-center">
+                        <div id="inner-output" class="text-center">
                             <p id="loading" class="text-center pt-3">Caricamento dei messaggi</p>
-                            <div class="spinner-border text-primary" role="status">
+                            <div id="loading-msg-spinner" class="spinner-border text-primary" role="status">
                                 <span class="sr-only">Caricamento...</span>
                             </div>
                         </div>
                     </div>
                     <div id="feedback"></div>
                 </div>
-                <input id="username" type="text" placeholder="Username" maxlength="16" required>
-                <textarea id="message" type="text" placeholder="Messaggio" maxlength="300" required></textarea>
-                <button id="img">Immagine...</button>
-                <button id="send">Invia</button>
+                <div id="chat-buttons" style="display: none;">
+                    <% if(utente){ %>
+                        <input id="username" type="text" placeholder="Username" maxlength="16" value="<%= utente.username %>" required>
+                    <% } else { %>
+                        <input id="username" type="text" placeholder="Username" maxlength="16" required>
+                    <% } %>
+                    <textarea id="message" type="text" placeholder="Messaggio" maxlength="300" required></textarea>
+                    <button id="img"><i class="fas fa-image"></i> Immagine...</button>
+                    <button id="send"><i class="fas fa-paper-plane"></i> Invia</button>
+                </div>
             </div>
         </div>
 
         <div class="col-12 col-lg-8">
             <% posts.forEach(function(post){ %>
             <div class="post card bg-light m-3">
-                <img style="float: left;" class="post-img my-1 ml-1 mr-3" src="<%= post.immagine %>"
-                    alt="Immagine del post">
+                <% if(post.immagine.tipo == "local"){ %>
+                    <img class="post-img my-1 ml-1 mr-3" src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine del post">
+                <% } else if(post.immagine.tipo == "url") { %>
+                    <img class="post-img my-1 ml-1 mr-3" src="<%= post.immagine.indirizzo %>" alt="Immagine del post">
+                <% } %>
                 <div class="card-body">
                     <h5 class="card-title"><%= post.titolo %></h5>
                     <p class="card-text"><%= post.contenuto %></p>
@@ -40,6 +49,12 @@
                             <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
                         </small>
                     </p>
+                    <div style="display: inline;">
+                        <% if(post.allegati.length > 0){ %>
+                            <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
+                        <% } %>
+                        <a style="float: right;" class="btn btn-outline-dark mb-2" href="/post/<%= post._id %>">Visita</a>
+                    </div>
                 </div>
             </div>
             <% }) %>

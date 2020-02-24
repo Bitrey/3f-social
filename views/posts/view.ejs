@@ -1,0 +1,57 @@
+<%- include("../partials/header") %>
+
+<div class="container">
+    <h1 class="text-center mt-3 mb-4 post-title"><%= post.titolo %></h1>
+    <div class="row">
+        <div class="col-12 col-lg-4" style="border-right: 1px solid #ccc;">
+            <div class="form-group">
+                <div class="row" style="align-content: center; justify-content: center; align-items: center;">
+                    <div class="col-6 col-lg-12">
+                        <h2 class="text-muted">Scritto da <%= autore %></h2>
+                        <% if(post.immagine.tipo == "local"){ %>
+                            <img src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                        <% } else if(post.immagine.tipo == "url") { %>
+                            <img src="<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-8">
+
+            <!-- Contenuto -->
+            <p><%= post.contenuto %></p>
+
+            <!-- Data -->
+            <small class="text-muted">
+                <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
+                <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
+            </small>
+
+            <!-- Allegati -->
+            <% if(post.allegati.length > 0){ %>
+            <hr>
+            <h2>Allegati</h2>
+            <div id="attachments-div">
+                <% post.allegati.forEach(function(allegato){ %>
+                    <div class="card m-2">
+                        <div class="card-body">
+                            <form id="downloadForm" action="/filedownload/<%= allegato.indirizzo %>" method="GET">
+                                <h5 class="card-title file-title"><%= allegato.nome %></h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Dimensione: <%= allegato.dimensione / 1000 %>KB</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">Estensione: <%= allegato.estensione %></h6>
+                                <button type="submit" class="btn btn-light"><i class="fas fa-file-download"></i> Scarica</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/viewPost.js"></script>
+
+<%- include("../partials/footer") %>

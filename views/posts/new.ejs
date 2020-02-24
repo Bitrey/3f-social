@@ -1,5 +1,6 @@
 <%- include("../partials/header") %>
 
+<!-- Modal allegato -->
 <div class="modal fade" id="allegato-modal" aria-labelledby="allegato-modal-label" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -11,11 +12,13 @@
             </div>
             <div class="modal-body">
                 <form id="uploadForm" action="fileupload" method="post" enctype="multipart/form-data">
-                    <input type="file" id="filetoupload" name="filetoupload"><br>
-                    <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-paperclip"></i> Aggiungi</button>
-                    <span id="status"></span>
+                    <input type="file" aria-describedby="max-size-label" id="attachment" name="attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
+                    <div style="display: inline-block;">
+                        <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
+                        <small id="max-size-label">Premi per allegare un file, dimensione massima: 10MB</small>
+                    </div>
+                    <p class="text-center" style="font-weight: 700;" id="status"></p>
                 </form>
-                <p>Clicca il tasto qua sotto per inserire nuovi allegati</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" id="close-modal" data-dismiss="modal">Chiudi</button>
@@ -24,19 +27,70 @@
     </div>
 </div>
 
+<!-- Modal immagine -->
+<div class="modal fade" id="cambia-img-modal" tabindex="-1" role="dialog" aria-labelledby="cambia-img-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cambia-img-modal-label">Cambia immagine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <button id="url-post-img" class="btn btn-dark mr-3"><i class="fas fa-external-link-alt"></i> Link esterno</button>
+                <button id="upload-post-img" class="btn btn-dark ml-3"><i class="fas fa-file-upload"></i> Carica</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal carica immagine -->
+<div class="modal fade" id="carica-img-modal" tabindex="-1" role="dialog" aria-labelledby="carica-img-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carica-img-modal-label">Carica immagine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="imgForm" action="imgupload" method="post" enctype="multipart/form-data">
+                    <input type="file" accept="image/*" aria-describedby="max-size-label" id="img-attachment" name="img-attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
+                    <div style="display: inline-block;">
+                        <button type="submit" id="upload-img" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
+                        <small id="max-size-label">Premi per allegare un'immagine, dimensione massima: 10MB</small>
+                    </div>
+                    <p class="text-center" style="font-weight: 700;" id="status-img"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" id="close-modal" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Body -->
 <div class="container">
     <h1 class="text-center mt-3 mb-4">Nuovo Post</h1>
-    <form action="/" method="post">
+    <form id="new-post-form" action="/" method="post">
         <div class="row">
             <div class="col-12 col-lg-4">
                 <div class="form-group">
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
-                            <img src="<%= defaultImg %>" alt="Immagine post" class="post-img">
-                            <input type='hidden' id= 'hiddenImgField' name='img' value='' />
+                            <img src="/img/post/default.jpeg" alt="Immagine post" class="new-post-img">
+                            <input type='hidden' id='hiddenImgField' name='img' value=''>
                         </div>
                         <div class="col-6 col-lg-12 mt-3">
-                            <button id="change-post-img" type="button" class="btn btn-light"><i class="fas fa-edit"></i> Cambia immagine</button>
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#cambia-img-modal"><i class="fas fa-edit"></i> Cambia immagine</button>
                         </div>
                     </div>
                 </div>
@@ -56,6 +110,7 @@
                     <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#allegato-modal">
                         <i class="fas fa-paperclip"></i> Nuovo allegato
                     </button>
+                    <input type='hidden' id='hiddenAttField' name='attachments' value=''>
                 </div>
             </div>
         </div>
