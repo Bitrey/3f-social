@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
+const log = require('simple-node-logger').createSimpleFileLogger('error.log');
 var socket = require("socket.io");
 
 // Routes
@@ -19,7 +20,7 @@ const postRoutes = require("./routes/post-routes");
 const imgUploader = require("./routes/img-upload");
 
 // Middleware
-const middleware = require("./middleware/index");
+const middleware = require("./middleware");
 
 // Auth
 const session = require('express-session');
@@ -35,6 +36,17 @@ app.set("view engine", "ejs");
 
 // SETUP COOKIE PARSER
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// MONGOOSE SETUP
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
+
+// CONNECT TO MONGODB
+mongoose.connect(process.env.MONGODB_URI, function(){
+    console.log("Database connesso!");
+});
 
 // SETUP MONGOSTORE
 mongoStore = new MongoStore({
@@ -52,97 +64,50 @@ app.use(session({
     store: mongoStore
 }));
 
-// Upload and download attachments
-app.use('/fileupload', fileUploader);
-app.use('/filedownload', fileDownloader);
-app.use('/imgupload', imgUploader);
+// CONNECT FLASH MESSAGES
+app.use(flash());
 
 // initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// MONGOOSE SETUP
-mongoose.set('useNewUrlParser', true);
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
-
-// CONNECT TO MONGODB
-mongoose.connect(process.env.MONGODB_URI, function(){
-    console.log("Database connesso!");
+// GLOBAL
+app.use(function(req, res, next){
+    res.locals.utente = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.warn = req.flash("warn");
+    res.locals.info = req.flash("info");
+    res.locals.success = req.flash("success");
+    next();
 });
 
 // BODY PARSER SETUP
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// SET PUBLIC FOLDER
-app.use(express.static(__dirname + "/public"));
-
 // METHOD OVERRIDE SETUP
 app.use(methodOverride("_method"));
 
+// Upload and download attachments
+app.use('/fileupload', fileUploader);
+app.use('/filedownload', fileDownloader);
+app.use('/imgupload', imgUploader);
 // ROUTES SET UP
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
-app.use('/post', postRoutes);
+app.use('/posts', postRoutes);
 
-// CONNECT FLASH MESSAGES
-app.use(flash());
+// SET PUBLIC FOLDER
+app.use(express.static(__dirname + "/public"));
 
-// GLOBAL
-app.use(function(req, res, next){
-    res.locals.utente = req.user;
-    res.locals.error = req.flash("error");
-    res.locals.success = req.flash("success");
-    next();
-});
 
 app.get("/", function(req, res){
     Post.find({}, function(err, posts){
         if(err){
-            console.log(err);
+            log.error(err);
             res.status(400).send("Si è verificato un errore nel caricamento, mannaggia alla Peppina");
         } else {
             res.render("index", { posts: posts.reverse() });
-        }
-    });
-})
-
-app.get("/new", function(req, res){
-    res.render("posts/new");
-})
-
-app.post("/", middleware.isLoggedIn, function(req, res){
-    let parsedAttachments = JSON.parse(req.body.attachments);
-    let attachments = [];
-    parsedAttachments.forEach(function(attachment){
-        attachments.push({
-            indirizzo: attachment.name,
-            nome: attachment.originalName,
-            dimensione: attachment.size,
-            estensione: attachment.ext
-        });
-    })
-    var newPost = new Post({
-        idAutore: req.user.id,
-        titolo: req.body.titolo,
-        contenuto: req.body.contenuto,
-        soloFermi: false,
-        commenti: [],
-        like: 0,
-        dislike: 0,
-        immagine: JSON.parse(req.body.img),
-        allegati: attachments
-    });
-    newPost.save(function(err, newPost){
-        if(err){
-            console.log(err);
-            res.status(400).send("Si è verificato un errore nel salvataggio, mannaggia alla Peppina");
-        } else {
-            console.log("Salvato nuovo post:");
-            console.log(newPost);
-            res.redirect("/");
         }
     });
 })
@@ -172,14 +137,14 @@ io.use(passportSocketIo.authorize({
 }));
 
 function onAuthorizeSuccess(data, accept){
-    // console.log('Nuova connessione accettata, sessione: ' + data.sessionID);
     accept();
 }
 
 function onAuthorizeFail(data, message, error, accept){
     // error indicates whether the fail is due to an error or just a unauthorized client
     if(error){
-        console.log(`\n${new Error().stack}\nMotivo: ${message}\n`);
+        data.socket.emit("error", message);
+        log.warn(`\n${new Error().stack}\nMotivo: ${message}\n`);
     } else {
         // reject socket connection
         return accept(new Error(message));

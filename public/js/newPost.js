@@ -1,6 +1,6 @@
 var img = {
     tipo: "local",
-    indirizzo: "default.jpeg"
+    indirizzo: "default.jpg"
 };
 
 $(document).ready(function(){
@@ -46,13 +46,12 @@ $("#upload-file").on("click", function(){
                 $(this).ajaxSubmit({
 
                     error: function(xhr){
-                        status('Errore: ' + xhr.status);
+                        $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                     },
 
                     success: function(response){
                         $("#status").empty().text(response.msg);
                         if(response.msg == "File caricato!"){
-                            // FAI QUALCOSA DEBUG NON VA
                             attachments.push({
                                 name: response.name,
                                 originalName: response.originalName,
@@ -90,7 +89,7 @@ $("#upload-img").on("click", function(){
                 $(this).ajaxSubmit({
 
                     error: function(xhr){
-                        status('Errore: ' + xhr.status);
+                        $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                     },
 
                     success: function(response){

@@ -1,12 +1,17 @@
 <%- include ('./partials/header') %>
 
 <div class="container">
+
+    <div class="alert alert-danger error-div m-3 text-center" role="alert">
+        <h3><i class="fas fa-exclamation-triangle"></i> Errore <i class="fas fa-exclamation-triangle"></i></h3>
+        <p id="error-text">Impossibile caricare JavaScript correttamente. Verifica che sia abilitato.</p>
+    </div>
     <div class="row">
 
         <div class="col-12 col-lg-4">
             <div id="chat">
                 <div id="chat-window">
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert chat-alert alert-danger" role="alert">
                         Scrivi lo username e il messaggio!
                     </div>
                     <div id="output">
@@ -53,7 +58,7 @@
                         <% if(post.allegati.length > 0){ %>
                             <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
                         <% } %>
-                        <a style="float: right;" class="btn btn-outline-dark mb-2" href="/post/<%= post._id %>">Visita</a>
+                        <a style="float: right;" class="btn btn-outline-dark mb-2" href="/posts/<%= post._id %>">Visita</a>
                     </div>
                 </div>
             </div>

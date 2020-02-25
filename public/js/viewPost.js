@@ -31,3 +31,7 @@ $(".file-title").each(function(){
         $(this).text(text);
     }
 });
+
+$('#font-slider').on('input', function(){
+    $("#contenuto").css("font-size", ($(this).val() / 2) + "rem");
+});

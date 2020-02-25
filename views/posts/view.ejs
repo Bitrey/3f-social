@@ -1,5 +1,30 @@
 <%- include("../partials/header") %>
 
+<!-- Modal eliminazione post -->
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="delete-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delete-modal-label">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Sei sicuro di voler eliminare questo post?</p>
+                
+            </div>
+            <div class="modal-footer">
+                <form id="delete-form" action="/posts/<%= post._id %>?_method=DELETE" method="POST">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-dark">Conferma</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <h1 class="text-center mt-3 mb-4 post-title"><%= post.titolo %></h1>
     <div class="row">
@@ -7,7 +32,7 @@
             <div class="form-group">
                 <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                     <div class="col-6 col-lg-12">
-                        <h2 class="text-muted">Scritto da <%= autore %></h2>
+                        <h2 class="text-muted">Scritto da <%= post.autore.username %></h2>
                         <% if(post.immagine.tipo == "local"){ %>
                             <img src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
                         <% } else if(post.immagine.tipo == "url") { %>
@@ -19,14 +44,29 @@
         </div>
         <div class="col-12 col-lg-8">
 
+            <div style="display: inline;">
+                <small style="float: left; margin-right: 5px;" id="dimensione-font-label">Dimensione font</small>
+                <input style="max-width: 100px;" aria-describedby="dimensione-font-label" type="range" min="1" max="10" value="2" class="slider pl-1 pr-1 mb-1" id="font-slider">
+            </div>
             <!-- Contenuto -->
-            <p><%= post.contenuto %></p>
+            <p id="contenuto"><%= post.contenuto %></p>
 
             <!-- Data -->
             <small class="text-muted">
                 <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
                 <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
             </small>
+
+            <% if(utente && post.autore.id == utente._id){ %>
+                <hr>
+                <p>Opzioni autore</p>
+                <div style="display: inline-flex;">
+                    <a class="btn btn-dark mr-3" href="/posts/<%= post._id %>/edit" role="button"><i class="fas fa-edit"></i> Modifica</a>
+                    <button type="button" class="btn btn-light" data-toggle="modal" data-target="#delete-modal">
+                        <i class="far fa-trash-alt"></i> Elimina
+                    </button>
+                </div>
+            <% } %>
 
             <!-- Allegati -->
             <% if(post.allegati.length > 0){ %>
@@ -36,7 +76,7 @@
                 <% post.allegati.forEach(function(allegato){ %>
                     <div class="card m-2">
                         <div class="card-body">
-                            <form id="downloadForm" action="/filedownload/<%= allegato.indirizzo %>" method="GET">
+                            <form id="downloadForm" action="/filedownload/<%= allegato.indirizzo %>/<%= allegato.nome %>" method="GET">
                                 <h5 class="card-title file-title"><%= allegato.nome %></h5>
                                 <h6 class="card-subtitle mb-2 text-muted">Dimensione: <%= allegato.dimensione / 1000 %>KB</h6>
                                 <h6 class="card-subtitle mb-2 text-muted">Estensione: <%= allegato.estensione %></h6>

@@ -2,12 +2,14 @@ const router = require('express').Router();
 const passport = require('passport');
 
 // auth login
-router.get('/login', (req, res) => {
-    res.render('login');
+router.get('/login', function(req, res){
+    // res.render('login');
+    res.redirect("/auth/google");
 });
 
 // auth logout
-router.get('/logout', (req, res) => {
+router.get('/logout', function(req, res){
+    req.flash("success", "Ti sei disconnesso");
     req.logout();
     res.redirect('/');
 });
@@ -17,10 +19,8 @@ router.get('/google', passport.authenticate('google', {
     scope: ['profile', 'email']
 }));
 
-// callback route for google to redirect to
-// hand control to passport to use code to grab profile info
-router.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-    // res.send(req.user);
+router.get('/google/redirect', passport.authenticate('google'), function(req, res){
+    req.flash("success", "Ti sei autenticato");
     res.redirect('/profile');
 });
 

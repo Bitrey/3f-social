@@ -1,0 +1,255 @@
+<%- include("../partials/header") %>
+
+<!-- Modal allegato -->
+<div class="modal fade" id="allegato-modal" aria-labelledby="allegato-modal-label" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="allegato-modal-label">Nuovo allegato</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" action="fileupload" method="post" enctype="multipart/form-data">
+                    <input type="file" aria-describedby="max-size-label" id="attachment" name="attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
+                    <div style="display: inline-block;">
+                        <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
+                        <small id="max-size-label">Premi per allegare un file, dimensione massima: 10MB</small>
+                    </div>
+                    <p class="text-center" style="font-weight: 700;" id="status"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" id="close-modal" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal immagine -->
+<div class="modal fade" id="cambia-img-modal" tabindex="-1" role="dialog" aria-labelledby="cambia-img-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cambia-img-modal-label">Cambia immagine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <button id="url-post-img" class="btn btn-dark mr-3"><i class="fas fa-external-link-alt"></i> Link esterno</button>
+                <button id="upload-post-img" class="btn btn-dark ml-3"><i class="fas fa-file-upload"></i> Carica</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal carica immagine -->
+<div class="modal fade" id="carica-img-modal" tabindex="-1" role="dialog" aria-labelledby="carica-img-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carica-img-modal-label">Carica immagine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="imgForm" action="imgupload" method="post" enctype="multipart/form-data">
+                    <input type="file" accept="image/*" aria-describedby="max-size-label" id="img-attachment" name="img-attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
+                    <div style="display: inline-block;">
+                        <button type="submit" id="upload-img" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
+                        <small id="max-size-label">Premi per allegare un'immagine, dimensione massima: 10MB</small>
+                    </div>
+                    <p class="text-center" style="font-weight: 700;" id="status-img"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" id="close-modal" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Body -->
+<div class="container">
+    <h1 class="text-center mt-3 mb-4">Modifica <%= post.titolo %></h1>
+    <form id="edit-post-form" action="/posts/<%= post._id %>?_method=PUT" method="POST">
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <div class="form-group">
+                    <div class="row" style="align-content: center; justify-content: center; align-items: center;">
+                        <div class="col-6 col-lg-12">
+                            <% if(post.immagine.tipo == "local"){ %>
+                                <img src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                            <% } else if(post.immagine.tipo == "url") { %>
+                                <img src="<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                            <% } %>
+                            <input type='hidden' id='hiddenImgField' name='img' value=''>
+                        </div>
+                        <div class="col-6 col-lg-12 mt-3">
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#cambia-img-modal"><i class="fas fa-edit"></i> Cambia immagine</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="form-group">
+                    <label for="titolo">Titolo</label>
+                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="titolo" id="titolo" minlength="5" maxlength="30" value="<%= post.titolo %>">
+                    <small id="titoloHelp" class="form-text text-muted text-center">Inserisci il titolo del post, da 5 a 30 caratteri</small>
+                </div>
+                <div class="form-group">
+                    <label for="contenuto">Contenuto</label>
+                    <textarea class="form-control" aria-describedby="contenutoHelp" name="contenuto" maxlength="1500" minlength="30" autocomplete="off" id="contenuto" rows="5"><%= post.contenuto %></textarea>
+                    <small id="contenutoHelp" class="form-text text-muted text-center">Inserisci il contenuto del post, da 30 a 1500 caratteri</small>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#allegato-modal">
+                        <i class="fas fa-paperclip"></i> Nuovo allegato
+                    </button>
+                    <input type='hidden' id='hiddenAttField' name='attachments' value=''>
+                </div>
+            </div>
+        </div>
+        <div class="post-submit mt-3 mb-3 d-flex">
+            <div><a role="button" class="btn btn-light" href="/posts/<%= post._id %>"><i class="fas fa-window-close"></i> Annulla</a></div>
+            <div><button type="submit" class="btn btn-dark"><i class="fas fa-plus"></i> Posta modifica</button></div>
+        </div>
+    </form>
+</div>
+
+<script>
+    var img = {
+        tipo: JSON.parse("<%= post.immagine.tipo %>"),
+        indirizzo: JSON.parse("<%= post.immagine.indirizzo %>")
+    };
+
+    $(document).ready(function(){
+        $("#titolo").focus();
+    });
+
+    function imageExists(url){
+        try {
+            var imgTry = new Image();
+            imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide") };
+            imgTry.onerror = function(){ alert("Immagine non valida!"); };
+            imgTry.src = url;
+        } catch(e){
+            alert("URL non valido!");
+        }
+    }
+
+    $("#url-post-img").on("click", function(){
+        var link = prompt("Inserisci l'URL dell'immagine");
+        if(link){
+            imageExists(link);
+        }
+    })
+
+    let dbAttachments = JSON.parse("<%= post.allegati %>");
+    let attachments = [];
+    if(dbAttachments){
+        dbAttachments.forEach(function(attachment){
+            attachments.push({
+                name: indirizzo,
+                originalName: nome,
+                size: dimensione,
+                ext: estensione
+            })
+        });
+    }
+
+    $("#new-post-form").on("submit", function(){
+        $("#hiddenAttField").val(JSON.stringify(attachments));
+        $("#hiddenImgField").val(JSON.stringify(img));
+    })
+
+    $("#upload-file").on("click", function(){
+        try {
+            if(!$("#attachment")[0].files[0]){
+                $("#status").empty().text("Nessun file selezionato");
+                return false;
+            } else if($("#attachment")[0].files[0].size > 10000000){
+                $("#status").empty().text("Il file supera il limite di 10MB");
+                return false;
+            } else {
+                $('#uploadForm').submit(function(){
+                    $("#status").empty().text("Caricamento file...");
+                    $(this).ajaxSubmit({
+
+                        error: function(xhr){
+                            status('Errore: ' + xhr.status);
+                        },
+
+                        success: function(response){
+                            $("#status").empty().text(response.msg);
+                            if(response.msg == "File caricato!"){
+                                // FAI QUALCOSA DEBUG NON VA
+                                attachments.push({
+                                    name: response.name,
+                                    originalName: response.originalName,
+                                    size: response.size,
+                                    ext: response.ext
+                                });
+                            }
+                        }
+                    });
+                    // Annulla rinfrescamento pagina
+                    return false;
+                });
+            }
+        } catch(e){
+            $("#status").empty().text("Errore: " + err.toString());
+        }
+    })
+
+    $("#upload-post-img").on("click", function(){
+        $("#cambia-img-modal").modal("hide");
+        $("#carica-img-modal").modal("show");
+    })
+
+    $("#upload-img").on("click", function(){
+        try {
+            if(!$("#img-attachment")[0].files[0]){
+                $("#status-img").empty().text("Nessun file selezionato");
+                return false;
+            } else if($("#img-attachment")[0].files[0].size > 10000000){
+                $("#status-img").empty().text("L'immagine supera il limite di 10MB");
+                return false;
+            } else {
+                $('#imgForm').submit(function(){
+                    $("#status-img").empty().text("Caricamento file...");
+                    $(this).ajaxSubmit({
+
+                        error: function(xhr){
+                            status('Errore: ' + xhr.status);
+                        },
+
+                        success: function(response){
+                            $("#status-img").empty().text(response.msg);
+                            if(response.msg == "Immagine caricata!"){
+                                img.tipo = "local";
+                                img.indirizzo = response.name;
+                                $("#carica-img-modal").modal("hide");
+                                $(".new-post-img").attr("src", `/img/post/${response.name}`);
+                            }
+                        }
+                    });
+                    // Annulla rinfrescamento pagina
+                    return false;
+                });
+            }
+        } catch(e){
+            $("#status-img").empty().text("Errore: " + err.toString());
+        }
+    })
+</script>
+
+<%- include("../partials/footer") %>

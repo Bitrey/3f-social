@@ -11,7 +11,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="uploadForm" action="fileupload" method="post" enctype="multipart/form-data">
+                <form id="uploadForm" action="/fileupload" method="post" enctype="multipart/form-data">
                     <input type="file" aria-describedby="max-size-label" id="attachment" name="attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
                     <div style="display: inline-block;">
                         <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
@@ -61,7 +61,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="imgForm" action="imgupload" method="post" enctype="multipart/form-data">
+                <form id="imgForm" action="/imgupload" method="post" enctype="multipart/form-data">
                     <input type="file" accept="image/*" aria-describedby="max-size-label" id="img-attachment" name="img-attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
                     <div style="display: inline-block;">
                         <button type="submit" id="upload-img" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
@@ -80,13 +80,13 @@
 <!-- Body -->
 <div class="container">
     <h1 class="text-center mt-3 mb-4">Nuovo Post</h1>
-    <form id="new-post-form" action="/" method="post">
+    <form id="new-post-form" action="/posts" method="post">
         <div class="row">
             <div class="col-12 col-lg-4">
                 <div class="form-group">
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
-                            <img src="/img/post/default.jpeg" alt="Immagine post" class="new-post-img">
+                            <img src="/img/post/default.jpg" alt="Immagine post" class="new-post-img">
                             <input type='hidden' id='hiddenImgField' name='img' value=''>
                         </div>
                         <div class="col-6 col-lg-12 mt-3">
@@ -98,7 +98,7 @@
             <div class="col-12 col-lg-8">
                 <div class="form-group">
                     <label for="titolo">Titolo</label>
-                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="titolo" id="titolo" minlength="5" maxlength="30">
+                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="titolo" id="titolo" minlength="5" maxlength="30" autocomplete="off">
                     <small id="titoloHelp" class="form-text text-muted text-center">Inserisci il titolo del post, da 5 a 30 caratteri</small>
                 </div>
                 <div class="form-group">

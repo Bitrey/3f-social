@@ -7,21 +7,20 @@ middlewareObj.isPostOwner = function(req, res, next){
     if(req.isAuthenticated()){
         Post.findById(req.params.id, function(err, foundPost){
             if(err){
-                req.flash("error", "Post not found");
-                res.redirect("back");
+                req.flash("error", "Post non trovato");
+                res.status(404).redirect("back");
             } else {
-                // does user own the post?
-                if(foundPost.author.id.equals(req.user._id)){
+                if(foundPost.autore.id == req.user._id){
                     next();
                 } else {
-                    req.flash("error", "You don't have permission to do that");
-                    res.redirect("back");
+                    req.flash("error", "Non sei autorizzato");
+                    res.status(401).redirect("back");
                 }
             }
         });
     } else {
-        req.flash("error", "You need to be logged in to do that");
-        res.redirect("back");
+        req.flash("error", "Devi fare l'acesso per continuare");
+        res.status(401).redirect("back");
     }
 }
 
@@ -29,20 +28,20 @@ middlewareObj.isCommentOwner = function(req, res, next){
     if(req.isAuthenticated()){
         Comment.findById(req.params.comment_id, function(err, foundComment){
             if(err){
-                res.redirect("back");
+                req.flash("error", err);
+                res.status(500).redirect("back");
             } else {
-                // does user own the comment?
                 if(foundComment.author.id.equals(req.user._id)){
                     next();
                 } else {
-                    req.flash("error", "You don't have permission to do that");
-                    res.redirect("back");
+                    req.flash("error", "Non sei autorizzato");
+                    res.status(401).redirect("back");
                 }
             }
         });
     } else {
-        req.flash("error", "You need to be logged in to do that");
-        res.redirect("back");
+        req.flash("info", "Devi fare l'acesso per continuare");
+        res.status(401).redirect("back");
     }
 }
 
@@ -50,8 +49,8 @@ middlewareObj.isLoggedIn = function(req, res, next){
     if(req.isAuthenticated()){
         return next();
     }
-    req.flash("error", "You need to be logged in to do that");
-    res.redirect("/login");
+    req.flash("info", "Devi fare l'acesso per continuare");
+    res.status(401).redirect("back");
 }
 
 module.exports = middlewareObj;
