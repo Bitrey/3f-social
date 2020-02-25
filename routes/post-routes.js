@@ -79,7 +79,7 @@ router.get("/:id/edit", function(req, res){
             console.log(err);
             res.status(500).redirect("back");
         } else {
-            res.render("posts/edit", { post: foundPost });
+            res.render("posts/edit", { post: foundPost, postJSON: JSON.stringify(foundPost) });
         }
     })
 })
@@ -92,8 +92,30 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
             console.log(err);
             res.status(500).redirect("back");
         } else {
-            req.flash("success", "Post modificato con successo");
-            res.redirect("/posts/" + req.params.id);
+            updatedPost.immagine = JSON.parse(req.body.post.img);
+            if(req.body.post.attachments){
+                let attachments = [];
+                let parsedAttachments = JSON.parse(req.body.post.attachments);
+                parsedAttachments.forEach(function(attachment){
+                    attachments.push({
+                        indirizzo: attachment.name,
+                        nome: attachment.originalName,
+                        dimensione: attachment.size,
+                        estensione: attachment.ext
+                    });
+                });
+                updatedPost.allegati = attachments;
+            }
+            updatedPost.save(function(err, saved){
+                if(err){
+                    req.flash("error", "Errore nel salvataggio del file, mannaggia alla Peppina!");
+                    console.log(err);
+                    res.status(500).redirect("back");
+                } else {
+                    req.flash("success", "Post modificato con successo");
+                    res.redirect("/posts/" + req.params.id);
+                }
+            })
         }
     })
 })

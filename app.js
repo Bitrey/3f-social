@@ -82,7 +82,7 @@ app.use(function(req, res, next){
 });
 
 // BODY PARSER SETUP
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // METHOD OVERRIDE SETUP
