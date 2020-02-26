@@ -38,8 +38,9 @@
         </div>
 
         <div class="col-12 col-lg-8">
+            <div class="row">
             <% posts.forEach(function(post){ %>
-            <div class="post card bg-light m-3">
+            <div class="col-12 col-lg-5 post card bg-light m-3">
                 <% if(post.immagine.tipo == "local"){ %>
                     <img class="post-img my-1 ml-1 mr-3" src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine del post">
                 <% } else if(post.immagine.tipo == "url") { %>
@@ -47,22 +48,25 @@
                 <% } %>
                 <div class="card-body">
                     <h5 class="card-title"><%= post.titolo %></h5>
-                    <p class="card-text"><%= post.contenuto %></p>
-                    <p class="card-text">
-                        <small class="text-muted">
-                            <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
-                            <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
-                        </small>
-                    </p>
-                    <div style="display: inline;">
-                        <% if(post.allegati.length > 0){ %>
-                            <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
-                        <% } %>
-                        <a style="float: right;" class="btn btn-outline-dark mb-2" href="/posts/<%= post._id %>">Visita</a>
+                    <p class="post-text card-text"><%= post.contenuto %></p>
+                    <div class="card-btns">
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
+                                <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
+                            </small>
+                        </p>
+                        <div style="display: inline;">
+                            <% if(post.allegati.length > 0){ %>
+                                <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
+                            <% } %>
+                            <a style="float: right;" class="btn btn-outline-dark mb-2" href="/posts/<%= post._id %>">Visita</a>
+                        </div>
                     </div>
                 </div>
             </div>
             <% }) %>
+            </div>
         </div>
     </div>
 

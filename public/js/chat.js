@@ -254,3 +254,20 @@ socket.on("error", function(message){
 socket.on("connect_error", function(message){
     $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-comment-slash"></i> Connessione al socket rifiutata</h5><p>Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p><small>Errore: ' + message + '</div>');
 })
+
+// Tronca file con nome > 16 caratteri
+$(".post-text").each(function(){
+    if($(this).text().length > 100){
+        var text = $(this).text();
+        text = text.substr(0, 100) + '...';
+        $(this).text(text);
+    }
+});
+
+// $(".card").each(function(){
+//     $(this).css("height", $(".card-body").css("height"));
+// })
+
+$(".post").each(function(){
+    $(this).css("height", ($(this).children(".card-title").css("height") + $(this).children(".post-text").css("height") + $(this).children(".card-btns").css("height")));
+})
