@@ -35,3 +35,9 @@ $(".file-title").each(function(){
 $('#font-slider').on('input', function(){
     $("#contenuto").css("font-size", ($(this).val() / 2) + "rem");
 });
+
+var str = JSON.parse($("#post-text").text());
+$("#post-text").remove();
+
+str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
+$("#contenuto").html(str);
