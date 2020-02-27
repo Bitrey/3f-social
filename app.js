@@ -144,7 +144,7 @@ function onAuthorizeFail(data, message, error, accept){
     // error indicates whether the fail is due to an error or just a unauthorized client
     if(error){
         data.socket.emit("error", message);
-        log.warn(`\n${new Error().stack}\nMotivo: ${message}\n`);
+        console.log(`\n${new Error().stack}\nMotivo: ${message}\n`);
     } else {
         // reject socket connection
         return accept(new Error(message));

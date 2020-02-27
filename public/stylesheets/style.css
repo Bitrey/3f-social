@@ -48,8 +48,8 @@
 }
 
 .post-img {
-    max-width: 170px;
-    max-height: 200px;
+    max-width: 150px;
+    max-height: 150px;
 	border: 5px solid #f8f9fa;
 	border-radius: 5%;
     box-shadow: 0 0 5px #ddd;
@@ -96,11 +96,12 @@ h2{
 }
 
 #chat{
-    max-width: 600px;
+    width: 100%;
     margin: 30px auto;
     border: 1px solid #ddd;
     box-shadow: 1px 3px 5px rgba(0,0,0,0.05);
     border-radius: 2px;
+    float: left;
 }
 
 .info-container {
