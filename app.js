@@ -14,9 +14,11 @@ const User = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
 const Message = require("./models/message");
+const indexRoutes = require("./routes/index");
+const courseRoutes = require("./routes/course");
 const fileUploader = require("./routes/file-upload");
 const fileDownloader = require("./routes/file-download");
-const postRoutes = require("./routes/post-routes");
+const postRoutes = require("./routes/post");
 const imgUploader = require("./routes/img-upload");
 
 // Middleware
@@ -28,11 +30,15 @@ const MongoStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser');
 const passportSocketIo = require("passport.socketio");
 const passport = require('passport');
-const authRoutes = require('./routes/auth-routes');
-const profileRoutes = require('./routes/profile-routes');
+const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
 const passportSetup = require('./config/passport-setup');
 
 app.set("view engine", "ejs");
+
+// BODY PARSER SETUP
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // SETUP COOKIE PARSER
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -81,39 +87,29 @@ app.use(function(req, res, next){
     next();
 });
 
-// BODY PARSER SETUP
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 // METHOD OVERRIDE SETUP
 app.use(methodOverride("_method"));
+
+// SET PUBLIC FOLDER
+app.use(express.static(__dirname + "/public"));
 
 // Upload and download attachments
 app.use('/fileupload', fileUploader);
 app.use('/filedownload', fileDownloader);
 app.use('/imgupload', imgUploader);
 // ROUTES SET UP
+app.use('/', indexRoutes);
+app.use('/courses', courseRoutes);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/posts', postRoutes);
 
-// SET PUBLIC FOLDER
-app.use(express.static(__dirname + "/public"));
-
-
-app.get("/", function(req, res){
-    Post.find({}, function(err, posts){
-        if(err){
-            log.error(err);
-            res.status(400).send("Si è verificato un errore nel caricamento, mannaggia alla Peppina");
-        } else {
-            res.render("index", { posts: posts.reverse() });
-        }
-    });
-})
-
 app.get("/info", function(req, res){
     res.render("info");
+})
+
+app.get("/test", function(req, res){
+    res.render("tests/course-list");
 })
 
 app.get("*", function(req, res){
@@ -151,6 +147,7 @@ function onAuthorizeFail(data, message, error, accept){
     }
 }
 
+// Chat
 io.on("connection", function(socket){
     Message.find({}, function(err, messages){
         if(err){
@@ -160,13 +157,32 @@ io.on("connection", function(socket){
         }
     });
     socket.on("chat", function(data){
-        // DEBUG: !!! RISOLVI AD AUTORE DA PRENDERE DA USER PASSPORT AUTHENTICATION
+        // DEBUG: !!! RISOLVI USERNAME DA PRENDERE DA USER PASSPORT AUTHENTICATION
         let messageObj = new Message({
-            usernameAutore: data.username,
-            idAutore: socket.request.user._id,
+            autore: {
+                id: socket.request.user._id,
+                username: data.username,
+                immagine: socket.request.user.immagine
+            },
             contenuto: data.message,
             dataCreazione: Date.now()
         });
+        if(data.username != socket.request.user.username){
+            let newUsername = data.username;
+            let oldUsername = socket.request.user.username;
+            User.findByIdAndUpdate(socket.request.user._id, { username: data.username }, function(err, newUser){
+                if(err){
+                    log.error(err);
+                    socket.emit("error", err);
+                } else {
+                    socket.emit("changeOwnUsername", newUsername);
+                    io.sockets.emit("changeUsername", {
+                        newUsername: newUsername,
+                        oldUsername: oldUsername
+                    });
+                }
+            })
+        }
         messageObj.save(function(err){if(err){console.log(err);}});
         Message.find({}).sort('-dataCreazione').exec(function(err, foundMessages){
             if(err){

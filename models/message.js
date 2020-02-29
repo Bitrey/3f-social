@@ -1,8 +1,11 @@
 var mongoose = require("mongoose");
 
 var messaggiSchema = new mongoose.Schema({
-    usernameAutore: { type: String, default: "Errore nel salvataggio username" },
-    idAutore: String,
+    autore: {
+        id: String,
+        username: String,
+        immagine: { type: String, default: "/img/post/default.jpg" }
+    },
     contenuto: { type: String, default: "Errore nel salvataggio del messaggio dio ortaggio" },
     dataCreazione: { type: Date, default: Date.now },
 })

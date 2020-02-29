@@ -62,7 +62,7 @@ router.get("/:id", function(req, res){
             res.status(500).redirect("/");
         } else {
             if(post){
-                res.render("posts/view", { post: post, utente: req.user, contenutoJSON: JSON.stringify(post.contenuto) });
+                res.render("posts/view", { post: post, contenutoJSON: JSON.stringify(post.contenuto) });
             } else {
                 req.flash("error", "Post non trovato");
                 res.status(404).redirect("back");

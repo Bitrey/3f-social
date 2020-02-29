@@ -52,7 +52,7 @@
                 <ul class="navbar-nav ml-auto">
                     <% if(utente) { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile"><i class="fas fa-user-circle"></i> <%= utente.username %></a>
+                        <a class="nav-link" href="/profile"><i class="fas fa-user-circle"></i> <span id="username-span"><%= utente.username %></span></a>
                         <div class="underline"></div>
                     </li>
                     <li class="nav-item">

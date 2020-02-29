@@ -20,6 +20,11 @@ var userSchema = new mongoose.Schema({
             ref: "Message"
         }
     ],
+    corsi: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course"
+        },]
 });
 
 module.exports = mongoose.model("User", userSchema);

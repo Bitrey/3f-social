@@ -103,9 +103,9 @@ socket.on("chat", function(data) {
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span> <strong>" + data.usernameAutore + "</strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<p id='" + data.dataCreazione + "'><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span> <strong><span class='username-chat-span'>" + data.autore.username + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
     } else {
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><strong>" + data.usernameAutore + "</strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<p id='" + data.dataCreazione + "'><strong><span class='username-chat-span'>" + data.autore.username + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
     };
     chat_window.scrollTop = chat_window.scrollHeight;
     unread++;
@@ -149,7 +149,7 @@ socket.on("pastMsg", function(messages){
                 output.innerHTML += `<p class="date-separator">${currentDay.getDate()}/${month}/${year}</p>`;
             }
         }
-        output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong>" + messages[i].usernameAutore + "</strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
+        output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong><span class='username-chat-span'>" + messages[i].autore.username + "</span></strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
     }
     chat_window.scrollTop = chat_window.scrollHeight;
 });
@@ -198,8 +198,8 @@ $("#img").on("click", function(){
                 img.onload = function(){
                     $(".chat-alert").hide();
                     socket.emit("chat", {
-                        contenuto: "<img style='width: auto; max-width: 80%; max-height: 300px; display: block;' src='" + imgPrompt + "'",
-                        usernameAutore: username.value
+                        message: "<img style='width: auto; max-width: 80%; max-height: 300px; display: block;' src='" + imgPrompt + "'",
+                        username: username.value
                     });
                 };
                 img.onerror = function(){
@@ -270,4 +270,16 @@ $(".post-text").each(function(){
 
 $(".post").each(function(){
     $(this).css("height", ($(this).children(".card-title").css("height") + $(this).children(".post-text").css("height") + $(this).children(".card-btns").css("height")));
+})
+
+socket.on("changeOwnUsername", function(data){
+    $("#username-span").text(data);
+});
+
+socket.on("changeUsername", function(data){
+    $(".username-chat-span").each(function(){
+        if($(this).text() == data.oldUsername){
+            $(this).text(data.newUsername);
+        }
+    })
 })
