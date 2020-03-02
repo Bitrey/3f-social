@@ -2,10 +2,17 @@ const router = require('express').Router();
 const Post = require("../models/post");
 
 router.get("/", function(req, res){
-    Post.find({}, function(err, posts){
+    res.redirect("/courses/view");
+})
+
+router.get("/view", function(req, res){
+    Post.find({}).
+    populate("autore").
+    exec(function(err, posts){
         if(err){
-            log.error(err);
-            res.status(400).send("Si è verificato un errore nel caricamento, mannaggia alla Peppina");
+            req.flash("error", "Si è verificato un errore nel caricamento, mannaggia alla Peppina");
+            console.log(err);
+            res.status(400).redirect("back");
         } else {
             res.render("courses/list", { posts: posts.reverse() });
         }

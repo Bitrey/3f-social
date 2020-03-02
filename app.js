@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
-const log = require('simple-node-logger').createSimpleFileLogger('error.log');
 var socket = require("socket.io");
 
 // Routes
@@ -149,8 +148,11 @@ function onAuthorizeFail(data, message, error, accept){
 
 // Chat
 io.on("connection", function(socket){
-    Message.find({}, function(err, messages){
+    Message.find({}).
+    populate("autore").
+    exec(function(err, messages){
         if(err){
+            console.log(err);
             socket.emit("err", err);
         } else {
             socket.emit("pastMsg", messages);
@@ -159,11 +161,7 @@ io.on("connection", function(socket){
     socket.on("chat", function(data){
         // DEBUG: !!! RISOLVI USERNAME DA PRENDERE DA USER PASSPORT AUTHENTICATION
         let messageObj = new Message({
-            autore: {
-                id: socket.request.user._id,
-                username: data.username,
-                immagine: socket.request.user.immagine
-            },
+            autore: socket.request.user._id,
             contenuto: data.message,
             dataCreazione: Date.now()
         });
@@ -172,7 +170,7 @@ io.on("connection", function(socket){
             let oldUsername = socket.request.user.username;
             User.findByIdAndUpdate(socket.request.user._id, { username: data.username }, function(err, newUser){
                 if(err){
-                    log.error(err);
+                    console.log(err);
                     socket.emit("error", err);
                 } else {
                     socket.emit("changeOwnUsername", newUsername);
@@ -196,7 +194,11 @@ io.on("connection", function(socket){
                 }
             }
         });
-        io.sockets.emit("chat", messageObj);
+        io.sockets.emit("chat", {
+            autore: data.username,
+            contenuto: messageObj.contenuto,
+            dataCreazione: messageObj.dataCreazione
+        });
     });
 
     socket.on("typing", function(data){

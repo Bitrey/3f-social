@@ -31,7 +31,11 @@
             <div class="form-group">
                 <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                     <div class="col-6 col-lg-12">
-                        <h2 class="text-muted">Scritto da <%= post.autore.username %></h2>
+                        <% if(post.autore){ %>
+                            <h2 class="text-muted">Scritto da <%= post.autore.username %></h2>
+                        <% } else { %>
+                            <h2 class="text-muted"><i class="fas fa-user-slash"></i> Utente non trovato</h2>
+                        <% } %>
                         <% if(post.immagine.tipo == "local"){ %>
                             <img src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
                         <% } else if(post.immagine.tipo == "url") { %>
@@ -56,7 +60,7 @@
                 <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
             </small>
 
-            <% if(utente && post.autore.id == utente._id){ %>
+            <% if(utente && post.autore && post.autore.id == utente._id){ %>
                 <hr>
                 <p>Opzioni autore</p>
                 <div style="display: inline-flex;">

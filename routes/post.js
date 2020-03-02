@@ -28,10 +28,7 @@ router.post("/", middleware.isLoggedIn, function(req, res){
             res.redirect("back");
         } else {
             var newPost = new Post({
-                autore: {
-                    id: req.user.id,
-                    username: foundUser.username
-                },
+                autore: req.user.id,
                 titolo: req.body.titolo,
                 contenuto: req.body.contenuto,
                 soloFermi: false,
@@ -56,7 +53,10 @@ router.post("/", middleware.isLoggedIn, function(req, res){
 
 // SHOW POST
 router.get("/:id", function(req, res){
-    Post.findById(req.params.id, function(err, post){
+    Post.findById(req.params.id).
+    populate("commenti").
+    populate("autore").
+    exec(function(err, post){
         if(err){
             req.flash("error", err.message);
             res.status(500).redirect("/");

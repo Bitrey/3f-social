@@ -45,16 +45,28 @@
             </div>
             <% posts.forEach(function(post){ %>
             <div class="col-12 col-sm-5 post card bg-light m-3">
-                <% if(post.immagine.tipo != "none"){ %>
-                    <% if(post.immagine.tipo == "local"){ %>
-                        <img class="post-img my-1 ml-1 mr-3" src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine del post">
-                    <% } else if(post.immagine.tipo == "url") { %>
-                        <img class="post-img my-1 ml-1 mr-3" src="<%= post.immagine.indirizzo %>" alt="Immagine del post">
-                    <% } %>
+                <% if(post.immagine.tipo == "local"){ %>
+                    <img class="post-img my-1 ml-1 mr-3" src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine del post">
+                <% } else if(post.immagine.tipo == "url") { %>
+                    <img class="post-img my-1 ml-1 mr-3" src="<%= post.immagine.indirizzo %>" alt="Immagine del post">
                 <% } %>
                 <div class="card-body">
                     <h5 class="card-title"><%= post.titolo %></h5>
-                    <p class="post-text card-text"><%= post.contenuto %></p>
+                    <p class="post-text card-text">
+                        <%= post.contenuto %>
+                    </p>
+                    <p class="post-author card-text">
+                        <% if(post.autore){ %>
+                            <% if(post.autore.immagine.tipo == "local"){ %>
+                                <img style="max-width: 2rem; border-radius: 0.5rem;" src="/img/post/<%= post.autore.immagine.indirizzo %>">
+                            <% } else if(post.autore.immagine.tipo == "url") { %>
+                                <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= post.autore.immagine.indirizzo %>">
+                            <% } %>
+                            <span class="username-post-span"><%= post.autore.username %></span>
+                        <% } else { %>
+                            <span class="user-not-found-post-span"><i class="fas fa-user-slash"></i> Utente non trovato</span>
+                        <% } %>
+                    </p>
                     <div class="card-btns">
                         <p class="card-text">
                             <small class="text-muted">

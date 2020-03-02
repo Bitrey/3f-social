@@ -33,13 +33,22 @@ passport.use(
                 // Utente da registrare
                 var user = new User({
                     googleId: profile.id,
+                    datiGoogle: {
+                        nome: profile.name.givenName,
+                        cognome: profile.name.familyName,
+                        email: profile.emails[0].value,
+                        username: profile.displayName,
+                        immagine: profile.photos[0].value
+                    },
                     nome: profile.name.givenName,
                     cognome: profile.name.familyName,
                     email: profile.emails[0].value,
                     username: profile.displayName,
-                    immagine: profile.photos[0].value,
-                    post: [],
-                    messaggi: []
+                    immagine: {
+                        // tipo: "local" / "url" / "none"
+                        tipo: "url",
+                        indirizzo: profile.photos[0].value
+                    },
                 })
                 user.save().then((newUser) => {
                     console.log('Nuova registrazione: ', newUser.username);

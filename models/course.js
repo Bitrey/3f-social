@@ -2,9 +2,8 @@ var mongoose = require("mongoose");
 
 var courseSchema = new mongoose.Schema({
     amministratori: [{
-        id: String,
-        username: String,
-        immagine: { type: String, default: "/img/post/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }],
     partecipanti: [{
         id: String,

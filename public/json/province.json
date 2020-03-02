@@ -1,0 +1,430 @@
+[
+  {
+    "regione": "Piemonte",
+    "provincia": "Torino"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Vercelli"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Novara"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Cuneo"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Asti"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Alessandria"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Biella"
+  },
+  {
+    "regione": "Piemonte",
+    "provincia": "Verbano-Cusio-Ossola"
+  },
+  {
+    "regione": "Valle d'Aosta",
+    "provincia": "Valle d'Aosta"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Varese"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Como"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Sondrio"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Milano"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Bergamo"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Brescia"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Pavia"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Cremona"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Mantova"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Lecco"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Lodi"
+  },
+  {
+    "regione": "Lombardia",
+    "provincia": "Monza e della Brianza"
+  },
+  {
+    "regione": "Trentino-Alto Adige",
+    "provincia": "Bolzano/Bozen"
+  },
+  {
+    "regione": "Trentino-Alto Adige",
+    "provincia": "Trento"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Verona"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Vicenza"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Belluno"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Treviso"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Venezia"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Padova"
+  },
+  {
+    "regione": "Veneto",
+    "provincia": "Rovigo"
+  },
+  {
+    "regione": "Friuli-Venezia Giulia",
+    "provincia": "Udine"
+  },
+  {
+    "regione": "Friuli-Venezia Giulia",
+    "provincia": "Gorizia"
+  },
+  {
+    "regione": "Friuli-Venezia Giulia",
+    "provincia": "Trieste"
+  },
+  {
+    "regione": "Friuli-Venezia Giulia",
+    "provincia": "Pordenone"
+  },
+  {
+    "regione": "Liguria",
+    "provincia": "Imperia"
+  },
+  {
+    "regione": "Liguria",
+    "provincia": "Savona"
+  },
+  {
+    "regione": "Liguria",
+    "provincia": "Genova"
+  },
+  {
+    "regione": "Liguria",
+    "provincia": "La Spezia"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Piacenza"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Parma"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Reggio nell'Emilia"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Modena"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Bologna"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Ferrara"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Ravenna"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Forlì-Cesena"
+  },
+  {
+    "regione": "Emilia-Romagna",
+    "provincia": "Rimini"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Massa-Carrara"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Lucca"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Pistoia"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Firenze"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Livorno"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Pisa"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Arezzo"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Siena"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Grosseto"
+  },
+  {
+    "regione": "Toscana",
+    "provincia": "Prato"
+  },
+  {
+    "regione": "Umbria",
+    "provincia": "Perugia"
+  },
+  {
+    "regione": "Umbria",
+    "provincia": "Terni"
+  },
+  {
+    "regione": "Marche",
+    "provincia": "Pesaro e Urbino"
+  },
+  {
+    "regione": "Marche",
+    "provincia": "Ancona"
+  },
+  {
+    "regione": "Marche",
+    "provincia": "Macerata"
+  },
+  {
+    "regione": "Marche",
+    "provincia": "Ascoli Piceno"
+  },
+  {
+    "regione": "Marche",
+    "provincia": "Fermo"
+  },
+  {
+    "regione": "Lazio",
+    "provincia": "Viterbo"
+  },
+  {
+    "regione": "Lazio",
+    "provincia": "Rieti"
+  },
+  {
+    "regione": "Lazio",
+    "provincia": "Roma"
+  },
+  {
+    "regione": "Lazio",
+    "provincia": "Latina"
+  },
+  {
+    "regione": "Lazio",
+    "provincia": "Frosinone"
+  },
+  {
+    "regione": "Abruzzo",
+    "provincia": "L'Aquila"
+  },
+  {
+    "regione": "Abruzzo",
+    "provincia": "Teramo"
+  },
+  {
+    "regione": "Abruzzo",
+    "provincia": "Pescara"
+  },
+  {
+    "regione": "Abruzzo",
+    "provincia": "Chieti"
+  },
+  {
+    "regione": "Molise",
+    "provincia": "Campobasso"
+  },
+  {
+    "regione": "Molise",
+    "provincia": "Isernia"
+  },
+  {
+    "regione": "Campania",
+    "provincia": "Caserta"
+  },
+  {
+    "regione": "Campania",
+    "provincia": "Benevento"
+  },
+  {
+    "regione": "Campania",
+    "provincia": "Napoli"
+  },
+  {
+    "regione": "Campania",
+    "provincia": "Avellino"
+  },
+  {
+    "regione": "Campania",
+    "provincia": "Salerno"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Foggia"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Bari"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Taranto"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Brindisi"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Lecce"
+  },
+  {
+    "regione": "Puglia",
+    "provincia": "Barletta-Andria-Trani"
+  },
+  {
+    "regione": "Basilicata",
+    "provincia": "Potenza"
+  },
+  {
+    "regione": "Basilicata",
+    "provincia": "Matera"
+  },
+  {
+    "regione": "Calabria",
+    "provincia": "Cosenza"
+  },
+  {
+    "regione": "Calabria",
+    "provincia": "Catanzaro"
+  },
+  {
+    "regione": "Calabria",
+    "provincia": "Reggio Calabria"
+  },
+  {
+    "regione": "Calabria",
+    "provincia": "Crotone"
+  },
+  {
+    "regione": "Calabria",
+    "provincia": "Vibo Valentia"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Trapani"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Palermo"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Messina"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Agrigento"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Caltanissetta"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Enna"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Catania"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Ragusa"
+  },
+  {
+    "regione": "Sicilia",
+    "provincia": "Siracusa"
+  },
+  {
+    "regione": "Sardegna",
+    "provincia": "Sassari"
+  },
+  {
+    "regione": "Sardegna",
+    "provincia": "Nuoro"
+  },
+  {
+    "regione": "Sardegna",
+    "provincia": "Cagliari"
+  },
+  {
+    "regione": "Sardegna",
+    "provincia": "Oristano"
+  },
+  {
+    "regione": "Sardegna",
+    "provincia": "Sud Sardegna"
+  }
+]

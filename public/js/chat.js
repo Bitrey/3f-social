@@ -103,9 +103,9 @@ socket.on("chat", function(data) {
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span> <strong><span class='username-chat-span'>" + data.autore.username + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<p id='" + data.dataCreazione + "'><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span> <strong><span class='username-chat-span'>" + data.autore + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
     } else {
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><strong><span class='username-chat-span'>" + data.autore.username + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<p id='" + data.dataCreazione + "'><strong><span class='username-chat-span'>" + data.autore + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
     };
     chat_window.scrollTop = chat_window.scrollHeight;
     unread++;
@@ -149,7 +149,14 @@ socket.on("pastMsg", function(messages){
                 output.innerHTML += `<p class="date-separator">${currentDay.getDate()}/${month}/${year}</p>`;
             }
         }
-        output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong><span class='username-chat-span'>" + messages[i].autore.username + "</span></strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
+        // Controlla se utente esiste
+        let username;
+        if(messages[i].autore){
+            username = "<span class='username-chat-span'>" + messages[i].autore.username + "</span>";
+        } else {
+            username = "<span class='text-muted'><i class='fas fa-user-slash'></i> Utente non trovato</span>"
+        }
+        output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong>" + username + "</strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
     }
     chat_window.scrollTop = chat_window.scrollHeight;
 });
@@ -257,9 +264,9 @@ socket.on("connect_error", function(message){
 
 // Tronca file con nome > 16 caratteri
 $(".post-text").each(function(){
-    if($(this).text().length > 100){
+    if($(this).text().length > 120){
         var text = $(this).text();
-        text = text.substr(0, 100) + '...';
+        text = text.substr(0, 120) + '...';
         $(this).text(text);
     }
 });
@@ -278,6 +285,11 @@ socket.on("changeOwnUsername", function(data){
 
 socket.on("changeUsername", function(data){
     $(".username-chat-span").each(function(){
+        if($(this).text() == data.oldUsername){
+            $(this).text(data.newUsername);
+        }
+    })
+    $(".username-post-span").each(function(){
         if($(this).text() == data.oldUsername){
             $(this).text(data.newUsername);
         }

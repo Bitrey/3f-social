@@ -2,9 +2,8 @@ var mongoose = require("mongoose");
 
 var commentiSchema = new mongoose.Schema({
     autore: {
-        id: String,
-        username: String,
-        immagine: { type: String, default: "/img/post/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     dataCreazione: { type: Date, default: Date.now },
     contenuto: { type: String, default: "Errore nel salvataggio del contenuto dio imbuto" },

@@ -1,10 +1,10 @@
 var mongoose = require("mongoose");
 
 var messaggiSchema = new mongoose.Schema({
+    corso: String,
     autore: {
-        id: String,
-        username: String,
-        immagine: { type: String, default: "/img/post/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     contenuto: { type: String, default: "Errore nel salvataggio del messaggio dio ortaggio" },
     dataCreazione: { type: Date, default: Date.now },

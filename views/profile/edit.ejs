@@ -1,0 +1,94 @@
+<%- include ('../partials/header') %>
+
+<link rel="stylesheet" href="/css/easy-autocomplete.min.css">
+
+<div class="container">
+    <h1 class="text-center m-3"><i class="fas fa-edit"></i> Modifica profilo</h1>
+
+    <!-- Form caricamento immagine -->
+    <form id="imgForm" action="/imgupload" method="post" enctype="multipart/form-data">
+        <% if(utente.immagine.tipo == "local"){ %>
+            <img src="/img/post/<%= utente.immagine.indirizzo %>" alt="Immagine utente" class="post-img">
+        <% } else if(utente.immagine.tipo == "url") { %>
+            <img src="<%= utente.immagine.indirizzo %>" alt="Immagine post" class="post-img">
+        <% } %>
+        <div class="row">
+            <div style="display: inline-block;" class="form-group col-md-6">
+                <label for="img-attachment">Carica immagine</label>
+                <input type="file" accept="image/*" aria-describedby="max-size-label" id="img-attachment"
+                    name="img-attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;">
+                <button type="submit" id="upload-img" class="btn btn-dark mt-2"><i class="fas fa-upload"></i> Carica</button>
+                <small id="max-size-label">Premi per allegare un'immagine, dimensione massima: 10MB</small>
+                <p class="text-center" style="font-weight: 700;" id="status-img"></p>
+            </div>
+            <div class="form-group col-md-6">
+                <label id="img-upload-label" for="inputImmagine">Oppure inserisci il link di un'immagine</label>
+                <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="url-icon"><i class="fas fa-link"></i></span>
+                </div>
+                <% if(utente.immagine.tipo == "url"){ %>
+                    <input type="text" class="form-control" id="inputImmagine" aria-describedby="url-icon" value="<%= utente.immagine.indirizzo %>" placeholder="<%= utente.immagine.indirizzo %>">
+                <% } else { %>
+                    <input type="text" class="form-control" id="inputImmagine" aria-describedby="url-icon" placeholder="https://i.imgur.com/Loj2ya8.jpg">
+                <% } %>
+                </div>
+                <button type="button" id="url-img" class="btn btn-dark"><i class="fas fa-external-link-alt"></i> Inserisci</button>
+            </div>
+        </div>
+    </form>
+
+    <form action="/profile?_method=PUT" method="POST" id="update-profile-form">
+        <input type='hidden' id='hiddenImgField' name='profile[img]' value=''>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputNome">Nome</label>
+                <input type="text" class="form-control" id="inputNome" name="profile[nome]" value="<%= utente.nome %>">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputCognome">Cognome</label>
+                <input type="text" class="form-control" id="inputCognome" name="profile[cognome]" value="<%= utente.cognome %>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputEmail">Email</label>
+                <input type="email" class="form-control" id="inputEmail" name="profile[email]" value="<%= utente.email %>">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputUsername">Username</label>
+                <input type="text" class="form-control" id="inputUsername" name="profile[username]" value="<%= utente.username %>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="inputBiografia">Biografia</label>
+                <textarea class="form-control" id="inputBiografia" name="profile[biografia]" rows="3"><%= utente.biografia %></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputComune">Città / Comune</label>
+                <input type="search" class="form-control" id="inputComune" autocomplete="off" value="<%= utente.residenza.comune %>">
+                <% if(utente.residenza.regione){ %>
+                    <div class="residenza-div mt-1" style="display: flex;" aria-label="breadcrumb">
+                <% } else { %>
+                    <div class="residenza-div mt-1" style="display: none;" aria-label="breadcrumb">
+                <% } %>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item" id="breadcrumb-regione"><%= utente.residenza.regione %></li>
+                            <li class="breadcrumb-item" id="breadcrumb-provincia"><%= utente.residenza.provincia %></li>
+                            <li class="breadcrumb-item" id="breadcrumb-comune"><%= utente.residenza.comune %></li>
+                        </ol>
+                    </div>
+                </div>
+            <input type="hidden" class="form-control" id="residenza" name="profile[residenza]">
+        </div>
+        <p id="residenzaJSON" style="display:none"><%= residenzaJSON %></p>
+        <p id="immagineJSON" style="display:none"><%= immagineJSON %></p>
+        <button type="submit" class="btn btn-dark">Aggiorna</button>
+    </form>
+</div>
+
+<script src="/js/jquery.easy-autocomplete.min.js"></script>
+<script src="/js/profile.js"></script>
+
+<%- include ('../partials/footer') %>
