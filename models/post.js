@@ -20,14 +20,14 @@ var postSchema = new mongoose.Schema({
     dislike: { type: Number, default: 0 },
     immagine: {
         tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/img/post/default.jpg" }
+        indirizzo: { type: String, default: "/uploads/default.jpg" }
     },
-    allegati: [{
-        indirizzo: String,
-        nome: String,
-        dimensione: Number,
-        estensione: String
-    }],
+    allegati: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Attachment"
+        }
+    ],
     categoria: { type: String, default: "default" }
 });
 

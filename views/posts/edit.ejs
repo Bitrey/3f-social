@@ -87,7 +87,7 @@
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
                             <% if(post.immagine.tipo == "local"){ %>
-                                <img src="/img/post/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                                <img src="/uploads/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
                             <% } else if(post.immagine.tipo == "url") { %>
                                 <img src="<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
                             <% } %>

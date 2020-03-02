@@ -56,7 +56,7 @@ $("#upload-img").on("click", function(){
                             img.tipo = "local";
                             img.indirizzo = response.name;
                             $("#carica-img-modal").modal("hide");
-                            $(".post-img").attr("src", `/img/post/${response.name}`);
+                            $(".post-img").attr("src", `/uploads/${response.name}`);
                         }
                     }
                 });
@@ -122,4 +122,10 @@ function imageExists(url){
 
 $("#url-img").on("click", function(){
     imageExists($("#inputImmagine").val());
+})
+
+$("#generic-img").on("click", function(){
+    img.tipo = "local";
+    img.indirizzo = "user.png";
+    $(".post-img").attr("src", '/uploads/user.png');
 })

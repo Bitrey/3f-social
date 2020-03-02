@@ -305,3 +305,25 @@ p:hover .delete {
     height: 15px;
     background: #2ab7ca;
 }
+
+.round-img {
+    max-width: 200px;
+    border-radius: 50%;
+	border: 5px solid #f8f9fa;
+    box-shadow: 0 0 5px #ddd;
+}
+
+@keyframes FadeIn {
+    from {
+        background-color: #2ab7ca;
+    }
+    
+    to {
+        background-color: white;
+    }
+}
+
+.highlight-on-load {
+    background-color: white;
+    animation: FadeIn 1s ease-in-out forwards;
+}

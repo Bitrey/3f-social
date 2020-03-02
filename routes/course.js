@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Post = require("../models/post");
 
 router.get("/", function(req, res){
-    res.redirect("/courses/view");
+    res.render("courses/list");
 })
 
 router.get("/view", function(req, res){
@@ -12,11 +12,15 @@ router.get("/view", function(req, res){
         if(err){
             req.flash("error", "Si è verificato un errore nel caricamento, mannaggia alla Peppina");
             console.log(err);
-            res.status(400).redirect("back");
+            res.status(500).redirect("back");
         } else {
-            res.render("courses/list", { posts: posts.reverse() });
+            res.render("courses/view", { posts: posts.reverse() });
         }
     });
+})
+
+router.get("/new", function(req, res){
+    res.render("courses/new");
 })
 
 module.exports = router;

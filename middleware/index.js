@@ -10,9 +10,12 @@ middlewareObj.isPostOwner = function(req, res, next){
                 req.flash("error", "Post non trovato");
                 res.status(404).redirect("back");
             } else {
-                if(foundPost.autore.id == req.user._id){
+                // foundPost.autore è un ref di Mongoose = all'ObjectId, quindi all'_id
+                // Per comparare ObjectId con stringhe devi usare .equals()
+                if(foundPost.autore.equals(req.user._id)){
                     next();
                 } else {
+                    console.log(`${foundPost.autore} diverso da ${req.user._id}`)
                     req.flash("error", "Non sei autorizzato");
                     res.status(401).redirect("back");
                 }
@@ -31,7 +34,7 @@ middlewareObj.isCommentOwner = function(req, res, next){
                 req.flash("error", err);
                 res.status(500).redirect("back");
             } else {
-                if(foundComment.author.id.equals(req.user._id)){
+                if(foundComment.author.equals(req.user._id)){
                     next();
                 } else {
                     req.flash("error", "Non sei autorizzato");

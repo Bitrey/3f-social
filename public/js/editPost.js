@@ -108,7 +108,7 @@ $("#upload-img").on("click", function(){
                             img.tipo = "local";
                             img.indirizzo = response.name;
                             $("#carica-img-modal").modal("hide");
-                            $(".new-post-img").attr("src", `/img/post/${response.name}`);
+                            $(".new-post-img").attr("src", `/uploads/${response.name}`);
                         }
                     }
                 });
