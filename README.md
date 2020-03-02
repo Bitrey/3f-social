@@ -12,14 +12,7 @@ Iniziato come un progetto di micro social network da finire in un'ora durante un
 
 ### Da aggiungere
 
--Impostazione corsi come pubblici o privati
--Impostazione dei singoli post pubblici o priv.
--Implementazione di oAuth di Twitter e Facebook
--Aggiunta API di Google Drive e Google Form
-
-
-**Contenuti**
-
-[TOCM]
-
-[TOC]
+- Impostazione corsi come pubblici o privati
+- Impostazione dei singoli post pubblici o priv.
+- Implementazione di oAuth di Twitter e Facebook
+- Aggiunta API di Google Drive e Google Form
