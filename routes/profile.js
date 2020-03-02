@@ -7,7 +7,10 @@ let province = require("../public/json/province.json");
 let regioni = require("../public/json/regioni.json");
 
 router.get('/', middleware.isLoggedIn, function(req, res){
-    res.redirect("/profile/edit");
+    res.render('profile/view', {
+        residenzaJSON: JSON.stringify(req.user.residenza),
+        immagineJSON: JSON.stringify(req.user.immagine)
+    });
 });
 
 router.get('/edit', middleware.isLoggedIn, function(req, res){
@@ -21,7 +24,7 @@ router.put("/", middleware.isLoggedIn, function(req, res){
     User.findByIdAndUpdate(req.user.id, req.body.profile, function(err, updatedUser){
         if(err){
             console.log(err);
-            req.flash("err", "Errore nel salvataggio delle nuove informazioni!");
+            req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
             res.status(500).redirect("back");
         } else {
             try {
@@ -30,7 +33,7 @@ router.put("/", middleware.isLoggedIn, function(req, res){
                 updatedUser.save(function(err, saved){
                     if(err){
                         console.log(err);
-                        req.flash("err", "Errore nel salvataggio delle nuove informazioni!");
+                        req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                         res.status(500).redirect("back");
                     } else {
                         req.flash("success", "Informazioni profilo aggiornate");
@@ -39,7 +42,7 @@ router.put("/", middleware.isLoggedIn, function(req, res){
                 })
             } catch(err){
                 console.log(err);
-                req.flash("err", "Errore nel salvataggio delle nuove informazioni!");
+                req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                 res.status(500).redirect("back");
             }
         }

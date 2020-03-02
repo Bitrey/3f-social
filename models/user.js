@@ -8,7 +8,7 @@ var userSchema = new mongoose.Schema({
         cognome: { type: String, default: "cognome" },
         email: { type: String, default: "email" },
         username: { type: String, default: "username" },
-        immagine: { type: String, default: "/img/post/default.jpeg" }
+        immagine: { type: String, default: "/uploads/default.jpeg" }
     },
     // Dati MODIFICABILI
     nome: { type: String, default: "nome" },
@@ -17,7 +17,7 @@ var userSchema = new mongoose.Schema({
     username: { type: String, default: "username" },
     immagine: {
         tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/img/post/default.jpg" }
+        indirizzo: { type: String, default: "/uploads/default.jpg" }
     },
     residenza: {
         regione: { type: String, default: "" },
@@ -42,7 +42,14 @@ var userSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course"
-        },]
+        }
+    ],
+    allegati: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Attachment"
+        }
+    ]
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Post = require("../models/post");
 
 router.get("/", function(req, res){
-    res.redirect("/courses")
+    res.render("index");
 })
 
 router.get("/info", function(req, res){

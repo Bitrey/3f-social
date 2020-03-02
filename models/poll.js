@@ -4,7 +4,7 @@ var pollSchema = new mongoose.Schema({
     autore: {
         id: String,
         username: String,
-        immagine: { type: String, default: "/img/post/default.jpg" }
+        immagine: { type: String, default: "/uploads/default.jpg" }
     },
     titolo: { type: String, default: "Nuovo sondaggio" },
     scelte: [{
@@ -14,7 +14,7 @@ var pollSchema = new mongoose.Schema({
             votante: {
                 id: String,
                 username: String,
-                immagine: { type: String, default: "/img/post/default.jpg" }
+                immagine: { type: String, default: "/uploads/default.jpg" }
             },
             dataVotazione: { type: Date, default: Date.now }
         }]
@@ -31,7 +31,7 @@ var pollSchema = new mongoose.Schema({
     dislike: { type: Number, default: 0 },
     immagine: {
         tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/img/post/default.jpeg" }
+        indirizzo: { type: String, default: "/uploads/default.jpeg" }
     },
     votiVisibiliDopoVotazione: { type: Boolean, default: false },
     votoCambiabile: { type: Boolean, default: false },

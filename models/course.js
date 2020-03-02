@@ -8,9 +8,10 @@ var courseSchema = new mongoose.Schema({
     partecipanti: [{
         id: String,
         username: String,
-        immagine: { type: String, default: "/img/post/default.jpg" }
+        immagine: { type: String, default: "/uploads/default.jpg" }
     }],
     titolo: { type: String, default: "Nuovo corso" },
+    descrizione: { type: String, default: "Nessuna descrizione impostata per questo corso" },
     contenuti: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +27,7 @@ var courseSchema = new mongoose.Schema({
     dataCreazione: { type: Date, default: Date.now },
     immagine: {
         tipo: { type: String, default: "local" },
-        indirizzo: { type: String, default: "/img/post/default.jpg" }
+        indirizzo: { type: String, default: "/uploads/default.jpg" }
     }
 });
 
