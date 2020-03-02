@@ -4,11 +4,11 @@ Iniziato come un progetto di micro social network da finire in un'ora durante un
 
 ### Funzionalità
 
--Creazione di corsi
--Aggiunta di post
--Chat istantanea
--Possibilità di aggiungere allegati
--Implementazione di Google oAuth
+- Creazione di corsi
+- Aggiunta di post
+- Chat istantanea
+- Possibilità di aggiungere allegati
+- Implementazione di Google oAuth
 
 ### Da aggiungere
 
