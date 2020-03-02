@@ -1,4 +1,4 @@
-#Bitrey Classroom
+# Bitrey Classroom
 
 Iniziato come un progetto di micro social network da finire in un'ora durante un'ora scolastica, si è evoluto in una specie di Google Classroom, per questo verrà chiamato Bitrey Classroom.
 
