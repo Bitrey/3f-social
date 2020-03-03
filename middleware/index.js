@@ -12,14 +12,19 @@ middlewareObj.isPostOwner = function(req, res, next){
                 req.flash("error", "Post non trovato");
                 res.status(404).redirect("back");
             } else {
-                // foundPost.autore è un ref di Mongoose = all'ObjectId, quindi all'_id
-                // Per comparare ObjectId con stringhe devi usare .equals()
-                if(foundPost.autore.equals(req.user._id)){
-                    next();
+                if(foundPost){
+                    // foundPost.autore è un ref di Mongoose = all'ObjectId, quindi all'_id
+                    // Per comparare ObjectId con stringhe devi usare .equals()
+                    if(foundPost.autore.equals(req.user._id)){
+                        next();
+                    } else {
+                        console.log(`${foundPost.autore} diverso da ${req.user._id}`)
+                        req.flash("error", "Non sei autorizzato");
+                        res.status(401).redirect("back");
+                    }
                 } else {
-                    console.log(`${foundPost.autore} diverso da ${req.user._id}`)
-                    req.flash("error", "Non sei autorizzato");
-                    res.status(401).redirect("back");
+                    req.flash("error", "Il post non esiste o è stato eliminato");
+                    res.status(400).redirect("back");
                 }
             }
         });
@@ -37,11 +42,16 @@ middlewareObj.isCommentOwner = function(req, res, next){
                 req.flash("error", err);
                 res.status(500).redirect("back");
             } else {
-                if(foundComment.author.equals(req.user._id)){
-                    next();
+                if(foundComment){
+                    if(foundComment.author.equals(req.user._id)){
+                        next();
+                    } else {
+                        req.flash("error", "Non sei autorizzato");
+                        res.status(401).redirect("back");
+                    }
                 } else {
-                    req.flash("error", "Non sei autorizzato");
-                    res.status(401).redirect("back");
+                    req.flash("error", "Il commento non esiste o è stato eliminato");
+                    res.status(400).redirect("back");
                 }
             }
         });
@@ -78,23 +88,33 @@ middlewareObj.userInCourse = function(req, res, next){
             }
             return false;
         }
-        User.findById(req.user.id).
-        exec(function(err, foundUser){
-            if(err){
-                console.log(err);
-                req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
-                res.status(500).redirect("back");
-                return false;
-            }
-            if(isInCourse(foundCourse, foundUser)){
-                req.course = foundCourse;
-                req.user = foundUser;
-                next();
-            } else {
-                req.flash("error", "Non sei iscritto al corso");
-                res.status(401).redirect("back");
-            }
-        })
+        if(foundCourse){
+            User.findById(req.user.id).
+            exec(function(err, foundUser){
+                if(err){
+                    console.log(err);
+                    req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
+                    res.status(500).redirect("back");
+                    return false;
+                }
+                if(foundUser){
+                    if(isInCourse(foundCourse, foundUser)){
+                        req.course = foundCourse;
+                        req.user = foundUser;
+                        next();
+                    } else {
+                        req.flash("error", "Non sei iscritto al corso");
+                        res.status(401).redirect("back");
+                    }
+                } else {
+                    req.flash("error", "L'utente non esiste o è stato eliminato");
+                    res.status(400).redirect("back");
+                }
+            })
+        } else {
+            req.flash("error", "Il corso non esiste o è stato eliminato");
+            res.status(400).redirect("back");
+        }
     })
 }
 
