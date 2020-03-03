@@ -1,7 +1,11 @@
 var mongoose = require("mongoose");
 
 var postSchema = new mongoose.Schema({
-    corso: String,
+    tipoContenuto: { type: String, default: "post" },
+    corso: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
+    },
     autore: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

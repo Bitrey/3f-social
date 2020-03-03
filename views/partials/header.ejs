@@ -94,9 +94,11 @@
             </div>
         <% } %>
     </div>
-    <!-- <div id="back-div" style="display: none;" class="container mb-1">
-        <div class="mt-3">
-            <a class="back-link" href="/" class="mt-5"><i class="fas fa-long-arrow-alt-left"></i>
-                Torna ai post</a>
+    <% if(typeof corso != "undefined"){ %>
+        <div id="back-div" style="display: none;" class="container mb-1">
+            <div class="mt-3">
+                <a class="back-link" href="/courses/<%= corso._id %>" class="mt-5">
+                    <i class="fas fa-home"></i> Vai alla homepage del corso</a>
+            </div>
         </div>
-    </div> -->
+    <% } %>
