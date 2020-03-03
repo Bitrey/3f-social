@@ -52,14 +52,15 @@
 
 <!-- Body -->
 <div class="container">
-    <h1 class="text-center mt-3 mb-4">Nuovo Corso</h1>
-    <form id="new-post-form" action="/courses" method="post">
+    <h1 class="text-center mt-3 mb-4">Modifica <%= corso.titolo %></h1>
+    <form id="new-post-form" action="/courses/<%= corso._id %>?_method=PUT" method="post">
         <div class="row">
             <div class="col-12 col-lg-4">
                 <div class="form-group">
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
-                            <img src="/uploads/default.jpg" alt="Immagine corso" class="new-post-img">
+                            <img src="<%= (corso.immagine.tipo == "local") ? "/uploads/" + corso.immagine.indirizzo : corso.immagine.indirizzo %>"
+                                alt="Immagine corso" class="new-post-img">
                             <input type='hidden' id='hiddenImgField' name='course[img]' value=''>
                         </div>
                         <div class="col-6 col-lg-12 mt-3">
@@ -71,16 +72,18 @@
             <div class="col-12 col-lg-8">
                 <div class="form-group">
                     <label for="titolo">Titolo</label>
-                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="course[titolo]" id="titolo" minlength="5" maxlength="30" autocomplete="off">
+                    <input type="text" class="form-control" aria-describedby="titoloHelp" name="course[titolo]" id="titolo" minlength="5"
+                        maxlength="30" autocomplete="off" value="<%= corso.titolo %>">
                     <small id="titoloHelp" class="form-text text-muted text-center">Inserisci il titolo del corso, da 5 a 30 caratteri</small>
                 </div>
                 <div class="form-group">
                     <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control" aria-describedby="descrizioneHelp" name="course[descrizione]" maxlength="150" autocomplete="off" id="descrizione" rows="3"></textarea>
+                    <textarea class="form-control" aria-describedby="descrizioneHelp" name="course[descrizione]" maxlength="150"
+                        autocomplete="off" id="descrizione" rows="3"><%= corso.descrizione %></textarea>
                     <small id="descrizioneHelp" class="form-text text-muted text-center">Inserisci la descrizione del corso, fino a 150 caratteri</small>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="pubblico" name="course[pubblico]" checked>
+                    <input class="form-check-input" type="checkbox" id="pubblico" name="course[pubblico]" value="yes" <%= (corso.pubblico) ? "checked" : "" %>>
                     <label class="form-check-label" for="pubblico">
                         Corso pubblico <i class="fas fa-info-circle" data-toggle="tooltip" data-html="true"
                             title="Se abilitato, chiunque con il codice corso potrà iscriversi.
@@ -88,14 +91,14 @@
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="chat-globale" name="course[chatGlobale]" checked>
+                    <input class="form-check-input" type="checkbox" id="chat-globale" name="course[chatGlobale]" value="yes" <%= (corso.chatGlobale) ? "checked" : "" %>>
                     <label class="form-check-label" for="chat-globale">
                         Chat globale <i class="fas fa-info-circle" data-toggle="tooltip" data-html="true"
                         title="Attiva una chat comune in cui tutti i partecipanti possono scrivere."></i>
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="chat-privata" name="course[chatPrivata]" checked>
+                    <input class="form-check-input" type="checkbox" id="chat-privata" name="course[chatPrivata]" value="yes" <%= (corso.chatPrivata) ? "checked" : "" %>>
                     <label class="form-check-label" for="chat-privata">
                         Chat privata <i class="fas fa-info-circle" data-toggle="tooltip" data-html="true"
                         title="Attiva una chat privata ad ogni iscritto.<br>Permette ai partecipanti di scrivere tra loro in chat private."></i>
@@ -104,12 +107,13 @@
             </div>
         </div>
         <div class="post-submit mt-3 mb-3 d-flex">
-            <div><a role="button" class="btn btn-light" href="/"><i class="fas fa-times"></i> Annulla</a></div>
-            <div><button type="submit" class="btn btn-dark"><i class="fas fa-plus"></i> Crea corso</button></div>
+            <div><a role="button" class="btn btn-light" href="/courses/<%= corso._id %>"><i class="fas fa-times"></i> Annulla</a></div>
+            <div><button type="submit" class="btn btn-dark"><i class="fas fa-edit"></i> Modifica corso</button></div>
         </div>
+        <p id="corso-json" style="display:none"><%= corsoJSON %></p>
     </form>
 </div>
 
-<script src="/js/newCourse.js"></script>
+<script src="/js/editCourse.js"></script>
 
 <%- include("../partials/footer") %>

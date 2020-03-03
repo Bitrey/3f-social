@@ -1,6 +1,13 @@
+let corso = JSON.parse($("#corso-json").text());
+$("#corso-json").remove();
+
+$(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+})
+
 var img = {
-    tipo: "local",
-    indirizzo: "default.jpg"
+    tipo: corso.immagine.tipo,
+    indirizzo: corso.immagine.indirizzo
 };
 
 $(document).ready(function(){
@@ -10,7 +17,7 @@ $(document).ready(function(){
 function imageExists(url){
     try {
         var imgTry = new Image();
-        imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $(".new-post-img").show(); $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide")};
+        imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide")};
         imgTry.onerror = function(){ alert("Immagine non valida!"); };
         imgTry.src = url;
     } catch(e){
@@ -25,49 +32,8 @@ $("#url-post-img").on("click", function(){
     }
 })
 
-let attachments = [];
-
 $("#new-post-form").on("submit", function(){
-    $("#hiddenAttField").val(JSON.stringify(attachments));
     $("#hiddenImgField").val(JSON.stringify(img));
-})
-
-$("#upload-file").on("click", function(){
-    try {
-        if(!$("#attachment")[0].files[0]){
-            $("#status").empty().text("Nessun file selezionato");
-            return false;
-        } else if($("#attachment")[0].files[0].size > 10000000){
-            $("#status").empty().text("Il file supera il limite di 10MB");
-            return false;
-        } else {
-            $('#uploadForm').submit(function(){
-                $("#status").empty().text("Caricamento file...");
-                $(this).ajaxSubmit({
-
-                    error: function(xhr){
-                        $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
-                    },
-
-                    success: function(response){
-                        $("#status").empty().text(response.msg);
-                        if(response.msg == "File caricato!"){
-                            attachments.push({
-                                name: response.name,
-                                originalName: response.originalName,
-                                size: response.size,
-                                ext: response.ext
-                            });
-                        }
-                    }
-                });
-                // Annulla rinfrescamento pagina
-                return false;
-            });
-        }
-    } catch(e){
-        $("#status").empty().text("Errore: " + err.toString());
-    }
 })
 
 $("#upload-post-img").on("click", function(){
@@ -98,7 +64,6 @@ $("#upload-img").on("click", function(){
                             img.tipo = "local";
                             img.indirizzo = response.name;
                             $("#carica-img-modal").modal("hide");
-                            $(".new-post-img").show();
                             $(".new-post-img").attr("src", `/uploads/${response.name}`);
                         }
                     }
@@ -111,10 +76,3 @@ $("#upload-img").on("click", function(){
         $("#status-img").empty().text("Errore: " + err.toString());
     }
 })
-
-$("#rimuovi-immagine").on("click", function(){
-    img.tipo = "none";
-    img.indirizzo = "none";
-    $("#hiddenImgField").val("none");
-    $(".new-post-img").hide();
-});

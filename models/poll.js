@@ -16,9 +16,8 @@ var pollSchema = new mongoose.Schema({
         colore: { type: String, default: "#2ab7ca" },
         voti: [{
             votante: {
-                id: String,
-                username: String,
-                immagine: { type: String, default: "/uploads/default.jpg" }
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
             },
             dataVotazione: { type: Date, default: Date.now }
         }]

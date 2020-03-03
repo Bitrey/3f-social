@@ -7,11 +7,8 @@
 
     <!-- Form caricamento immagine -->
     <form id="imgForm" action="/imgupload" method="post" enctype="multipart/form-data">
-        <% if(utente.immagine.tipo == "local"){ %>
-            <img src="/uploads/<%= utente.immagine.indirizzo %>" alt="Immagine utente" class="post-img">
-        <% } else if(utente.immagine.tipo == "url") { %>
-            <img src="<%= utente.immagine.indirizzo %>" alt="Immagine post" class="post-img">
-        <% } %>
+        <img src="<%= (utente.immagine.tipo == "local") ? "/uploads/" + utente.immagine.indirizzo : utente.immagine.indirizzo %>"
+            alt="Immagine utente" class="post-img">
         <div class="row">
             <div style="display: inline-block;" class="form-group col-12 col-md-4">
                 <label for="img-attachment">Carica immagine</label>

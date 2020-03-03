@@ -13,7 +13,7 @@ $(document).ready(function(){
 function imageExists(url){
     try {
         var imgTry = new Image();
-        imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide") };
+        imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $(".new-post-img").show(); $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide") };
         imgTry.onerror = function(){ alert("Immagine non valida!"); };
         imgTry.src = url;
     } catch(e){
@@ -58,7 +58,7 @@ $("#upload-file").on("click", function(){
             $("#status").empty().text("Caricamento file...");
             $(this).ajaxSubmit({
                 error: function(xhr){
-                    status('Errore: ' + xhr.status);
+                    $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                 },
 
                 success: function(response){
@@ -99,7 +99,7 @@ $("#upload-img").on("click", function(){
                 $(this).ajaxSubmit({
 
                     error: function(xhr){
-                        status('Errore: ' + xhr.status);
+                        $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                     },
 
                     success: function(response){
@@ -108,6 +108,7 @@ $("#upload-img").on("click", function(){
                             img.tipo = "local";
                             img.indirizzo = response.name;
                             $("#carica-img-modal").modal("hide");
+                            $(".new-post-img").show();
                             $(".new-post-img").attr("src", `/uploads/${response.name}`);
                         }
                     }
@@ -120,3 +121,10 @@ $("#upload-img").on("click", function(){
         $("#status-img").empty().text("Errore: " + err.toString());
     }
 })
+
+$("#rimuovi-immagine").on("click", function(){
+    img.tipo = "none";
+    img.indirizzo = "none";
+    $("#hiddenImgField").val("none");
+    $(".new-post-img").hide();
+});

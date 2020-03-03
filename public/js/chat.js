@@ -301,16 +301,3 @@ socket.on("changeUsername", function(data){
         }
     })
 });
-
-let codiceMostrato = false;
-$("#mostra-codice-h1").on("click", function(){
-    if(codiceMostrato){
-        codiceMostrato = false;
-        $("#codice-corso-h1").hide();
-        $(this).children("span").text("Mostra codice");
-    } else {
-        codiceMostrato = true;
-        $("#codice-corso-h1").show();
-        $(this).children("span").text("Nascondi codice");
-    }
-})

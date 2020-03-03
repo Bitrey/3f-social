@@ -24,7 +24,11 @@
 
     <!-- NAVBAR V2 -->
     <nav class="navbar navbar-container navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="/">Bitrey Classroom</a>
+        <% if(utente){ %>
+            <a class="navbar-brand" href="/courses">Bitrey Classroom</a>
+        <% } else { %>
+            <a class="navbar-brand" href="/">Bitrey Classroom</a>
+        <% } %>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#social-navbar"
             aria-controls="social-navbar" aria-expanded="false" aria-label="Navbar per schermi piccoli">
             <span class="navbar-toggler-icon"></span>

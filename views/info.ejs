@@ -390,24 +390,5 @@
 
     </div>
 </div>
-
-<script>
-    $(".collapse").each(function(){console.log($(this).attr("id"))})
-    $(function(){
-        // check if there is a hash in the url (id)
-        if(window.location.hash != ''){
-            // remove any accordion panels that are showing (they have a class of 'in')
-            $('.collapse').removeClass('in');
-            // show the panel based on the hash now:
-            $(window.location.hash + '.collapse').collapse('show');
-            $(window.location.hash).addClass("highlight-on-load").delay(1000).queue(function (next) {
-                $(this).removeClass("highlight-on-load");
-                next();
-            });
-        } else {
-            $('.collapse').eq(1).collapse("show");
-        }
-    });
-</script>
             
 <%- include ('./partials/footer') %>

@@ -1,5 +1,7 @@
 var Post = require("../models/post");
 var Comment = require("../models/comment");
+const Course = require("../models/course");
+const User = require("../models/user");
 
 let middlewareObj = {};
 
@@ -57,6 +59,52 @@ middlewareObj.isLoggedIn = function(req, res, next){
     res.redirect("/auth/google");
     // req.flash("info", "Devi fare l'acesso per continuare");
     // res.status(401).redirect("back");
+}
+
+middlewareObj.userInCourse = function(req, res, next){
+    Course.findById(req.params.id).
+    populate({ path: "contenuti", populate: { path: "autore", model: "User" } }).
+    populate("amministratori").
+    populate("partecipanti").
+    exec(function(err, foundCourse){
+        if(err){
+            if(err.name == "CastError"){
+                req.flash("error", `L'ID corso inserito (${req.params.id}) non è valido`);
+                res.status(400).redirect("back");
+            } else {
+                console.log(err);
+                req.flash("error", "Errore nel caricamento del corso");
+                res.status(500).redirect("back");
+            }
+            return false;
+        }
+        User.findById(req.user.id).
+        exec(function(err, foundUser){
+            if(err){
+                console.log(err);
+                req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
+                res.status(500).redirect("back");
+                return false;
+            }
+            if(isInCourse(foundCourse, foundUser)){
+                req.course = foundCourse;
+                req.user = foundUser;
+                next();
+            } else {
+                req.flash("error", "Non sei iscritto al corso");
+                res.status(401).redirect("back");
+            }
+        })
+    })
+}
+
+function isInCourse(course, user){
+    for(let i = 0; i < course.partecipanti.length; i++){
+        if(course.partecipanti[i]._id.equals(user._id)){
+            return true;
+        }
+    }
+    return false;
 }
 
 module.exports = middlewareObj;
