@@ -90,16 +90,16 @@ function getOreMinuti(dataString){
     return `${(date.getHours()<10?'0':'') + date.getHours()}:${(date.getMinutes()<10?'0':'') + date.getMinutes()}`;
 }
 
-let pastDay;
+let pastDay, pastMonth, pastYear;
 
 // Listen for events
 socket.on("chat", function(data) {
         // Stampa differenza di giorni, se presente
-    let currentDay = new Date(Date.parse(data.dataCreazione));
-    if(currentDay.getDate() > pastDay){
-        let month = currentDay.getMonth() + 1;
-        let year = currentDay.getFullYear();
-        output.innerHTML += `<p class="date-separator">${currentDay.getDate()}/${month}/${year}</p>`;
+    let currentDate = new Date(Date.parse(data.dataCreazione));
+    if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+        output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
@@ -110,7 +110,10 @@ socket.on("chat", function(data) {
     chat_window.scrollTop = chat_window.scrollHeight;
     unread++;
     document.title = "(" + unread + ") 3F Chat";
-    pastDay = new Date(Date.parse(data.dataCreazione)).getDate();
+    let pastDate = new Date(Date.parse(data.dataCreazione));
+    pastDay = pastDate.getDate();
+    pastMonth = pastDate.getMonth();
+    pastYear = pastDate.getFullYear();
 });
 
 socket.on("typing", function(data) {
@@ -141,12 +144,15 @@ socket.on("pastMsg", function(messages){
         document.title = "(" + unread + ") 3F Chat";
         if(i > 1){
             // Stampa differenza di giorni, se presente
-            let currentDay = new Date(Date.parse(messages[i].dataCreazione));
-            pastDay = new Date(Date.parse(messages[i - 1].dataCreazione)).getDate();
-            if(currentDay.getDate() > pastDay){
-                let month = currentDay.getMonth() + 1;
-                let year = currentDay.getFullYear();
-                output.innerHTML += `<p class="date-separator">${currentDay.getDate()}/${month}/${year}</p>`;
+            let currentDate = new Date(Date.parse(messages[i].dataCreazione));
+            let pastDate = new Date(Date.parse(messages[i - 1].dataCreazione))
+            pastDay = pastDate.getDate();
+            pastMonth = pastDate.getMonth();
+            pastYear = pastDate.getFullYear();
+            if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
+                let month = currentDate.getMonth() + 1;
+                let year = currentDate.getFullYear();
+                output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
             }
         }
         // Controlla se utente esiste
@@ -294,4 +300,17 @@ socket.on("changeUsername", function(data){
             $(this).text(data.newUsername);
         }
     })
+});
+
+let codiceMostrato = false;
+$("#mostra-codice-h1").on("click", function(){
+    if(codiceMostrato){
+        codiceMostrato = false;
+        $("#codice-corso-h1").hide();
+        $(this).children("span").text("Mostra codice");
+    } else {
+        codiceMostrato = true;
+        $("#codice-corso-h1").show();
+        $(this).children("span").text("Nascondi codice");
+    }
 })

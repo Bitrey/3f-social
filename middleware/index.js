@@ -22,8 +22,9 @@ middlewareObj.isPostOwner = function(req, res, next){
             }
         });
     } else {
-        req.flash("error", "Devi fare l'acesso per continuare");
-        res.status(401).redirect("back");
+        res.redirect("/auth/google");
+        // req.flash("info", "Devi fare l'acesso per continuare");
+        // res.status(401).redirect("back");
     }
 }
 
@@ -43,8 +44,9 @@ middlewareObj.isCommentOwner = function(req, res, next){
             }
         });
     } else {
-        req.flash("info", "Devi fare l'acesso per continuare");
-        res.status(401).redirect("back");
+        res.redirect("/auth/google");
+        // req.flash("info", "Devi fare l'acesso per continuare");
+        // res.status(401).redirect("back");
     }
 }
 
@@ -52,8 +54,9 @@ middlewareObj.isLoggedIn = function(req, res, next){
     if(req.isAuthenticated()){
         return next();
     }
-    req.flash("info", "Devi fare l'acesso per continuare");
-    res.status(401).redirect("back");
+    res.redirect("/auth/google");
+    // req.flash("info", "Devi fare l'acesso per continuare");
+    // res.status(401).redirect("back");
 }
 
 module.exports = middlewareObj;

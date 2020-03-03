@@ -1,6 +1,86 @@
 <%- include ('../partials/header') %>
 
+<% if(admin){ %>
+<!-- Show code modal -->
+<div class="modal fade" id="mostraCodiceModal" tabindex="-1" role="dialog" aria-labelledby="mostraCodiceModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mostraCodiceModalLabel">Mostra codice</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <h4>Codice corso</h4>
+                <button role="button" class="btn btn-dark" id="mostra-codice-h1"><i class="fas fa-key"></i> <span>Mostra codice</span></button>
+                <h1 id="codice-corso-h1" style="font-size: 4.5rem; display: none;"><%= corso.codice %></h1>
+                <% if(corso.pubblico){ %>
+                    <p class="text-muted mt-2">Corso pubblico</p>
+                    <p><i class="fas fa-exclamation-triangle"></i> Chiunque potrà iscriversi inserendo questo codice</p>
+                <% } else { %>
+                    <p class="text-muted mt-2">Corso privato</p>
+                    <p>Chiunque inserisce questo codice potrà iscriversi dopo la tua conferma</p>
+                <% } %>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
 <div class="container">
+
+    <div class="jumbotron pt-3 pb-3">
+        <div class="row">
+            <div class="col-12 col-md-3 text-center">
+                <div class="mr-3">
+                    <% if(corso.immagine.tipo == "local"){ %>
+                        <img class="new-post-img" src="/uploads/<%= corso.immagine.indirizzo %>">
+                    <% } else if(corso.immagine.tipo == "url") { %>
+                        <img class="new-post-img" src="<%= corso.immagine.indirizzo %>">
+                    <% } %>
+                </div>
+            </div>
+            <div class="col-12 col-md-9">
+                <div>
+                    <h2><%= corso.titolo %></h2>
+                    <p><%= corso.descrizione %></p>
+                    <% if(admin){ %>
+                        <button role="button" class="btn btn-dark" id="mostra-codice"  data-toggle="modal" data-target="#mostraCodiceModal"><i class="fas fa-key"></i> Mostra codice</button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row mt-1 mb-1">
+            <div class="col" style="overflow-y: scroll; overflow-x: hidden;">
+                <h5>Amministratori:</h5>
+                <% corso.amministratori.forEach(function(admin){ %>
+                    <% if(admin.immagine.tipo == "local"){ %>
+                        <img style="max-width: 2rem; border-radius: 0.5rem;" src="/uploads/<%= admin.immagine.indirizzo %>">
+                    <% } else if(admin.immagine.tipo == "url") { %>
+                        <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= admin.immagine.indirizzo %>">
+                    <% } %>
+                    <span class="username-post-span"><%= admin.username %></span>
+                <% }); %>
+            </div>
+            <div class="col" style="overflow-y: scroll; overflow-x: hidden;">
+                <h5>Partecipanti:</h5>
+                <% corso.partecipanti.forEach(function(partecipante){ %>
+                    <% if(partecipante.immagine.tipo == "local"){ %>
+                        <img style="max-width: 2rem; border-radius: 0.5rem;" src="/uploads/<%= partecipante.immagine.indirizzo %>">
+                    <% } else if(partecipante.immagine.tipo == "url") { %>
+                        <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= partecipante.immagine.indirizzo %>">
+                    <% } %>
+                    <span class="username-post-span"><%= partecipante.username %></span>
+                <% }); %>
+            </div>
+        </div>
+    </div>
 
     <div class="alert alert-danger error-div m-3 text-center" role="alert">
         <h3><i class="fas fa-exclamation-triangle"></i> Errore <i class="fas fa-exclamation-triangle"></i></h3>
@@ -37,13 +117,15 @@
             </div>
         </div>
 
-        <div class="col-12 col-lg-8">
+        <div class="col">
             <div class="row">
             <div class="col-10 mt-3 text-center">
-                <a class="btn btn-outline-info" href="/posts/new"><i class="fas fa-align-left"></i> Nuovo post</a>
-                <a class="btn btn-outline-info" href="/posts/new"><i class="fas fa-poll"></i> Nuovo sondaggio</a>
+                <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i> Nuovo post</a>
+                <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-poll"></i> Nuovo sondaggio</a>
             </div>
-            <% posts.forEach(function(post){ %>
+            <% corso.contenuti.forEach(function(contenuto){ %>
+            <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
+            <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
             <div class="col-12 col-sm-5 post card bg-light m-3">
                 <% if(post.immagine.tipo == "local"){ %>
                     <img class="post-img my-1 ml-1 mr-3" src="/uploads/<%= post.immagine.indirizzo %>" alt="Immagine del post">
@@ -83,7 +165,7 @@
                     </div>
                 </div>
             </div>
-            <% }) %>
+            <% }}) %>
             </div>
         </div>
     </div>

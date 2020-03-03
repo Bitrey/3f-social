@@ -1,15 +1,19 @@
 var mongoose = require("mongoose");
+var randomstring = require("randomstring");
 
 var courseSchema = new mongoose.Schema({
-    amministratori: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    partecipanti: [{
-        id: String,
-        username: String,
-        immagine: { type: String, default: "/uploads/default.jpg" }
-    }],
+    amministratori: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
+    partecipanti: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
     titolo: { type: String, default: "Nuovo corso" },
     descrizione: { type: String, default: "Nessuna descrizione impostata per questo corso" },
     contenuti: [
@@ -22,8 +26,14 @@ var courseSchema = new mongoose.Schema({
             ref: "Poll"
         }
     ],
+    codice: { type: String, default: randomstring.generate({
+        length: 9,
+        readable: true,
+        capitalization: "uppercase"
+    })},
     pubblico: { type: Boolean, default: true },
-    chatAbilitata: { type: Boolean, default: true },
+    chatGlobale: { type: Boolean, default: true },
+    chatPrivata: { type: Boolean, default: true },
     dataCreazione: { type: Date, default: Date.now },
     immagine: {
         tipo: { type: String, default: "local" },

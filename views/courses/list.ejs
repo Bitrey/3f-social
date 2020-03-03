@@ -1,28 +1,65 @@
 <%- include ('../partials/header') %>
 
-<div class="container">
-    <h1>Lista corsi</h1>
-    <nav>
-        <a href="/courses/new" class="btn btn-dark mb-4" role="button"><i class="fas fa-plus"></i> Crea nuovo corso</a>
-    </nav>
-    <% utente.corsi.forEach(function(corso){ %>
-        <div class="row row-cols-1 row-cols-md-2">
-            <div class="col mb-4">
-                <div class="card">
-                    <% if(corso.immagine.tipo == "local"){ %>
-                        <img class="card-img-top" src="/uploads/<%= post.immagine.indirizzo %>" alt="Immagine del corso">
-                    <% } else if(corso.immagine.tipo == "url") { %>
-                        <img class="card-img-top" src="<%= post.immagine.indirizzo %>" alt="Immagine del corso">
-                    <% } %>
-                    <div class="card-body">
-                        <h5 class="card-title"><%= corso.titolo %></h5>
-                        <p class="card-text"><%= corso.descrizione %></p>
+<style>
+    #inputCodice {
+        text-transform: uppercase;
+    }
+</style>
+
+<!-- Join course modal -->
+<div class="modal fade" id="joinCourseModal" tabindex="-1" role="dialog" aria-labelledby="joinCourseModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/courses/join" method="POST" autocomplete="off">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="joinCourseModalLabel"><i class="fas fa-sign-in-alt"></i> Unisciti a un corso</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputCodice">Codice corso</label>
+                        <input type="text" minlength="9" maxlength="9" class="form-control" id="inputCodice" aria-describedby="codiceHelp" name="codice">
+                        <small id="codiceHelp" class="form-text text-muted">Inserisci il codice corso da 9 caratteri (maiuscole automatiche)</small>
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal"><i class="fas fa-times"></i> Annulla</button>
+                    <button type="submit" class="btn btn-dark"><i class="fas fa-sign-in-alt"></i> Unisciti</button>
+                </div>
+            </form>
         </div>
-    <% }) %>
-    <% if(utente.corsi.length <= 0){ %>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Lista corsi</h1>
+    <nav class="nav mb-4">
+        <button type="button" class="btn btn-dark mr-1" data-toggle="modal" data-target="#joinCourseModal"><i class="fas fa-sign-in-alt"></i> Unisciti a un corso</button>
+        <a role="button" href="/courses/new" class="btn btn-dark"><i class="fas fa-plus"></i> Crea nuovo corso</a>
+    </nav>
+    <div class="row row-cols-1 row-cols-md-2">
+        <% corsi.forEach(function(corso){ %>
+            <div class="col mb-4">
+                <div class="card">
+                    <a href="/courses/<%= corso._id %>" class="no-link">
+                        <% if(corso.immagine.tipo == "local"){ %>
+                            <img class="img-fit" src="/uploads/<%= corso.immagine.indirizzo %>" alt="Immagine del corso">
+                        <% } else if(corso.immagine.tipo == "url") { %>
+                            <img class="img-fit" src="<%= corso.immagine.indirizzo %>" alt="Immagine del corso">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= corso.titolo %></h5>
+                            <p class="card-text"><%= corso.descrizione %></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <% if(corsi.length <= 0){ %>
         <p>Non sei iscritto a nessun corso</p>
     <% } %>
 </div>

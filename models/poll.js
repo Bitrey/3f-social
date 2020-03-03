@@ -1,10 +1,14 @@
 var mongoose = require("mongoose");
 
 var pollSchema = new mongoose.Schema({
+    tipoContenuto: { type: String, default: "poll" },
+    corso: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
+    },
     autore: {
-        id: String,
-        username: String,
-        immagine: { type: String, default: "/uploads/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     titolo: { type: String, default: "Nuovo sondaggio" },
     scelte: [{
