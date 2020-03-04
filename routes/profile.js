@@ -39,14 +39,14 @@ router.put("/", middleware.isLoggedIn, function(req, res){
                         req.flash("success", "Informazioni profilo aggiornate");
                         res.redirect("/profile");
                     }
-                })
+                });
             } catch(err){
                 console.log(err);
                 req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                 res.status(500).redirect("back");
             }
         }
-    })
-})
+    });
+});
 
 module.exports = router;

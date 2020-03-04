@@ -1,7 +1,10 @@
-var Post = require("../models/post");
-var Comment = require("../models/comment");
-const Course = require("../models/course");
 const User = require("../models/user");
+var Post = require("../models/post");
+var Poll = require("../models/poll");
+var Course = require("../models/course");
+var Comment = require("../models/comment");
+var Attachment = require("../models/attachment");
+var Message = require("../models/message");
 
 let middlewareObj = {};
 
@@ -110,12 +113,12 @@ middlewareObj.userInCourse = function(req, res, next){
                     req.flash("error", "L'utente non esiste o è stato eliminato");
                     res.status(400).redirect("back");
                 }
-            })
+            });
         } else {
             req.flash("error", "Il corso non esiste o è stato eliminato");
             res.status(400).redirect("back");
         }
-    })
+    });
 }
 
 function isInCourse(course, user){

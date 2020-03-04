@@ -9,6 +9,7 @@ const middleware = require("../middleware");
 router.get("/:course/new", middleware.isLoggedIn, function(req, res){
     Course.findById(req.params.course, function(err, foundCourse){
         if(err){
+            console.log(err);
             req.flash("error", "Errore nella ricerca del corso");
             res.status(500).redirect("back");
             return false;
@@ -20,6 +21,7 @@ router.get("/:course/new", middleware.isLoggedIn, function(req, res){
 router.post("/:course", middleware.isLoggedIn, async function(req, res){
     Course.findById(req.params.course, function(err, foundCourse){
         if(err){
+            console.log(err);
             req.flash("error", "Errore nella ricerca del corso");
             res.status(500).redirect("back");
             return false;
@@ -82,7 +84,7 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                         res.status(500).redirect("back");
                     } else {
                         // Salva post in utente e corso
-                        foundUser.post.push(newPost._id);
+                        foundUser.contenuti.push(newPost._id);
                         foundUser.save(function(err){if(err){console.log(err);}});
                         foundCourse.contenuti.push(newPost._id);
                         foundCourse.save(function(err){if(err){console.log(err);}});
@@ -168,15 +170,30 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
     });
 });
 
-router.delete("/:id", middleware.isPostOwner, function(req, res){
-    Post.findByIdAndDelete(req.params.id, function(err){
+router.delete("/:course/:id", middleware.isPostOwner, async function(req, res){
+    Post.findById(req.params.id).
+    exec(async function(err, foundPost){
         if(err){
-            req.flash("error", err.msg);
             console.log(err);
+            req.flash("error", "Errore nella ricerca del post");
             res.status(500).redirect("back");
         } else {
-            req.flash("success", "Post eliminato con successo");
-            res.redirect("/");
+            if(foundPost){
+                foundPost.deleteOne(function(err){
+                    if(err){
+                        console.log(err);
+                        req.flash("error", "Errore nell'eliminazione del post");
+                        res.status(500).redirect("back");
+                        return false;
+                    } else {
+                        req.flash("success", "Post eliminato con successo");
+                        res.redirect("/courses/" + req.params.course);
+                    }
+                });
+            } else {
+                req.flash("error", "Nessun post trovato");
+                res.status(404).redirect("back");
+            }
         }
     });
 });

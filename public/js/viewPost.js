@@ -21,7 +21,7 @@ $(".download").on("click", function(){
     } catch(e){
         $("#status").empty().text("Errore: " + err.toString());
     }
-})
+});
 
 // Tronca file con nome > 16 caratteri
 $(".file-title").each(function(){

@@ -3,7 +3,7 @@ $("#corso-json").remove();
 
 $(function(){
     $('[data-toggle="tooltip"]').tooltip();
-})
+});
 
 var img = {
     tipo: corso.immagine.tipo,
@@ -30,16 +30,16 @@ $("#url-post-img").on("click", function(){
     if(link){
         imageExists(link);
     }
-})
+});
 
 $("#new-post-form").on("submit", function(){
     $("#hiddenImgField").val(JSON.stringify(img));
-})
+});
 
 $("#upload-post-img").on("click", function(){
     $("#cambia-img-modal").modal("hide");
     $("#carica-img-modal").modal("show");
-})
+});
 
 $("#upload-img").on("click", function(){
     try {

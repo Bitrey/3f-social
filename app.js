@@ -105,19 +105,19 @@ app.use('/posts', postRoutes);
 
 app.get("/info", function(req, res){
     res.render("info");
-})
+});
 
 app.get("/test", function(req, res){
     res.render("tests/course-list");
-})
+});
 
 app.get("*", function(req, res){
     res.status(404).send("Mannaggia alla Peppina, dove vuoi andare?");
-})
+});
 
 const server = app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server partito!");
-})
+});
 
 // Socket setup
 var io = socket(server);
@@ -179,7 +179,7 @@ io.on("connection", function(socket){
                         oldUsername: oldUsername
                     });
                 }
-            })
+            });
         }
         messageObj.save(function(err){if(err){console.log(err);}});
         Message.find({}).sort('-dataCreazione').exec(function(err, foundMessages){
@@ -203,11 +203,11 @@ io.on("connection", function(socket){
 
     socket.on("typing", function(data){
         socket.broadcast.emit("typing", data);
-    })
+    });
 
     socket.on("notyping", function(){
         socket.broadcast.emit("notyping");
-    })
+    });
 
     socket.on("cancella", function(data){
         Message.findOneAndRemove({date: data}, function(err, deleted){
@@ -217,5 +217,5 @@ io.on("connection", function(socket){
                 io.emit("cancella", deleted);
             }
         });
-    })
+    });
 });
