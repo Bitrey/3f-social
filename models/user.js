@@ -26,10 +26,14 @@ var userSchema = new mongoose.Schema({
     },
     biografia: { type: String, default: "" },
     dataCreazione: { type: Date, default: Date.now },
-    post: [
+    contenuti: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Post"
+        },
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Poll"
         }
     ],
     messaggi: [
@@ -49,8 +53,41 @@ var userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Attachment"
         }
+    ],
+    commenti: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment"
+        }
     ]
 });
 
-module.exports = mongoose.model("User", userSchema);
+userSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    try {
+        await this.populate("contenuti").execPopulate();
+        await this.populate("messaggi").execPopulate();
+        await this.populate("corsi").execPopulate();
+        await this.populate("allegati").execPopulate();
+        await this.populate("commenti").execPopulate();
+        await this.model("Post").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "post" } });
+        await this.model("Poll").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "poll" } });
+        await this.model("Message").deleteMany({ "_id": { $in: this.messaggi } });
+        await this.model("Attachment").deleteMany({ "_id": { $in: this.allegati } });
+        await this.model("Comment").deleteMany({ "_id": { $in: this.commenti } });
 
+        await this.corsi.forEach(async function(corso){
+                await corso.partecipanti.pull({ _id: this._id });
+                await corso.amministratori.findById(this._id, async function(err, foundAdmin){
+                    if(foundAdmin){
+                        await corso.amministratori.pull({ _id: this._id });
+                    }
+                await corso.save();
+            });
+        });
+        next();
+    } catch(err){
+        next(err);
+    }
+});
+
+module.exports = mongoose.model("User", userSchema);

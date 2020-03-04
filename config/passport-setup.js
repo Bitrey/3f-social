@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 passport.serializeUser(function (user, done) {
     done(null, user.id);
-})
+});
 
 passport.deserializeUser(function (id, done) {
     User.findById(id, function (err, foundUser) {
@@ -14,7 +14,7 @@ passport.deserializeUser(function (id, done) {
             done(null, foundUser);
         }
     });
-})
+});
 
 passport.use(
     new GoogleStrategy({
@@ -49,7 +49,7 @@ passport.use(
                         tipo: "url",
                         indirizzo: profile.photos[0].value
                     },
-                })
+                });
                 user.save().then((newUser) => {
                     console.log('Nuova registrazione: ', newUser.username);
                     done(null, newUser);

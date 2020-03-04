@@ -23,14 +23,14 @@ $("#url-post-img").on("click", function(){
     if(link){
         imageExists(link);
     }
-})
+});
 
 let attachments = [];
 
 $("#new-post-form").on("submit", function(){
     $("#hiddenAttField").val(JSON.stringify(attachments));
     $("#hiddenImgField").val(JSON.stringify(img));
-})
+});
 
 $("#upload-file").on("click", function(){
     try {
@@ -68,12 +68,12 @@ $("#upload-file").on("click", function(){
     } catch(e){
         $("#status").empty().text("Errore: " + err.toString());
     }
-})
+});
 
 $("#upload-post-img").on("click", function(){
     $("#cambia-img-modal").modal("hide");
     $("#carica-img-modal").modal("show");
-})
+});
 
 $("#upload-img").on("click", function(){
     try {
@@ -110,7 +110,7 @@ $("#upload-img").on("click", function(){
     } catch(e){
         $("#status-img").empty().text("Errore: " + err.toString());
     }
-})
+});
 
 $("#rimuovi-immagine").on("click", function(){
     img.tipo = "none";

@@ -52,7 +52,7 @@
                 $("#codice-corso-h1").show();
                 $(this).children("span").text("Nascondi codice");
             }
-        })
+        });
         // Se l'utente esce dal modal, nascondi il codice
         $("#mostraCodiceModal").on("hidden.bs.modal", function(){
             codiceMostrato = false;
@@ -71,7 +71,7 @@
                     $("#errore-modal-text").hide();
                     $("#codice-corso-h1").text(data);
                 }
-            })
+            });
         });
     </script>
 <% } %>

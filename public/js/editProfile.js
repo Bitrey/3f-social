@@ -5,7 +5,7 @@ $(document).ready(function(){
     $("#residenzaJSON").remove();
     img = JSON.parse($("#immagineJSON").text());
     $("#immagineJSON").remove();
-})
+});
 
 $("#inputComune").easyAutocomplete({
 	url: "/json/comuni.json",
@@ -29,7 +29,7 @@ $("#inputComune").easyAutocomplete({
 $("#update-profile-form").on("submit", function(){
     $("#hiddenImgField").val(JSON.stringify(img));
     $("#residenza").val(JSON.stringify(residenza));
-})
+});
 
 
 
@@ -67,7 +67,7 @@ $("#upload-img").on("click", function(){
     } catch(e){
         $("#status-img").empty().text("Errore: " + err.toString());
     }
-})
+});
 
 let errorTimer = false;
 function errorURL(err){
@@ -122,7 +122,7 @@ function imageExists(url){
 
 $("#url-img").on("click", function(){
     imageExists($("#inputImmagine").val());
-})
+});
 
 $("#generic-img").on("click", function(){
     img.tipo = "local";

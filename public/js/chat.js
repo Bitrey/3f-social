@@ -5,7 +5,7 @@ $(".error-div").hide();
 
 socket.on("connect", function(){
     $("#chat-buttons").css("display", "block");
-})
+});
 
 var chat_window = document.getElementById("chat-window");
 
@@ -69,13 +69,13 @@ $('body').click(function(){
     if($("#message").val() == ""){
         socket.emit("notyping");
     }
-})
+});
 
 $('body').keypress(function(){
     if($("#message").val() == ""){
         socket.emit("notyping");
     }
-})
+});
 
 message.addEventListener("keyup", function(){
     if(event.keyCode == 13 && !event.shiftKey){
@@ -223,7 +223,7 @@ $("#img").on("click", function(){
             }
         }
     }
-})
+});
 
 function isUrlImage(uri){
     uri = uri.split('?')[0];
@@ -262,11 +262,11 @@ socket.on("error", function(message){
     } else {
         $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-comment-slash"></i> Connessione al socket rifiutata</h5><p style="border-bottom: none">Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p><small>' + message + '</div>');
     }
-})
+});
 
 socket.on("connect_error", function(message){
     $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-comment-slash"></i> Connessione al socket rifiutata</h5><p>Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p><small>Errore: ' + message + '</div>');
-})
+});
 
 // Tronca file con nome > 16 caratteri
 $(".post-text").each(function(){
@@ -279,11 +279,11 @@ $(".post-text").each(function(){
 
 // $(".card").each(function(){
 //     $(this).css("height", $(".card-body").css("height"));
-// })
+// });
 
 $(".post").each(function(){
     $(this).css("height", ($(this).children(".card-title").css("height") + $(this).children(".post-text").css("height") + $(this).children(".card-btns").css("height")));
-})
+});
 
 socket.on("changeOwnUsername", function(data){
     $("#username-span").text(data);
@@ -294,10 +294,10 @@ socket.on("changeUsername", function(data){
         if($(this).text() == data.oldUsername){
             $(this).text(data.newUsername);
         }
-    })
+    });
     $(".username-post-span").each(function(){
         if($(this).text() == data.oldUsername){
             $(this).text(data.newUsername);
         }
-    })
+    });
 });

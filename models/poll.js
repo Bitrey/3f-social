@@ -43,4 +43,20 @@ var pollSchema = new mongoose.Schema({
     categoria: { type: String, default: "default" }
 });
 
+pollSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    try {
+        await this.populate("autore").execPopulate();
+        await this.populate("commenti").execPopulate();
+        await this.populate("corso").execPopulate();
+        await this.corso.contenuti.pull({ _id: this._id });
+        await this.autore.contenuti.pull({ _id: this._id });
+        await this.corso.save();
+        await this.autore.save();
+        await this.model("Comment").deleteMany({ "_id": { $in: this.commenti } });
+        next();
+    } catch(err){
+        next(err);
+    }
+});
+
 module.exports = mongoose.model("Poll", pollSchema);
