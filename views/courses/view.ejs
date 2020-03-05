@@ -2,78 +2,80 @@
 
 <% if(admin){ %>
 
-    <style>
-        #codice-corso-h1 {
-            font-size: 4.5rem;
-            display: none;
-            word-wrap: break-word;
-        }
-    </style>
-    <!-- Show code modal -->
-    <div class="modal fade" id="mostraCodiceModal" tabindex="-1" role="dialog" aria-labelledby="mostraCodiceModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="mostraCodiceModalLabel">Mostra codice</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <h4>Codice corso</h4>
-                    <button type="button" class="btn btn-dark mb-1" id="mostra-codice-h1"><i class="fas fa-key"></i> <span>Mostra codice</span></button>
-                    <button type="button" class="btn btn-dark mb-1" id="genera-nuovo-codice"><i class="fas fa-plus"></i> Genera nuovo codice</button>
-                    <h1 id="codice-corso-h1"><%= corso.codice %></h1>
-                    <p><strong><span id="errore-modal-text" class="m-3" style="display: none;">Errore</span></strong></p>
-                    <% if(corso.pubblico){ %>
-                        <p class="text-muted mt-2">Corso pubblico</p>
-                        <p><i class="fas fa-exclamation-triangle"></i> Chiunque potrà iscriversi inserendo questo codice</p>
-                    <% } else { %>
-                        <p class="text-muted mt-2">Corso privato</p>
-                        <p>Chiunque inserisce questo codice potrà iscriversi dopo la tua conferma</p>
-                    <% } %>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" data-dismiss="modal">Chiudi</button>
-                </div>
+<style>
+    #codice-corso-h1 {
+        font-size: 4.5rem;
+        display: none;
+        word-wrap: break-word;
+    }
+</style>
+<!-- Show code modal -->
+<div class="modal fade" id="mostraCodiceModal" tabindex="-1" role="dialog" aria-labelledby="mostraCodiceModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mostraCodiceModalLabel">Mostra codice</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <h4>Codice corso</h4>
+                <button type="button" class="btn btn-dark mb-1" id="mostra-codice-h1"><i class="fas fa-key"></i>
+                    <span>Mostra codice</span></button>
+                <button type="button" class="btn btn-dark mb-1" id="genera-nuovo-codice"><i class="fas fa-plus"></i>
+                    Genera nuovo codice</button>
+                <h1 id="codice-corso-h1"><%= corso.codice %></h1>
+                <p><strong><span id="errore-modal-text" class="m-3" style="display: none;">Errore</span></strong></p>
+                <% if(corso.pubblico){ %>
+                <p class="text-muted mt-2">Corso pubblico</p>
+                <p><i class="fas fa-exclamation-triangle"></i> Chiunque potrà iscriversi inserendo questo codice</p>
+                <% } else { %>
+                <p class="text-muted mt-2">Corso privato</p>
+                <p>Chiunque inserisce questo codice potrà iscriversi dopo la tua conferma</p>
+                <% } %>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Chiudi</button>
             </div>
         </div>
     </div>
-    <script>
-        let codiceMostrato = false;
-        $("#mostra-codice-h1").on("click", function(){
-            if(codiceMostrato){
-                codiceMostrato = false;
-                $("#codice-corso-h1").hide();
-                $(this).children("span").text("Mostra codice");
-            } else {
-                codiceMostrato = true;
-                $("#codice-corso-h1").show();
-                $(this).children("span").text("Nascondi codice");
-            }
-        });
-        // Se l'utente esce dal modal, nascondi il codice
-        $("#mostraCodiceModal").on("hidden.bs.modal", function(){
+</div>
+<script>
+    let codiceMostrato = false;
+    $("#mostra-codice-h1").on("click", function () {
+        if (codiceMostrato) {
             codiceMostrato = false;
             $("#codice-corso-h1").hide();
-            $("#mostra-codice-h1").children("span").text("Mostra codice");
+            $(this).children("span").text("Mostra codice");
+        } else {
+            codiceMostrato = true;
+            $("#codice-corso-h1").show();
+            $(this).children("span").text("Nascondi codice");
+        }
+    });
+    // Se l'utente esce dal modal, nascondi il codice
+    $("#mostraCodiceModal").on("hidden.bs.modal", function () {
+        codiceMostrato = false;
+        $("#codice-corso-h1").hide();
+        $("#mostra-codice-h1").children("span").text("Mostra codice");
+    });
+    $("#genera-nuovo-codice").on("click", function () {
+        $.ajax({
+            type: "GET",
+            url: "/courses/newcode?corso=<%= corso._id %>",
+            error: function (xhr, textStatus, errorThrown) {
+                $("#errore-modal-text").show();
+                $("#errore-modal-text").text(`${xhr.status} ${errorThrown}: ${xhr.responseText}`);
+            },
+            success: function (data, textStatus, xhr) {
+                $("#errore-modal-text").hide();
+                $("#codice-corso-h1").text(data);
+            }
         });
-        $("#genera-nuovo-codice").on("click", function(){
-            $.ajax({
-                type: "GET",
-                url: "/courses/newcode?corso=<%= corso._id %>",
-                error: function(xhr, textStatus, errorThrown){
-                    $("#errore-modal-text").show();
-                    $("#errore-modal-text").text(`${xhr.status} ${errorThrown}: ${xhr.responseText}`);
-                },
-                success: function(data, textStatus, xhr){
-                    $("#errore-modal-text").hide();
-                    $("#codice-corso-h1").text(data);
-                }
-            });
-        });
-    </script>
+    });
+</script>
 <% } %>
 
 <div class="container">
@@ -91,8 +93,10 @@
                     <h2><%= corso.titolo %></h2>
                     <p><%= corso.descrizione %></p>
                     <% if(admin){ %>
-                        <button type="button" class="btn btn-dark" id="mostra-codice"  data-toggle="modal" data-target="#mostraCodiceModal"><i class="fas fa-key"></i> Mostra codice</button>
-                        <a class="btn btn-dark" href="/courses/<%= corso._id %>/edit" role="button"><i class="fas fa-cog"></i> Impostazioni corso</a>
+                    <button type="button" class="btn btn-dark" id="mostra-codice" data-toggle="modal"
+                        data-target="#mostraCodiceModal"><i class="fas fa-key"></i> Mostra codice</button>
+                    <a class="btn btn-dark" href="/courses/<%= corso._id %>/edit" role="button"><i
+                            class="fas fa-cog"></i> Impostazioni corso</a>
                     <% } %>
                 </div>
             </div>
@@ -102,27 +106,21 @@
             <div class="col small-div-scrollable">
                 <h5>Amministratori:</h5>
                 <% corso.amministratori.forEach(function(admin){ %>
-                    <div style="display: block;" class="mb-1">
-                        <% if(admin.immagine.tipo == "local"){ %>
-                            <img style="max-width: 2rem; border-radius: 0.5rem;" src="/uploads/<%= admin.immagine.indirizzo %>">
-                        <% } else if(admin.immagine.tipo == "url") { %>
-                            <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= admin.immagine.indirizzo %>">
-                        <% } %>
-                        <span class="username-post-span"><%= admin.username %></span>
-                    </div>
+                <div style="display: block;" class="mb-1 show-profile" data-profile="<%= admin._id %>">
+                    <img class="img-profilo"
+                        src="<%= (admin.immagine.tipo == "local") ? "/uploads/" + admin.immagine.indirizzo : admin.immagine.indirizzo %>">
+                    <span class="username-post-span back-link"><%= admin.username %></span>
+                </div>
                 <% }); %>
             </div>
             <div class="col small-div-scrollable">
                 <h5>Partecipanti:</h5>
                 <% corso.partecipanti.forEach(function(partecipante){ %>
-                    <div style="display: block;" class="mb-1">
-                        <% if(partecipante.immagine.tipo == "local"){ %>
-                            <img style="max-width: 2rem; border-radius: 0.5rem;" src="/uploads/<%= partecipante.immagine.indirizzo %>">
-                        <% } else if(partecipante.immagine.tipo == "url") { %>
-                            <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= partecipante.immagine.indirizzo %>">
-                        <% } %>
-                        <span class="username-post-span"><%= partecipante.username %></span>
-                    </div>
+                <div style="display: block;" class="mb-1 show-profile" data-profile="<%= partecipante._id %>">
+                    <img class="img-profilo"
+                        src="<%= (partecipante.immagine.tipo == "local") ? "/uploads/" + partecipante.immagine.indirizzo : partecipante.immagine.indirizzo %>">
+                    <span class="username-post-span back-link"><%= partecipante.username %></span>
+                </div>
                 <% }); %>
             </div>
         </div>
@@ -152,9 +150,10 @@
                 </div>
                 <div id="chat-buttons" style="display: none;">
                     <% if(utente){ %>
-                        <input id="username" type="text" placeholder="Username" maxlength="16" value="<%= utente.username %>" required>
+                    <input id="username" type="text" placeholder="Username" maxlength="16"
+                        value="<%= utente.username %>" required>
                     <% } else { %>
-                        <input id="username" type="text" placeholder="Username" maxlength="16" required>
+                    <input id="username" type="text" placeholder="Username" maxlength="16" required>
                     <% } %>
                     <textarea id="message" type="text" placeholder="Messaggio" maxlength="300" required></textarea>
                     <button id="img"><i class="fas fa-image"></i> Immagine...</button>
@@ -165,59 +164,60 @@
 
         <div class="col">
             <div class="row">
-            <div class="col-10 mt-3 text-center">
-                <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i> Nuovo post</a>
-                <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-poll"></i> Nuovo sondaggio</a>
-            </div>
-            <%# ordina per data %>
-            <% corso.contenuti.sort(function(a,b){ return new Date(b.dataCreazione) - new Date(a.dataCreazione); }); %>
-            <% corso.contenuti.forEach(function(contenuto){ %>
-            <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
-            <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
-            <div class="col-12 col-sm-5 post card bg-light m-3">
-                <% if(post.immagine.tipo == "local"){ %>
-                    <img class="post-img my-1 ml-1 mr-3" src="/uploads/<%= post.immagine.indirizzo %>" alt="Immagine del post">
-                <% } else if(post.immagine.tipo == "url") { %>
-                    <img class="post-img my-1 ml-1 mr-3" src="<%= post.immagine.indirizzo %>" alt="Immagine del post">
-                <% } %>
-                <div class="card-body">
-                    <h5 class="card-title"><%= post.titolo %></h5>
-                    <p class="post-text card-text">
-                        <%= post.contenuto %>
-                    </p>
-                    <p class="post-author card-text">
-                        <% if(post.autore){ %>
-                            <% if(post.autore.immagine.tipo == "local"){ %>
-                                <img style="max-width: 2rem; border-radius: 0.5rem;" src="/uploads/<%= post.autore.immagine.indirizzo %>">
-                            <% } else if(post.autore.immagine.tipo == "url") { %>
-                                <img style="max-width: 2rem; border-radius: 0.5rem;" src="<%= post.autore.immagine.indirizzo %>">
-                            <% } %>
-                            <span class="username-post-span"><%= post.autore.username %></span>
-                        <% } else { %>
-                            <span class="user-not-found-post-span text-muted"><i class="fas fa-user-slash"></i> Utente non trovato</span>
-                        <% } %>
-                    </p>
-                    <div class="card-btns">
-                        <p class="card-text">
-                            <small class="text-muted">
-                                <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
-                                <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
-                            </small>
-                        </p>
-                        <div style="display: inline;">
-                            <% if(post.allegati.length > 0){ %>
-                                <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
-                            <% } %>
-                            <a style="float: right;" class="btn btn-outline-info mb-2" href="/posts/<%= post._id %>">Visita</a>
-                        </div>
-                    </div>
+                <div class="col-10 mt-3 text-center">
+                    <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i>
+                        Nuovo
+                        post</a>
+                    <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-poll"></i> Nuovo
+                        sondaggio</a>
                 </div>
-            </div>
-            <% }}) %>
+                <%# ordina per data %>
+                <% corso.contenuti.sort(function(a,b){ return new Date(b.dataCreazione) - new Date(a.dataCreazione); }); %>
+                <% corso.contenuti.forEach(function(contenuto){ %>
+                <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
+                <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
+                <div class="col-12 col-sm-5 post card bg-light m-3">
+                    <a href="/posts/<%= post._id %>" class="no-link">
+                        <img class="post-img my-1 ml-1 mr-3"
+                            src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
+                            alt="Immagine del post">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= post.titolo %></h5>
+                            <p class="post-text card-text"><%= post.contenuto %></p>
+                            <p class="post-author card-text">
+                                <% if(post.autore){ %>
+                                <div class="show-profile" data-profile="<%= post.autore._id %>"">
+                                                                    <img class=" img-profilo"
+                                    src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
+                                    <span class="username-post-span back-link"><%= post.autore.username %></span>
+                                </div>
+                                <% } else { %>
+                                <span class="user-not-found-post-span text-muted"><i class="fas fa-user-slash"></i> Utente
+                                    non
+                                    trovato</span>
+                                <% } %>
+                            </p>
+                            <div class="card-btns">
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
+                                        <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
+                                    </small>
+                                </p>
+                                <div style="display: inline;">
+                                    <% if(post.allegati.length > 0){ %>
+                                    <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
+                                    <% } %>
+                                    <a style="float: right;" class="btn btn-outline-info mb-2" href="/posts/<%= post._id %>">Visita</a>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <% }}) %>
             </div>
         </div>
     </div>
-
 </div>
 
 <script src="/js/chat.js"></script>
