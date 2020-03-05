@@ -111,6 +111,11 @@ app.get("/test", function(req, res){
     res.render("tests/course-list");
 });
 
+// Common routes
+app.get("/login", function(req, res){
+    res.redirect("/auth/login");
+});
+
 app.get("*", function(req, res){
     res.status(404).send("Mannaggia alla Peppina, dove vuoi andare?");
 });

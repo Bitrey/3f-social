@@ -1,0 +1,56 @@
+<h1>Debug</h1>
+
+<div class="profile-modal-body">
+    <div class="media mb-3">
+        <img class="modal-immagine" src="${(data.immagine.tipo == "local") ? "/uploads/" + data.immagine.indirizzo : data.immagine.indirizzo}" alt="Immagine utente" style="max-width: 35%;">
+        <div class="media-body">
+            <h5 class="mt-0 modal-username">${data.username}</h5>
+            <p class="mb-0 pb-0 modal-nome">${data.nome} ${data.cognome}</p>
+            <p class="mb-0 pb-0 modal-residenza">${data.residenza.comune}, ${data.residenza.provincia}, ${data.residenza.regione}</p>
+            <p>Membro da: ${new Date(Date.parse(data.dataCreazione)).toLocaleDateString()}</p>
+        </div>
+    </div>
+    <p class="mb-0">Biografia:</p>
+    <blockquote class="modal-biografia" style="font-size: 0.9rem;">${data.biografia}</blockquote>
+    <p>Username è iscritto ai seguenti corsi:</p>
+    <div class="modal-corso-container" style="max-height: 10rem; overflow-y: scroll;">
+    </div>
+</div>
+
+<div class="profile-modal-body">
+    <div class="media mb-3">
+        <img class="modal-immagine" src="${(data.immagine.tipo == "local") ? "/uploads/" + data.immagine.indirizzo : data.immagine.indirizzo}" alt="Immagine utente" style="max-width: 35%;">
+        <div class="media-body">
+            <h5 class="mt-0 modal-username">${data.username}</h5>
+            <p class="mb-0 pb-0 modal-nome">${data.nome} ${data.cognome}</p>
+            ${data.residenza.regione ? '<p class="mb-0 pb-0 modal-residenza">' + data.residenza.comune + ', ' + data.residenza.provincia + ', ' + data.residenza.regione + '</p>' : ''}
+            <p>Membro da: ${new Date(Date.parse(data.dataCreazione)).toLocaleDateString()}</p>
+        </div>
+    </div>
+    ${data.biografia ? '<p class="mb-0">Biografia:</p>
+    <blockquote class="modal-biografia" style="font-size: 0.9rem;">' + data.biografia + '</blockquote>' : ''}
+    ${data.corsi.length > 0 ? '<p>' + data.username + ' è iscritto ai seguenti corsi:</p>' : ''}
+    <div class="modal-corso-container" style="max-height: 10rem; overflow-y: scroll;">
+    </div>
+</div>
+
+
+<div class="media modal-corso">
+    <a href="/courses/${corso._id}">
+    <img src='${corso.immagine.tipo == "local" ? "/uploads/" + corso.immagine.indirizzo : corso.immagine.indirizzo}' class="mr-3 modal-immagine-corso" alt="Immagine corso"
+        style="max-width: 20%;">
+    <div class="media-body">
+        <h5 class="mt-0 modal-titolo-corso">${corso.titolo}</h5>
+        <p class="modal-descrizione-corso"> ${corso.descrizione.length > 80 ? $.trim(corso.descrizione).substring(0, 80).split(" ").slice(0, -1).join(" ") + "..." : corso.descrizione}</p>
+    </div>
+    </a>
+</div>
+
+<div class="media modal-corso">
+    <img src='${corso.immagine.tipo == "local" ? "/uploads/" + corso.immagine.indirizzo : corso.immagine.indirizzo}' class="mr-3 modal-immagine-corso" alt="Immagine corso"
+        style="max-width: 20%;">
+    <div class="media-body">
+        <h5 class="mt-0 modal-titolo-corso">${corso.titolo}</h5>
+        <p class="modal-descrizione-corso"> ${corso.descrizione}</p>
+    </div>
+</div>

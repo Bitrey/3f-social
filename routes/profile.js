@@ -2,11 +2,7 @@ const router = require('express').Router();
 const middleware = require("../middleware");
 const User = require("../models/user");
 
-let comuni = require("../public/json/comuni.json");
-let province = require("../public/json/province.json");
-let regioni = require("../public/json/regioni.json");
-
-router.get('/', middleware.isLoggedIn, function(req, res){
+router.get("/", middleware.isLoggedIn, function(req, res){
     res.render('profile/view', {
         residenzaJSON: JSON.stringify(req.user.residenza),
         immagineJSON: JSON.stringify(req.user.immagine)
@@ -17,6 +13,44 @@ router.get('/edit', middleware.isLoggedIn, function(req, res){
     res.render('profile/edit', {
         residenzaJSON: JSON.stringify(req.user.residenza),
         immagineJSON: JSON.stringify(req.user.immagine)
+    });
+});
+
+// Visualizza in nuova pagina
+// Visualizza con modal usando AJAX
+router.get("/:id", function(req, res){
+    if(req.xhr){
+        User.findById(req.query.id).
+        populate("corsi").
+        sort( {"corsi.dataCreazione": '-1'} ).
+        exec(function(err, foundUser){
+            if(err){
+                console.log(err);
+                res.status(500).send("Errore nella ricerca dell'utente");
+                return false;
+            }
+            if(!foundUser){
+                res.status(404).send("Utente non trovato");
+                return false;
+            }
+            res.json(foundUser);
+        })
+        return false;
+    }
+    console.log("Ricevuta richiesta normale!");
+    User.findById(req.params.id, function(err, foundUser){
+        if(err){
+            console.log(err);
+            req.flash("error", "Errore nella ricerca dell'utente.");
+            res.status(500).redirect("back");
+            return false;
+        }
+        if(!foundUser){
+            req.flash("error", "Utente non trovato");
+            res.status(404).redirect("back");
+            return false;
+        }
+        res.render("profile/public", { utente: foundUser });
     });
 });
 
