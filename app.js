@@ -6,7 +6,13 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
+const i18n = require("i18n-express");
 var socket = require("socket.io");
+const marked = require('marked');
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 // Routes
 const User = require("./models/user");
@@ -76,6 +82,16 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(
+    i18n({
+        translationsPath: __dirname + '/locales',
+        cookieLangName: "lang",
+        paramLangName: "lang",
+        siteLangs: ["en","it"],
+        textsVarName: 'text'
+    })
+);
+
 // GLOBAL
 app.use(function(req, res, next){
     res.locals.utente = req.user;
@@ -83,6 +99,13 @@ app.use(function(req, res, next){
     res.locals.warn = req.flash("warn");
     res.locals.info = req.flash("info");
     res.locals.success = req.flash("success");
+    i18n({
+        translationsPath: __dirname + '/locales',
+        cookieLangName: "lang",
+        paramLangName: "lang",
+        siteLangs: ["en","it"],
+        textsVarName: 'text'
+    });
     next();
 });
 
@@ -164,12 +187,20 @@ io.on("connection", function(socket){
         }
     });
     socket.on("chat", function(data){
+        let contenuto = DOMPurify.sanitize(marked(data.message), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+        'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ]});
+        if(contenuto.length <= 0){
+            socket.emit("error-msg", "Il messaggio era troppo corto e non è stato inviato");
+            return false;
+        }
         // DEBUG: !!! RISOLVI USERNAME DA PRENDERE DA USER PASSPORT AUTHENTICATION
         let messageObj = new Message({
             autore: socket.request.user._id,
-            contenuto: data.message,
+            contenuto: contenuto,
             dataCreazione: Date.now()
         });
+        
         if(data.username != socket.request.user.username){
             let newUsername = data.username;
             let oldUsername = socket.request.user.username;

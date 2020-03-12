@@ -103,9 +103,9 @@ socket.on("chat", function(data) {
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span> <strong><span class='username-chat-span'>" + data.autore + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span></div>";
     } else {
-        output.innerHTML += "<p id='" + data.dataCreazione + "'><strong><span class='username-chat-span'>" + data.autore + "</span></strong> " + data.contenuto + "<br><small>" + getOreMinuti(data.dataCreazione) + "</small></p>";
+        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span></div>";
     };
     chat_window.scrollTop = chat_window.scrollHeight;
     unread++;
@@ -138,13 +138,14 @@ setInterval(function(){
 }, 500);
 
 socket.on("pastMsg", function(messages){
-    $("#output").html("");
+    let currentDate = new Date(Date.parse(messages[0].dataCreazione));
+    $("#output").html(`<p class="date-separator">${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}</p>`);
     for(let i = 0; i < messages.length; i++){
         unread++;
         document.title = "(" + unread + ") 3F Chat";
         if(i > 1){
             // Stampa differenza di giorni, se presente
-            let currentDate = new Date(Date.parse(messages[i].dataCreazione));
+            currentDate = new Date(Date.parse(messages[i].dataCreazione));
             let pastDate = new Date(Date.parse(messages[i - 1].dataCreazione))
             pastDay = pastDate.getDate();
             pastMonth = pastDate.getMonth();
@@ -162,7 +163,7 @@ socket.on("pastMsg", function(messages){
         } else {
             username = "<span class='text-muted'><i class='fas fa-user-slash'></i> Utente non trovato</span>"
         }
-        output.innerHTML += "<p id='" + messages[i].dataCreazione + "'><strong>" + username + "</strong> " + messages[i].contenuto + "<br><small>" + getOreMinuti(messages[i].dataCreazione) + "</small></p>";
+        output.innerHTML += "<div class='chat-message' id='" + messages[i].dataCreazione + "'><p><strong class='chat-username'>" + username + "</strong><small> " + getOreMinuti(messages[i].dataCreazione) + "</small></p><span class='chat-content'>" + messages[i].contenuto + "</span></div>";
     }
     chat_window.scrollTop = chat_window.scrollHeight;
 });
@@ -249,13 +250,6 @@ function displayError(message){
     }
 }
 
-let dio = ["🐷", "🐶", "🐈", "🐒"];
-
-$(".navbar-brand").on("click", function(){
-    output.innerHTML += `<p><strong>Dio</strong> ${dio[Math.floor(Math.random()*dio.length)]}</p>`;
-    chat_window.scrollTop = chat_window.scrollHeight;
-});
-
 socket.on("error", function(message){
     if(message == "User not authorized through passport. (User Property not found)"){
         $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-user-slash"></i> Chi sei?</h5><p>Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p></div>');
@@ -268,18 +262,13 @@ socket.on("connect_error", function(message){
     $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-comment-slash"></i> Connessione al socket rifiutata</h5><p>Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p><small>Errore: ' + message + '</div>');
 });
 
-// Tronca file con nome > 16 caratteri
-$(".post-text").each(function(){
-    if($(this).text().length > 120){
-        var text = $(this).text();
-        text = text.substr(0, 120) + '...';
-        $(this).text(text);
-    }
+// Tronca contenuto troppo lungo
+$(".post-contenuto").each(function(){
+    $(this).html($.truncate($(this).html(), {
+        length: 80,
+        words: true
+    }));
 });
-
-// $(".card").each(function(){
-//     $(this).css("height", $(".card-body").css("height"));
-// });
 
 $(".post").each(function(){
     $(this).css("height", ($(this).children(".card-title").css("height") + $(this).children(".post-text").css("height") + $(this).children(".card-btns").css("height")));
@@ -300,4 +289,9 @@ socket.on("changeUsername", function(data){
             $(this).text(data.newUsername);
         }
     });
+});
+
+socket.on("error-msg", function(msg){
+    output.innerHTML += "<div class='chat-message'><p><strong style='color: red;'>Errore</strong></p><span class='chat-content'>" + msg + "</span></div>";
+    chat_window.scrollTop = chat_window.scrollHeight;
 });

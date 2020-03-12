@@ -5,6 +5,10 @@ const Post = require("../models/post");
 const User = require("../models/user");
 const Attachment = require("../models/attachment");
 const middleware = require("../middleware");
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 router.get("/:course/new", middleware.isLoggedIn, function(req, res){
     Course.findById(req.params.course, function(err, foundCourse){
@@ -30,7 +34,7 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
             if(err){
                 req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
                 console.log(err);
-                res.redirect("back");
+                res.status(500).redirect("back");
             } else {
                 let userInCourseFlag = false;
                 foundCourse.partecipanti.forEach(function(partecipante){
@@ -48,7 +52,11 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                     corso: foundCourse._id,
                     autore: foundUser._id,
                     titolo: req.body.titolo,
-                    contenuto: req.body.contenuto,
+                    // contenuto: sanitizeHtml(req.body.quill, {
+                    //     allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span', 'mrow', 'svg'])
+                    // }),
+                    contenuto: DOMPurify.sanitize(req.body.quill),
+                    contenutoJSON: req.body.quillJSON,
                     soloFermi: false,
                     commenti: [],
                     like: 0,
@@ -110,7 +118,7 @@ router.get("/:id", function(req, res){
             res.status(500).redirect("/");
         } else {
             if(post){
-                res.render("posts/view", { post: post, contenutoJSON: JSON.stringify(post.contenuto), corso: post.corso });
+                res.render("posts/view", { post: post, corso: post.corso });
             } else {
                 req.flash("error", "Post non trovato");
                 res.status(404).redirect("back");
@@ -123,6 +131,7 @@ router.get("/:id", function(req, res){
 router.get("/:id/edit", function(req, res){
     Post.findById(req.params.id).
     populate("corso").
+    populate("allegati").
     exec(function(err, foundPost){
         if(err){
             req.flash("error", err.message);
@@ -136,34 +145,65 @@ router.get("/:id/edit", function(req, res){
 
 // UPDATE POST
 router.put("/:id", middleware.isPostOwner, function(req, res){
-    Post.findByIdAndUpdate(req.params.id, req.body.post, function(err, updatedPost){
+    Post.findByIdAndUpdate(req.params.id, req.body.post, async function(err, updatedPost){
         if(err){
             req.flash("error", err.msg);
             console.log(err);
             res.status(500).redirect("back");
         } else {
-            updatedPost.immagine = JSON.parse(req.body.post.img);
-            if(req.body.post.attachments){
-                let attachments = [];
-                let parsedAttachments = JSON.parse(req.body.post.attachments);
-                parsedAttachments.forEach(function(attachment){
-                    attachments.push({
-                        indirizzo: attachment.name,
-                        nome: attachment.originalName,
-                        dimensione: attachment.size,
-                        estensione: attachment.ext
-                    });
-                });
-                updatedPost.allegati = attachments;
-            }
-            updatedPost.save(function(err, saved){
+            User.findById(req.user.id, async function(err, foundUser){
                 if(err){
-                    req.flash("error", "Errore nel salvataggio del file, mannaggia alla Peppina!");
+                    req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
                     console.log(err);
                     res.status(500).redirect("back");
                 } else {
-                    req.flash("success", "Post modificato con successo");
-                    res.redirect("/posts/" + req.params.id);
+                    updatedPost.immagine = JSON.parse(req.body.post.img);
+                    if(req.body.post.attachments){
+                        let parsedAttachments = JSON.parse(req.body.post.attachments);
+                        await parsedAttachments.forEach(async function(attachment){
+                            let flag = false;
+                            await updatedPost.allegati.forEach(async function(postAttachment){
+                                if(postAttachment == attachment._id){
+                                    flag = true;
+                                }
+                            });
+                            if(!flag){
+                                attachment = new Attachment({
+                                    proprietario: foundUser._id,
+                                    post: updatedPost._id,
+                                    indirizzo: attachment.name,
+                                    nome: attachment.originalName,
+                                    dimensione: attachment.size,
+                                    estensione: attachment.ext
+                                });
+                                // Salva nuovo allegato
+                                await attachment.save(function(err, saved){if(err){console.log(err);}});
+                                // Aggiungi e salva nuovo allegato all'utente
+                                await foundUser.allegati.push(attachment._id);
+                                await foundUser.save(function(err){if(err){console.log(err);}});
+                                // Aggiungi nuovo allegato al post
+                                await updatedPost.allegati.push(attachment._id);
+                            }
+                            flag = false;
+                        });
+                    }
+                    console.log(req.body.post.quill);
+                    updatedPost.contenutoJSON = req.body.quillJSON;
+                    // updatedPost.contenuto = sanitizeHtml(req.body.post.quill, {
+                        // allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span', 'mrow', 'svg'])
+                    // });
+                    updatedPost.contenuto = DOMPurify.sanitize(req.body.post.quill);
+                    // updatedPost.contenuto = req.body.post.quill;
+                    updatedPost.save(function(err, saved){
+                        if(err){
+                            req.flash("error", "Errore nel salvataggio del file, mannaggia alla Peppina!");
+                            console.log(err);
+                            res.status(500).redirect("back");
+                        } else {
+                            req.flash("success", "Post modificato con successo");
+                            res.redirect("/posts/" + req.params.id);
+                        }
+                    });
                 }
             });
         }

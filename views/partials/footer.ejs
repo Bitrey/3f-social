@@ -7,6 +7,12 @@
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function(event){
+            document.querySelectorAll('pre').forEach(function(block){
+                hljs.highlightBlock(block);
+            });
+        });
+
         // Cerca pagina attuale e metti underline a quell'header
         $(".nav-link").each(function(){
             if($(this).attr("href") == window.location.pathname){
@@ -48,24 +54,21 @@
                     $("#errore-modal-text").text(`${xhr.status} ${errorThrown}: ${xhr.responseText}`);
                 },
                 success: function(data, textStatus, xhr){
-                    console.log(data);
                     $("#errore-modal-text").hide();
-                    // $(".modal-immagine").attr("src", (data.immagine.tipo == "local") ? "/uploads/" + data.immagine.indirizzo : data.immagine.indirizzo);
-                    // $(".modal-username").text(data.username);
-                    // $(".modal-nome").text(`${data.nome} ${data.cognome}`);
-                    // $(".modal-residenza").text(`${data.comune}, ${data.provincia}, ${data.regione}`);
-                    // $(".modal-data").text(new Date(Date.parse(data.dataCreazione)).toLocaleDateString());
-                    // $(".modal-biografia").text(data.biografia);
                     $("#profile-body").html(`<div class="profile-modal-body"> <div class="media mb-3"> <img class="modal-immagine" src="${(data.immagine.tipo == "local") ? "/uploads/" + data.immagine.indirizzo : data.immagine.indirizzo}" alt="Immagine utente" style="max-width: 35%;"> <div class="media-body ml-3"> <h5 class="mt-0 modal-username">${data.username}</h5> <p class="mb-0 pb-0 modal-nome">${data.nome} ${data.cognome}</p> ${data.residenza.regione ? '<p class="mb-0 pb-0 modal-residenza">' + data.residenza.comune + ', ' + data.residenza.provincia + ', ' + data.residenza.regione + '</p>' : ''} <p>Membro dal: ${new Date(Date.parse(data.dataCreazione)).toLocaleDateString()}</p> </div> </div> ${data.biografia ? '<p class="mb-0">Biografia:</p> <blockquote class="modal-biografia" style="font-size: 0.9rem;">' + data.biografia + '</blockquote>' : ''} ${data.corsi.length > 0 ? '<p>' + data.username + ' è iscritto ai seguenti corsi:</p>' : ''} <div class="modal-corso-container" style="max-height: 10rem; overflow-y: scroll;"> </div></div>`);
                     data.corsi.forEach(function(corso){
-                        $(".modal-corso-container").append(`<div class="media modal-corso"> <img src='${corso.immagine.tipo == "local" ? "/uploads/" + corso.immagine.indirizzo : corso.immagine.indirizzo}' class="mr-3 modal-immagine-corso" alt="Immagine corso" style="max-width: 20%;"> <div class="media-body"> <a href="/courses/${corso._id}" class="back-link"><h5 class="mt-0 modal-titolo-corso">${corso.titolo}</h5></a> <p class="modal-descrizione-corso"> ${corso.descrizione.length > 80 ? $.trim(corso.descrizione).substring(0, 80).split(" ").slice(0, -1).join(" ") + "..." : corso.descrizione}</p> </div></div>`);
+                        $(".modal-corso-container").append(`<div class="media modal-corso mt-1"> <img onclick='window.location.href = "/courses/${corso._id}"' src='${corso.immagine.tipo == "local" ? "/uploads/" + corso.immagine.indirizzo : corso.immagine.indirizzo}' class="mr-3 modal-immagine-corso" alt="Immagine corso" style="max-width: 20%;"> <div class="media-body"> <a href="/courses/${corso._id}" class="back-link"><h5 class="mt-0 modal-titolo-corso">${corso.titolo}</h5></a> <a href="/courses/${corso._id}" class="back-link"><p class="modal-descrizione-corso"> ${corso.descrizione.length > 80 ? $.trim(corso.descrizione).substring(0, 80).split(" ").slice(0, -1).join(" ") + "..." : corso.descrizione}</p></a> </div></div>`);
                     });
                 }
             });
         });
         $('#profileModal').on('hidden.bs.modal', function(){
             $("#profile-body").html('<div class="profile-loading text-center"> <p> <div class="spinner-border text-info" role="status"> <span class="sr-only">Loading...</span> </div> Caricamento del profilo in corso... </p> </div>');
-        })
+        });
+        $(".modal-immagine-corso").on("click", function(){
+            alert("ciao");
+            window.location.href = "/courses/" + this.data("course");
+        });
     </script>
 </body>
 </html>

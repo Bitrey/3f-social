@@ -126,10 +126,6 @@
         </div>
     </div>
 
-    <div class="alert alert-danger error-div m-3 text-center" role="alert">
-        <h3><i class="fas fa-exclamation-triangle"></i> Errore <i class="fas fa-exclamation-triangle"></i></h3>
-        <p id="error-text">Impossibile caricare JavaScript correttamente. Verifica che sia abilitato.</p>
-    </div>
     <div class="row">
 
         <div class="col-12 col-lg-4">
@@ -163,7 +159,7 @@
         </div>
 
         <div class="col">
-            <div class="row">
+            <div class="row justify-content-center">
                 <div class="col-10 mt-3 text-center">
                     <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i>
                         Nuovo
@@ -177,13 +173,16 @@
                 <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
                 <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
                 <div class="col-12 col-sm-5 post card bg-light m-3">
-                    <a href="/posts/<%= post._id %>" class="no-link">
-                        <img class="post-img my-1 ml-1 mr-3"
+                    <% if(post.immagine.tipo != "none"){ %>
+                    <a href="/posts/<%= post._id %>" class="no-link hr">
+                        <img class="img-fit"
                             src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
                             alt="Immagine del post">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= post.titolo %></h5>
-                            <p class="post-text card-text"><%= post.contenuto %></p>
+                    </a>
+                    <% } %>
+                        <div class="card-body post-text">
+                                <h5 class="card-title"><%= post.titolo %></h5>
+                                <div class="post-contenuto"><%- post.contenuto %></div>
                             <p class="post-author card-text">
                                 <% if(post.autore){ %>
                                 <div class="show-profile" data-profile="<%= post.autore._id %>"">
@@ -212,7 +211,6 @@
                                 </div>
                             </div>
                         </div>
-                    </a>
                 </div>
                 <% }}) %>
             </div>
@@ -220,6 +218,7 @@
     </div>
 </div>
 
-<script src="/js/chat.js"></script>
+<script src="/js/jquery.truncate.js"></script>
+<script type="module" src="/js/chat.js"></script>
 
 <%- include ('../partials/footer') %>
