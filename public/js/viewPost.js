@@ -1,6 +1,6 @@
 $(".download").on("click", function(){
     try {
-        $('#downloadForm').submit(function(){
+        $('.downloadForm').submit(function(){
 
                 $(this).ajaxSubmit({
 
@@ -36,9 +36,3 @@ $('#font-slider').on('input', function(){
     let fontSize = ($(this).val() / 2) + "rem";
     $("#contenuto").animate({fontSize: fontSize}, 150);
 });
-
-var str = JSON.parse($("#post-text").text());
-$("#post-text").remove();
-
-str = str.replace(/(?:\r\n|\r|\n)/g, '<br>');
-$("#contenuto").html(str);

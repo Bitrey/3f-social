@@ -117,11 +117,12 @@ body {
     background-blend-mode: lighten;
 }
 
-#output p:not(#loading):not(.date-separator){
+.chat-message {
     padding: 14px 0px;
     margin: 0 20px;
     border-bottom: 1px solid #e9e9e9;
     color: #555;
+    display: block;
 }
 
 #feedback p{
@@ -130,7 +131,7 @@ body {
     margin: 0 20px;
 }
 
-#output strong{
+.chat-username {
     color: #2ab7ca;
 }
 
@@ -226,8 +227,7 @@ p:hover .delete {
 
 .post {
     overflow: hidden;
-    line-height: 20px;
-    display: inline-block;
+    /* display: inline-block; */
     max-height: 100%;
 }
 
@@ -369,4 +369,20 @@ p:hover .delete {
 
 .show-profile:hover {
     cursor: pointer;
+}
+
+.modal-immagine-corso:hover {
+    cursor: pointer;
+}
+
+.hr {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.card-title, .card-subtitle {
+    overflow: hidden;
+}
+
+.chat-content p, .chat-message p {
+    margin-bottom: 0;
 }

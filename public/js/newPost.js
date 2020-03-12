@@ -30,6 +30,8 @@ let attachments = [];
 $("#new-post-form").on("submit", function(){
     $("#hiddenAttField").val(JSON.stringify(attachments));
     $("#hiddenImgField").val(JSON.stringify(img));
+    $("#quill-input").val(quill.root.innerHTML);
+    $("#quill-input-JSON").val(JSON.stringify(quill.getContents()));
 });
 
 $("#upload-file").on("click", function(){
@@ -117,4 +119,17 @@ $("#rimuovi-immagine").on("click", function(){
     img.indirizzo = "none";
     $("#hiddenImgField").val("none");
     $(".new-post-img").hide();
+});
+
+var quill = new Quill('#editor', {
+    modules: {
+        syntax: true,
+        toolbar: [
+            ['bold', 'italic'],
+            ['link', 'blockquote', 'code-block', 'formula'],
+            [{ list: 'ordered' }, { list: 'bullet' }]
+        ]
+    },
+    placeholder: 'Scrivi il contenuto del post...',
+    theme: 'snow'
 });
