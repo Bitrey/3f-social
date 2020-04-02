@@ -71,38 +71,53 @@ $("#edit-post-form").on("submit", function(){
 });
 
 $("#upload-file").on("click", function(){
-    if(!$("#attachment")[0].files[0]){
-        $("#status").empty().text("Nessun file selezionato");
-        return false;
-    } else if($("#attachment")[0].files[0].size > 10000000){
-        $("#status").empty().text("Il file supera il limite di 10MB");
-        return false;
-    } else {
-        $('#uploadForm').submit(function(){
-            $("#status").empty().text("Caricamento file...");
-            $(this).ajaxSubmit({
-                error: function(xhr){
-                    $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
-                },
-
-                success: function(response){
-                    $("#status").empty().text(response.msg);
-                    if(response.msg == "File caricato!"){
-                        // FAI QUALCOSA DEBUG NON VA
-                        attachments.push({
-                            name: response.name,
-                            originalName: response.originalName,
-                            size: response.size,
-                            ext: response.ext
-                        });
-                    }
-                }
-            });
-            // Annulla rinfrescamento pagina
+    try {
+        if(!$("#attachment")[0].files[0]){
+            $("#status").empty().text("Nessun file selezionato");
             return false;
-        });
+        } else if($("#attachment")[0].files[0].size > 10000000){
+            $("#status").empty().text("Il file supera il limite di 10MB");
+            return false;
+        } else {
+            $('#uploadForm').submit(function(){
+                $("#status").empty().text("Caricamento file...");
+                $(this).ajaxSubmit({
+                    error: function(xhr){
+                        $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
+                    },
+    
+                    success: function(response){
+                        $("#status").empty().text(response.msg);
+                        if(response.msg == "File caricato!"){
+                            attachments.push({
+                                name: response.name,
+                                originalName: response.originalName,
+                                size: response.size,
+                                ext: response.ext
+                            });
+                            $("#allegato-modal").modal('hide');
+                            $("#show-attachment-div").show();
+                            $("#attachments-div").append(`<div class="card m-2"> <div class="card-body"> <h5 class="card-title file-title" data-file="${response.name}/${response.originalName}">${response.originalName}</h5> <h6 class="card-subtitle mb-2 text-muted">Dimensione: ${formatBytes(response.size)}</h6> <h6 class="card-subtitle mb-2 text-muted">Estensione: ${response.ext}</h6> <button type="button" class="btn btn-light download-btn"><i class="fas fa-file-download"></i> Scarica</button></div></div>`);
+                        }
+                    }
+                });
+                // Annulla rinfrescamento pagina
+                return false;
+            });
+        }
+    } catch(e){
+        $("#status").empty().text("Errore: " + e.toString());
     }
 });
+
+function formatBytes(a,b){
+    if(0==a)return"0 Bytes";
+    var c=1024,
+    d=b||2,
+    e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],
+    f=Math.floor(Math.log(a)/Math.log(c));
+    return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]
+}
 
 $("#upload-post-img").on("click", function(){
     $("#cambia-img-modal").modal("hide");
@@ -174,3 +189,5 @@ $(".download-btn").on("click", function(){
         $("#status").empty().text("Errore: " + err.toString());
     }
 });
+// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
+$('.ql-formula').attr("data-toggle", "tooltip").attr("data-placement", "top").prop("title", "Usa un LaTeX editor per un risultato migliore").tooltip();

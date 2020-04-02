@@ -63,23 +63,24 @@ var userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    let asyncThis = this;
     try {
-        await this.populate("contenuti").execPopulate();
-        await this.populate("messaggi").execPopulate();
-        await this.populate("corsi").execPopulate();
-        await this.populate("allegati").execPopulate();
-        await this.populate("commenti").execPopulate();
-        await this.model("Post").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "post" } });
-        await this.model("Poll").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "poll" } });
-        await this.model("Message").deleteMany({ "_id": { $in: this.messaggi } });
-        await this.model("Attachment").deleteMany({ "_id": { $in: this.allegati } });
-        await this.model("Comment").deleteMany({ "_id": { $in: this.commenti } });
+        await asyncThis.populate("contenuti").execPopulate();
+        await asyncThis.populate("messaggi").execPopulate();
+        await asyncThis.populate("corsi").execPopulate();
+        await asyncThis.populate("allegati").execPopulate();
+        await asyncThis.populate("commenti").execPopulate();
+        await asyncThis.model("Post").deleteMany({ "_id": { $in: asyncThis.contenuti }, "tipoContenuto": { $eq: "post" } });
+        await asyncThis.model("Poll").deleteMany({ "_id": { $in: asyncThis.contenuti }, "tipoContenuto": { $eq: "poll" } });
+        await asyncThis.model("Message").deleteMany({ "_id": { $in: asyncThis.messaggi } });
+        await asyncThis.model("Attachment").deleteMany({ "_id": { $in: asyncThis.allegati } });
+        await asyncThis.model("Comment").deleteMany({ "_id": { $in: asyncThis.commenti } });
 
-        await this.corsi.forEach(async function(corso){
-                await corso.partecipanti.pull({ _id: this._id });
-                await corso.amministratori.findById(this._id, async function(err, foundAdmin){
+        await asyncThis.corsi.forEach(async function(corso){
+                await corso.partecipanti.pull({ _id: asyncThis._id });
+                await corso.amministratori.findById(asyncThis._id, async function(err, foundAdmin){
                     if(foundAdmin){
-                        await corso.amministratori.pull({ _id: this._id });
+                        await corso.amministratori.pull({ _id: asyncThis._id });
                     }
                 await corso.save();
             });

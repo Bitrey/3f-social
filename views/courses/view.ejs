@@ -131,7 +131,7 @@
         <div class="col-12 col-lg-4">
             <div id="chat">
                 <div id="chat-window">
-                    <div class="alert chat-alert alert-danger" role="alert">
+                    <div class="alert chat-alert alert-danger" style="display: none;" role="alert">
                         Scrivi lo username e il messaggio!
                     </div>
                     <div id="output">
@@ -151,7 +151,7 @@
                     <% } else { %>
                     <input id="username" type="text" placeholder="Username" maxlength="16" required>
                     <% } %>
-                    <textarea id="message" type="text" placeholder="Messaggio" maxlength="300" required></textarea>
+                    <textarea id="message" type="text" placeholder="Messaggio" maxlength="120" required></textarea>
                     <button id="img"><i class="fas fa-image"></i> Immagine...</button>
                     <button id="send"><i class="fas fa-paper-plane"></i> Invia</button>
                 </div>
@@ -185,9 +185,8 @@
                                 <div class="post-contenuto"><%- post.contenuto %></div>
                             <p class="post-author card-text">
                                 <% if(post.autore){ %>
-                                <div class="show-profile" data-profile="<%= post.autore._id %>"">
-                                                                    <img class=" img-profilo"
-                                    src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
+                                <div class="show-profile" data-profile="<%= post.autore._id %>">
+                                    <img class="img-profilo" src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
                                     <span class="username-post-span back-link"><%= post.autore.username %></span>
                                 </div>
                                 <% } else { %>

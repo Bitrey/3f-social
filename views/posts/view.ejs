@@ -8,7 +8,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="delete-modal-label">Modal title</h5>
+                <h5 class="modal-title" id="delete-modal-label">Elimina post</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -37,7 +37,7 @@
                             <h2 class="text-muted">Scritto da 
                                 <img style="max-width: 3rem; border-radius: 0.5rem;"
                                     src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
-                            <%= post.autore.username %></h2>
+                                <span class="username-post-span back-link text-muted show-profile" data-profile="<%= post.autore._id %>"><%= post.autore.username %></span>
                         <% } else { %>
                             <h2 class="text-muted"><i class="fas fa-user-slash"></i> Utente non trovato</h2>
                         <% } %>
@@ -54,7 +54,8 @@
 
             <div style="display: inline;">
                 <small style="float: left; margin-right: 5px;" id="dimensione-font-label">Dimensione font</small>
-                <input style="max-width: 100px;" aria-describedby="dimensione-font-label" type="range" min="1" max="10" value="2" class="slider pl-1 pr-1 mb-1" id="font-slider">
+                <input style="max-width: 100px;" type="range" class="custom-range" min="1" max="100" value="20" aria-describedby="dimensione-font-label" id="font-slider" class="pl-1 pr-1 mb-1">
+                <!-- <input style="max-width: 100px;" aria-describedby="dimensione-font-label" type="range" min="1" max="10" value="2" class="slider pl-1 pr-1 mb-1" id="font-slider"> -->
             </div>
             <!-- Contenuto -->
             <div id="contenuto-quill" style="border: none;"></div>

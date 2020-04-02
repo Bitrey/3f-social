@@ -44,15 +44,16 @@ var pollSchema = new mongoose.Schema({
 });
 
 pollSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    let asyncThis = this;
     try {
-        await this.populate("autore").execPopulate();
-        await this.populate("commenti").execPopulate();
-        await this.populate("corso").execPopulate();
-        await this.corso.contenuti.pull({ _id: this._id });
-        await this.autore.contenuti.pull({ _id: this._id });
-        await this.corso.save();
-        await this.autore.save();
-        await this.model("Comment").deleteMany({ "_id": { $in: this.commenti } });
+        await asyncThis.populate("autore").execPopulate();
+        await asyncThis.populate("commenti").execPopulate();
+        await asyncThis.populate("corso").execPopulate();
+        await asyncThis.corso.contenuti.pull({ _id: asyncThis._id });
+        await asyncThis.autore.contenuti.pull({ _id: asyncThis._id });
+        await asyncThis.corso.save();
+        await asyncThis.autore.save();
+        await asyncThis.model("Comment").deleteMany({ "_id": { $in: asyncThis.commenti } });
         next();
     } catch(err){
         next(err);

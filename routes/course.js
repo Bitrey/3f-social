@@ -94,9 +94,9 @@ router.get("/newcode", function(req, res){
 
 router.get("/:id", middleware.isLoggedIn, middleware.userInCourse, function(req, res){
     if(req.query.showCode){
-        res.render("courses/view", { corso: req.course, mostraCodice: true, admin: checkAdmin(req.course, req.user) });
+        res.render("courses/view", { corso: req.course, hideHome: true, mostraCodice: true, admin: checkAdmin(req.course, req.user) });
     } else {
-        res.render("courses/view", { corso: req.course, admin: checkAdmin(req.course, req.user) });
+        res.render("courses/view", { corso: req.course, hideHome: true, admin: checkAdmin(req.course, req.user) });
     }
 });
 
@@ -200,6 +200,34 @@ router.put("/:id", middleware.isLoggedIn, middleware.userInCourse, function(req,
             req.flash("success", "Corso modificato con successo");
             res.redirect("/courses/" + updatedCourse._id);
         });
+    });
+});
+
+router.delete("/:course", middleware.isCourseAdmin, async function(req, res){
+    Course.findById(req.params.course).
+    exec(async function(err, foundCourse){
+        if(err){
+            console.log(err);
+            req.flash("error", "Errore nella ricerca del Course");
+            res.status(500).redirect("back");
+        } else {
+            if(foundCourse){
+                foundCourse.deleteOne(function(err){
+                    if(err){
+                        console.log(err);
+                        req.flash("error", "Errore nell'eliminazione del corso");
+                        res.status(500).redirect("back");
+                        return false;
+                    } else {
+                        req.flash("success", "Corso eliminato con successo");
+                        res.redirect("/courses");
+                    }
+                });
+            } else {
+                req.flash("error", "Nessun corso trovato");
+                res.status(404).redirect("back");
+            }
+        }
     });
 });
 

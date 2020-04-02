@@ -1,9 +1,39 @@
 <%- include ('./partials/header') %>
 
-<div class="container">
+<style>
+    body {
+        background-color: #2786DB;
+        margin: 0;
+        height: 100%;
+        color: white;
+    }
+    .container {
+        padding-top: 3rem;
+    }
+</style>
+
+<!-- <div class="container">
     <h1><i class="fas fa-code"></i></h1>
     <p>Sto ancora lavorando alla homepage, nel frattempo puoi andare sui tuoi <a href="/courses"><i class="fas fa-book"></i> corsi</a>!</p>
     <p>Se vuoi darmi una mano, <a href="/info#contatti">mandami una mail</a></p>
+</div> -->
+
+<div class="container">
+    <div class="row" style="justify-content: space-between; margin-right: auto; margin-left: auto;">
+            <!-- <div class="row"> -->
+                <div class="col-12 col-lg-5 order-2 order-lg-1 pr-lg-5">
+                    <h1 class="main-header pr-lg-3">La nuova classe virtuale</h1>
+                    <p class="main-subheader">Condivisione di materiale, chat testuale e video, verifiche e altro ancora sulla stessa piattaforma. Gratis.</p>
+                <!-- </div> -->
+                <!-- <div class="col-12 col-lg-6"> -->
+                    <button class="btn-big btn-white">Scopri di più</button>
+                    <button class="btn-big btn-white-outline">Iscriviti</button>
+                <!-- </div> -->
+            </div>
+        <div class="col-12 col-lg-6 text-center order-1 order-lg-2">
+            <img src="img/online.svg" alt="Copertina corso online" class="main-img">
+        </div>
+    </div>
 </div>
 
 <%- include ('./partials/footer') %>

@@ -1,50 +1,9 @@
+* {
+    max-width: 100%;
+}
+
 .nav-item a {
 	outline: none;
-}
-
-.navbar-container {
-	text-align: center;
-	background-color: #2ab7ca;
-	box-shadow: 0px -20px 5px 20px #333333;
-}
-
-.navbar-container ul li a {
-	color: #ffffff;
-	text-decoration: none;
-	transition: color 0.5s;
-}
-
-.navbar-container ul li .underline {
-	height: 3px;
-	background-color: transparent;
-	width: 0%;
-	transition: width 0.2s, background-color 0.5s;
-	margin: 0 auto;
-}
-
-.navbar-container ul li.active-link .underline {
-	width: 100%;
-	background-color: white;
-}
-
-.navbar-container ul li:hover .underline {
-	background-color: white;
-	width: 100%;
-}
-
-.navbar-container ul li:active a {
-	transition: none;
-	color: rgba(255,255,255,0.76);
-}
-
-.navbar-container ul li:active .underline {
-	transition: none;
-	background-color: rgba(255,255,255,0.76);
-}
-
-.navbar-nav > li{
-    padding-left: 25px;
-    padding-right: 25px;
 }
 
 .post-img {
@@ -79,12 +38,152 @@
 body {
     padding-bottom: 5rem;
     font-family: Nunito;
+    box-sizing: border-box;
+    /* padding: 0; */
+}
+
+.nav-link {
+    color: white!important;
+}
+
+.nav-link:hover {
+    color: #dddddd!important;
+}
+
+.dark-blue-rectangle {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+    width: 100%;
+    overflow: hidden;
+}
+
+.btn-big {
+    width: 25rem;
+    max-width: 100%;
+    height: 4rem;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    border-radius: 5px;
+    box-shadow: 4px 8px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.btn-big:focus {
+    outline: none;
+}
+
+.btn-white {
+    background-color: white;
+    color: #2786DB;
+    border: none;
+}
+
+.btn-white:hover {
+    background-color: #E9E9E9;
+    color: #0d78c0;
+    border: none;
+}
+
+.btn-white:focus {
+    background-color: #CDD1D3;
+    color: #0b6fb1;
+    border: none;
+}
+
+.btn-white-outline {
+    background-color: #2786DB;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-white-outline:hover {
+    background-color: #0d78c0;
+    color: white;
+    border: 2px solid #E9E9E9;
+}
+
+.btn-white-outline:focus {
+    background-color: #0b6fb1;
+    color: white;
+    border: 2px solid #CDD1D3;
+}
+
+/* Solo su PC */
+@media only screen and (min-width: 768px){
+
+    .navbar {
+        margin-bottom: 1.5rem;
+    }
+
+    .main-header {
+        font-size: 3.5rem;
+        line-height: 3.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .main-subheader {
+        font-size: 1.5rem;
+    }
+
+    .btn-big {
+        margin-top: 2rem;
+    }
+
+    .main-img {
+        padding-top: 1rem;
+        width: 70%;
+    }
+    
+
+    ul.mr-auto .nav-item {
+        margin-right: 1rem;
+    }
+
+    ul.ml-auto .nav-item {
+        margin-left: 1rem;
+    }
+
+}
+
+/* Solo su telefono */
+@media not screen and (min-width: 768px){
+
+    .main-header {
+        font-size: 3rem;
+        line-height: 3.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .row {
+        text-align: center;
+    }
+
+    .main-subheader {
+        font-size: 1.2rem;
+    }
+
+    .btn-big {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .main-img {
+        width: 50%;
+    }
+
+}
+
+.navbar {
+    background-color: #0d78c0;
 }
 
 /* h2{
     font-size: 18px;
     padding: 10px 20px;
-    color: #2ab7ca;
+    color: #2786DB;
 } */
 
 .alert {
@@ -132,7 +231,7 @@ body {
 }
 
 .chat-username {
-    color: #2ab7ca;
+    color: #2786DB;
 }
 
 label{
@@ -155,7 +254,7 @@ input, textarea{
 }
 
 #send{
-    background: #2ab7ca;
+    background: #2786DB;
     color: #fff;
     font-size: 18px;
     border: 0;
@@ -276,37 +375,6 @@ p:hover .delete {
     margin: 0;
 }
 
-.slider {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 15px;
-    background: #f7f7f7;
-    border: 1px solid #2ab7ca;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-}
-
-.slider:hover {
-    opacity: 1;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #2ab7ca;
-    cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    background: #2ab7ca;
-}
-
 .round-img {
     max-width: 200px;
     border-radius: 50%;
@@ -316,7 +384,7 @@ p:hover .delete {
 
 @keyframes FadeIn {
     from {
-        background-color: #2ab7ca;
+        background-color: #2786DB;
     }
     
     to {
@@ -385,4 +453,5 @@ p:hover .delete {
 
 .chat-content p, .chat-message p {
     margin-bottom: 0;
+    overflow-wrap: break-word;
 }

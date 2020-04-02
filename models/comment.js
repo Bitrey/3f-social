@@ -12,10 +12,11 @@ var commentiSchema = new mongoose.Schema({
 });
 
 commentiSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    let asyncThis = this;
     try {
-        await this.populate("autore").execPopulate();
-        await this.autore.commenti.pull({ _id: this._id });
-        await this.autore.save();
+        await asyncThis.populate("autore").execPopulate();
+        await asyncThis.autore.commenti.pull({ _id: asyncThis._id });
+        await asyncThis.autore.save();
         next();
     } catch(err){
         next(err);

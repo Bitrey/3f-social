@@ -38,6 +38,44 @@ middlewareObj.isPostOwner = function(req, res, next){
     }
 }
 
+middlewareObj.isCourseAdmin = function(req, res, next){
+    if(req.isAuthenticated()){
+        Course.findById(req.params.course, function(err, foundCourse){
+            if(err){
+                req.flash("error", "Corso non trovato");
+                res.status(404).redirect("back");
+            } else {
+                if(foundCourse){
+                    // foundCourse.autore è un ref di Mongoose = all'ObjectId, quindi all'_id
+                    // Per comparare ObjectId con stringhe devi usare .equals()
+                    let foundCourseFlag = false;
+                    foundCourse.amministratori.forEach(function(admin){
+                        // Admin non è popolato, quindi sono ObjectId di utenti admin
+                        if(admin.equals(req.user._id)){
+                            foundCourseFlag = true;
+                            return false;
+                        }
+                    });
+                    if(foundCourseFlag){
+                        next();
+                    } else {
+                        console.log(`Il tuo ID (${req.user._id}) non corrisponde a quello di un amministratore`);
+                        req.flash("error", "Non sei autorizzato");
+                        res.status(401).redirect("back");
+                    }
+                } else {
+                    req.flash("error", "Il corso non esiste o è stato eliminato");
+                    res.status(400).redirect("back");
+                }
+            }
+        });
+    } else {
+        res.redirect("/auth/google");
+        // req.flash("info", "Devi fare l'acesso per continuare");
+        // res.status(401).redirect("back");
+    }
+}
+
 middlewareObj.isCommentOwner = function(req, res, next){
     if(req.isAuthenticated()){
         Comment.findById(req.params.comment_id, function(err, foundComment){

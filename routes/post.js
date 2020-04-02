@@ -105,9 +105,23 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
     });
 });
 
+function showPost(req, res, post){
+    if(post){
+        res.render("posts/view", { post: post, corso: post.corso });
+    } else {
+        req.flash("error", "Post non trovato");
+        res.status(404).redirect("back");
+    }
+}
+
+function dontShowPost(req, res){
+    req.flash("error", "Non sei autorizzato a vedere questo post");
+    res.status(401).redirect("back");
+}
+
 // SHOW POST
-router.get("/:id", function(req, res){
-    Post.findById(req.params.id).
+router.get("/:post", function(req, res){
+    Post.findById(req.params.post).
     populate("corso").
     populate("commenti").
     populate("autore").
@@ -117,18 +131,32 @@ router.get("/:id", function(req, res){
             req.flash("error", err.message);
             res.status(500).redirect("/");
         } else {
-            if(post){
-                res.render("posts/view", { post: post, corso: post.corso });
+            if(post.corso.pubblico){
+                showPost(req, res, post);
             } else {
-                req.flash("error", "Post non trovato");
-                res.status(404).redirect("back");
+                if(req.isAuthenticated()){
+                    let isInCourse = false;
+                    post.corso.partecipanti.forEach(function(partecipante){
+                        if(partecipante.equals(req.user.id)){
+                            isInCourse = true;
+                            return false;
+                        };
+                    });
+                    if(isInCourse){
+                        showPost(req, res, post);
+                    } else {
+                        dontShowPost(req, res);
+                    }
+                } else {
+                    dontShowPost(req, res);
+                }
             }
         }
     });
 });
 
 // EDIT POST
-router.get("/:id/edit", function(req, res){
+router.get("/:id/edit", middleware.isPostOwner, function(req, res){
     Post.findById(req.params.id).
     populate("corso").
     populate("allegati").
@@ -187,7 +215,6 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
                             flag = false;
                         });
                     }
-                    console.log(req.body.post.quill);
                     updatedPost.contenutoJSON = req.body.quillJSON;
                     // updatedPost.contenuto = sanitizeHtml(req.body.post.quill, {
                         // allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span', 'mrow', 'svg'])

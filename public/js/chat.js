@@ -62,7 +62,7 @@ message.addEventListener("keypress", function() {
         } else {
             socket.emit("notyping");
         }
-    };
+    }
 });
 
 $('body').click(function(){
@@ -77,10 +77,12 @@ $('body').keypress(function(){
     }
 });
 
-message.addEventListener("keyup", function(){
-    if(event.keyCode == 13 && !event.shiftKey){
+$("#message").keydown(function(e){
+    // Enter was pressed without shift key
+    if (e.keyCode == 13 && !e.shiftKey){
+        e.preventDefault();
         inviaMsg();
-    };
+    }
 });
 
 var unread = 0;
@@ -94,7 +96,11 @@ let pastDay, pastMonth, pastYear;
 
 // Listen for events
 socket.on("chat", function(data) {
+    let scrollFlag = false;
         // Stampa differenza di giorni, se presente
+    if(chat_window.scrollTop == chat_window.scrollHeight - chat_window.offsetHeight){
+        scrollFlag = true;
+    }
     let currentDate = new Date(Date.parse(data.dataCreazione));
     if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
         let month = currentDate.getMonth() + 1;
@@ -106,8 +112,11 @@ socket.on("chat", function(data) {
         output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span></div>";
     } else {
         output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span></div>";
-    };
-    chat_window.scrollTop = chat_window.scrollHeight;
+    }
+    if(scrollFlag){
+        chat_window.scrollTop = chat_window.scrollHeight;
+        scrollFlag = false;
+    }
     unread++;
     document.title = "(" + unread + ") 3F Chat";
     let pastDate = new Date(Date.parse(data.dataCreazione));
@@ -146,7 +155,7 @@ socket.on("pastMsg", function(messages){
         if(i > 1){
             // Stampa differenza di giorni, se presente
             currentDate = new Date(Date.parse(messages[i].dataCreazione));
-            let pastDate = new Date(Date.parse(messages[i - 1].dataCreazione))
+            let pastDate = new Date(Date.parse(messages[i - 1].dataCreazione));
             pastDay = pastDate.getDate();
             pastMonth = pastDate.getMonth();
             pastYear = pastDate.getFullYear();
@@ -186,8 +195,8 @@ function magia(){
         $("#footer-img-left").attr("src", "https://i.imgur.com/P60WYPZ.png");
         $("#footer-img-right").attr("src", "https://i.imgur.com/lDIspTu.png");
         sfondo = false;
-    };
-};
+    }
+}
 
 $("#output").on("click", ".delete", function(){
     socket.emit("cancella", $(this).parent().attr("id"));
@@ -215,10 +224,10 @@ $("#img").on("click", function(){
                         message: "<img style='width: auto; max-width: 80%; max-height: 300px; display: block;' src='" + imgPrompt + "'",
                         username: username.value
                     });
-                };
+                }
                 img.onerror = function(){
                     displayError("Immagine non valida!");
-                };
+                }
             } catch(e){
                 displayError("Si è verificato un errore: " + e);
             }

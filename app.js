@@ -14,11 +14,13 @@ const { JSDOM } = require('jsdom');
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
-// Routes
+// Models
 const User = require("./models/user");
 const Post = require("./models/post");
 const Comment = require("./models/comment");
 const Message = require("./models/message");
+
+// Routes
 const indexRoutes = require("./routes/index");
 const courseRoutes = require("./routes/course");
 const fileUploader = require("./routes/file-upload");
@@ -187,14 +189,17 @@ io.on("connection", function(socket){
         }
     });
     socket.on("chat", function(data){
-        let contenuto = DOMPurify.sanitize(marked(data.message), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+        if(data.message.length > 120){
+            socket.emit("error-msg", "Il messaggio era più lungo di 120 caratteri e non è stato inviato");
+            return false;
+        }
+        let contenuto = DOMPurify.sanitize(marked(data.message, {breaks: true}), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
         'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
         'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ]});
         if(contenuto.length <= 0){
             socket.emit("error-msg", "Il messaggio era troppo corto e non è stato inviato");
             return false;
         }
-        // DEBUG: !!! RISOLVI USERNAME DA PRENDERE DA USER PASSPORT AUTHENTICATION
         let messageObj = new Message({
             autore: socket.request.user._id,
             contenuto: contenuto,

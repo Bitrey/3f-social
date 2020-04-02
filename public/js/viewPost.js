@@ -33,6 +33,6 @@ $(".file-title").each(function(){
 });
 
 $('#font-slider').on('input', function(){
-    let fontSize = ($(this).val() / 2) + "rem";
-    $("#contenuto").animate({fontSize: fontSize}, 150);
+    let fontSize = ($(this).val() / 20) + "rem";
+    $("#contenuto").css("fontSize", fontSize);
 });

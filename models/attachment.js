@@ -17,13 +17,14 @@ var attachmentSchema = new mongoose.Schema({
 });
 
 attachmentSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    let asyncThis = this;
     try {
-        await this.populate("proprietario").execPopulate();
-        await this.populate("post").execPopulate();
-        await this.proprietario.allegati.pull({ _id: this._id });
-        await this.post.allegati.pull({ _id: this._id });
-        await this.proprietario.save();
-        await this.post.save();
+        await asyncThis.populate("proprietario").execPopulate();
+        await asyncThis.populate("post").execPopulate();
+        await asyncThis.proprietario.allegati.pull({ _id: asyncThis._id });
+        await asyncThis.post.allegati.pull({ _id: asyncThis._id });
+        await asyncThis.proprietario.save();
+        await asyncThis.post.save();
         next();
     } catch(err){
         next(err);

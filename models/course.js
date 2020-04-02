@@ -42,15 +42,16 @@ var courseSchema = new mongoose.Schema({
 });
 
 courseSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+    let asyncThis = this;
     try {
-        await this.populate("partecipanti").execPopulate();
-        await this.populate("contenuti").execPopulate();
-        await this.partecipanti.forEach(async function(partecipante){
-            await partecipante.corsi.pull({ _id: this._id });
+        await asyncThis.populate("partecipanti").execPopulate();
+        await asyncThis.populate("contenuti").execPopulate();
+        await asyncThis.partecipanti.forEach(async function(partecipante){
+            await partecipante.corsi.pull({ _id: asyncThis._id });
             await partecipante.save();
         });
-        await this.model("Post").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "post" } });
-        await this.model("Poll").deleteMany({ "_id": { $in: this.contenuti }, "tipoContenuto": { $eq: "poll" } });
+        await asyncThis.model("Post").deleteMany({ "_id": { $in: asyncThis.contenuti }, "tipoContenuto": { $eq: "post" } });
+        await asyncThis.model("Poll").deleteMany({ "_id": { $in: asyncThis.contenuti }, "tipoContenuto": { $eq: "poll" } });
         next();
     } catch(err){
         next(err);
