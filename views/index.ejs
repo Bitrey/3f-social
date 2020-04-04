@@ -26,8 +26,8 @@
                     <p class="main-subheader">Condivisione di materiale, chat testuale e video, verifiche e altro ancora sulla stessa piattaforma. Gratis.</p>
                 <!-- </div> -->
                 <!-- <div class="col-12 col-lg-6"> -->
-                    <button class="btn-big btn-white">Scopri di più</button>
-                    <button class="btn-big btn-white-outline">Iscriviti</button>
+                    <button onclick="window.location.hash='find-out'" class="btn-big btn-white">Scopri di più</button>
+                    <button onclick="window.location.href=`<%= utente ? '/courses' : '/login' %>`" class="btn-big btn-white-outline"><%= utente ? 'I miei corsi' : 'Iscriviti' %></button>
                 <!-- </div> -->
             </div>
         <div class="col-12 col-lg-6 text-center order-1 order-lg-2">

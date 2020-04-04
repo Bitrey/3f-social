@@ -126,95 +126,87 @@
         </div>
     </div>
 
-    <div class="row">
+    <hr>
 
-        <div class="col-12 col-lg-4">
-            <div id="chat">
-                <div id="chat-window">
-                    <div class="alert chat-alert alert-danger" style="display: none;" role="alert">
-                        Scrivi lo username e il messaggio!
+    <div id="chat" style="float: left;">
+        <div id="chat-window">
+            <div class="alert chat-alert alert-danger" style="display: none;" role="alert">
+                Scrivi lo username e il messaggio!
+            </div>
+            <div id="output">
+                <div id="inner-output" class="text-center">
+                    <p id="loading" class="text-center pt-3">Caricamento dei messaggi</p>
+                    <div id="loading-msg-spinner" class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Caricamento...</span>
                     </div>
-                    <div id="output">
-                        <div id="inner-output" class="text-center">
-                            <p id="loading" class="text-center pt-3">Caricamento dei messaggi</p>
-                            <div id="loading-msg-spinner" class="spinner-border text-primary" role="status">
-                                <span class="sr-only">Caricamento...</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="feedback"></div>
-                </div>
-                <div id="chat-buttons" style="display: none;">
-                    <% if(utente){ %>
-                    <input id="username" type="text" placeholder="Username" maxlength="16"
-                        value="<%= utente.username %>" required>
-                    <% } else { %>
-                    <input id="username" type="text" placeholder="Username" maxlength="16" required>
-                    <% } %>
-                    <textarea id="message" type="text" placeholder="Messaggio" maxlength="120" required></textarea>
-                    <button id="img"><i class="fas fa-image"></i> Immagine...</button>
-                    <button id="send"><i class="fas fa-paper-plane"></i> Invia</button>
                 </div>
             </div>
+            <div id="feedback"></div>
         </div>
+        <div id="chat-buttons" style="display: none;">
+            <% if(utente){ %>
+            <input id="username" type="text" placeholder="Username" maxlength="16" value="<%= utente.username %>"
+                required>
+            <% } else { %>
+            <input id="username" type="text" placeholder="Username" maxlength="16" required>
+            <% } %>
+            <textarea id="message" type="text" placeholder="Messaggio" maxlength="120" required></textarea>
+            <button id="img"><i class="fas fa-image"></i> Immagine...</button>
+            <button id="send"><i class="fas fa-paper-plane"></i> Invia</button>
+        </div>
+    </div>
 
-        <div class="col">
-            <div class="row justify-content-center">
-                <div class="col-10 mt-3 text-center">
-                    <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i>
-                        Nuovo
-                        post</a>
-                    <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-poll"></i> Nuovo
-                        sondaggio</a>
+    <div class="mt-3 text-center">
+        <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-align-left"></i>Nuovo
+            post</a>
+        <a class="btn btn-outline-info" href="/posts/<%= corso._id %>/new"><i class="fas fa-poll"></i> Nuovo
+            sondaggio</a>
+    </div>
+    <%# ordina per data %>
+    <% corso.contenuti.sort(function(a,b){ return new Date(b.dataCreazione) - new Date(a.dataCreazione); }); %>
+    <% corso.contenuti.forEach(function(contenuto){ %>
+    <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
+    <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
+    <div class="m-3 post card bg-light">
+        <% if(post.immagine.tipo != "none"){ %>
+        <a href="/posts/<%= post._id %>" class="no-link hr">
+            <img class="img-fit"
+                src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
+                alt="Immagine del post">
+        </a>
+        <% } %>
+        <div class="card-body post-text">
+            <h5 class="card-title"><%= post.titolo %></h5>
+            <div class="post-contenuto"><%- post.contenuto %></div>
+            <p class="post-author card-text">
+                <% if(post.autore){ %>
+                <div class="show-profile" data-profile="<%= post.autore._id %>">
+                    <img class="img-profilo"
+                        src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
+                    <span class="username-post-span back-link"><%= post.autore.username %></span>
                 </div>
-                <%# ordina per data %>
-                <% corso.contenuti.sort(function(a,b){ return new Date(b.dataCreazione) - new Date(a.dataCreazione); }); %>
-                <% corso.contenuti.forEach(function(contenuto){ %>
-                <%# Se contenuto.tipoContenuto == post, post=contenuto, renderizza post %>
-                <% if(contenuto.tipoContenuto == "post"){ let post = contenuto; %>
-                <div class="col-12 col-sm-5 post card bg-light m-3">
-                    <% if(post.immagine.tipo != "none"){ %>
-                    <a href="/posts/<%= post._id %>" class="no-link hr">
-                        <img class="img-fit"
-                            src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
-                            alt="Immagine del post">
-                    </a>
+                <% } else { %>
+                <span class="user-not-found-post-span text-muted"><i class="fas fa-user-slash"></i> Utente
+                    non
+                    trovato</span>
+                <% } %>
+            </p>
+            <div class="card-btns" style="display: inline;">
+                <p class="card-text">
+                    <small class="text-muted">
+                        <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
+                        <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
+                    </small>
+                    <% if(post.allegati.length > 0){ %>
+                        <br>
+                        <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
                     <% } %>
-                        <div class="card-body post-text">
-                                <h5 class="card-title"><%= post.titolo %></h5>
-                                <div class="post-contenuto"><%- post.contenuto %></div>
-                            <p class="post-author card-text">
-                                <% if(post.autore){ %>
-                                <div class="show-profile" data-profile="<%= post.autore._id %>">
-                                    <img class="img-profilo" src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
-                                    <span class="username-post-span back-link"><%= post.autore.username %></span>
-                                </div>
-                                <% } else { %>
-                                <span class="user-not-found-post-span text-muted"><i class="fas fa-user-slash"></i> Utente
-                                    non
-                                    trovato</span>
-                                <% } %>
-                            </p>
-                            <div class="card-btns">
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <%= ("0" + post.dataCreazione.getHours()).slice(-2) %>:<%= (post.dataCreazione.getMinutes()<10?'0':'') + post.dataCreazione.getMinutes() %>
-                                        <%= ("0" + post.dataCreazione.getDate()).slice(-2) %>/<%= ("0" + (post.dataCreazione.getMonth() + 1)).slice(-2) %>/<%= post.dataCreazione.getFullYear() %>
-                                    </small>
-                                </p>
-                                <div style="display: inline;">
-                                    <% if(post.allegati.length > 0){ %>
-                                    <small class="text-muted">Include <%= post.allegati.length %> allegati</small>
-                                    <% } %>
-                                    <a style="float: right;" class="btn btn-outline-info mb-2" href="/posts/<%= post._id %>">Visita</a>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-                <% }}) %>
+                    <a style="float: right;" class="btn btn-outline-info mb-2" href="/posts/<%= post._id %>">Visita</a>
+                </p>
             </div>
         </div>
     </div>
+    <% }}) %>
 </div>
 
 <script src="/js/jquery.truncate.js"></script>

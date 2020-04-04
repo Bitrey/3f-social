@@ -96,6 +96,7 @@ let pastDay, pastMonth, pastYear;
 
 // Listen for events
 socket.on("chat", function(data) {
+    $(".no-chat-message").remove();
     let scrollFlag = false;
         // Stampa differenza di giorni, se presente
     if(chat_window.scrollTop == chat_window.scrollHeight - chat_window.offsetHeight){
@@ -147,6 +148,10 @@ setInterval(function(){
 }, 500);
 
 socket.on("pastMsg", function(messages){
+    if(messages.length <= 0){
+        output.innerHTML = '<p class="text-center align-items-center mt-3 no-chat-message"><i class="fas fa-comment-slash"></i> Nessun messaggio in chat.</p></div>';
+        return false;
+    }
     let currentDate = new Date(Date.parse(messages[0].dataCreazione));
     $("#output").html(`<p class="date-separator">${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}</p>`);
     for(let i = 0; i < messages.length; i++){

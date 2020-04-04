@@ -223,6 +223,13 @@ io.on("connection", function(socket){
             });
         }
         messageObj.save(function(err){if(err){console.log(err);}});
+        messageObj.populate("autore").execPopulate().then(function(populated){
+            populated.autore.messaggi.push(messageObj._id);
+            populated.autore.save(function(err){if(err){console.log(err);}});
+        }, function(err){
+            console.log("Error while populating user in messageObj");
+            console.log(err);
+        });
         Message.find({}).sort('-dataCreazione').exec(function(err, foundMessages){
             if(err){
                 console.log(err);

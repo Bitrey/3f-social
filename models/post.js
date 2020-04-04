@@ -48,6 +48,7 @@ postSchema.pre('deleteOne', { document: true, query: false }, async function(nex
         await asyncThis.corso.save();
         await asyncThis.autore.save();
         await asyncThis.model("Comment").deleteMany({ "_id": { $in: asyncThis.commenti } });
+        // console.log(asyncThis.allegati);
         await asyncThis.model("Attachment").deleteMany({ "_id": { $in: asyncThis.allegati } });
         next();
     } catch(err){
