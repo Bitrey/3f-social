@@ -79,7 +79,8 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                         await attachment.save(function(err, saved){if(err){console.log(err);}});
                         // Aggiungi e salva nuovo allegato all'utente
                         await foundUser.allegati.push(attachment._id);
-                        await foundUser.save(function(err){if(err){console.log(err);}});
+                        // L'utente viene comunque salvato dopo
+                        // await foundUser.save(function(err){if(err){console.log(err);}});
                         // Aggiungi nuovo allegato al post
                         await newPost.allegati.push(attachment._id);
                     });
