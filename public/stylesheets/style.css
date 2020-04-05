@@ -111,7 +111,14 @@ body {
     border: 2px solid #CDD1D3;
 }
 
-/* Solo su PC */
+/* Schermo lg */
+@media only screen and (min-width: 992px){
+    .border-lg-screen {
+        border-right: 1px solid #ccc;
+    }
+}
+
+/* Solo su PC - schermo md */
 @media only screen and (min-width: 768px){
     
     .post {

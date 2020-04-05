@@ -99,7 +99,7 @@ socket.on("chat", function(data) {
     $(".no-chat-message").remove();
     let scrollFlag = false;
         // Stampa differenza di giorni, se presente
-    if(chat_window.scrollTop == chat_window.scrollHeight - chat_window.offsetHeight){
+    if(Math.round(chat_window.scrollTop) == Math.round(chat_window.scrollHeight - chat_window.offsetHeight)){
         scrollFlag = true;
     }
     let currentDate = new Date(Date.parse(data.dataCreazione));
@@ -107,11 +107,6 @@ socket.on("chat", function(data) {
         let month = currentDate.getMonth() + 1;
         let year = currentDate.getFullYear();
         output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
-    }
-    if(!pastDay || !pastMonth || !pastYear){
-        pastDay = currentDate.getDate();
-        pastMonth = currentDate.getMonth();
-        pastYear = currentDate.getFullYear();
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
