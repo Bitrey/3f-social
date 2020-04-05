@@ -11,6 +11,7 @@ var commentiSchema = new mongoose.Schema({
     },
     dataCreazione: { type: Date, default: Date.now },
     contenuto: { type: String, default: "Errore nel salvataggio del contenuto" },
+    likeRatio: { type: Number, default: 0 },
     like: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
