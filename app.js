@@ -23,9 +23,10 @@ const Message = require("./models/message");
 // Routes
 const indexRoutes = require("./routes/index");
 const courseRoutes = require("./routes/course");
+const postRoutes = require("./routes/post");
+const commentRoutes = require("./routes/comment");
 const fileUploader = require("./routes/file-upload");
 const fileDownloader = require("./routes/file-download");
-const postRoutes = require("./routes/post");
 const imgUploader = require("./routes/img-upload");
 
 // Middleware
@@ -127,6 +128,7 @@ app.use('/courses', courseRoutes);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/posts', postRoutes);
+app.use('/comments', commentRoutes);
 
 app.get("/info", function(req, res){
     res.render("info");

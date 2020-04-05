@@ -103,10 +103,15 @@ socket.on("chat", function(data) {
         scrollFlag = true;
     }
     let currentDate = new Date(Date.parse(data.dataCreazione));
-    if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
+    if(!pastDay || currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
         let month = currentDate.getMonth() + 1;
         let year = currentDate.getFullYear();
         output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
+    }
+    if(!pastDay || !pastMonth || !pastYear){
+        pastDay = currentDate.getDate();
+        pastMonth = currentDate.getMonth();
+        pastYear = currentDate.getFullYear();
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){

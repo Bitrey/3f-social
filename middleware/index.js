@@ -9,6 +9,7 @@ var Message = require("../models/message");
 let middlewareObj = {};
 
 middlewareObj.isPostOwner = function(req, res, next){
+    if(!req.params.id && req.params.post) req.params.id = req.params.post;
     if(req.isAuthenticated()){
         Post.findById(req.params.id, function(err, foundPost){
             if(err){
