@@ -143,6 +143,10 @@ app.get("/login", function(req, res){
     res.redirect("/auth/login");
 });
 
+app.get("/thankyou", function(req, res){
+    res.render("thankyou");
+});
+
 app.get("*", function(req, res){
     res.status(404).send("Mannaggia alla Peppina, dove vuoi andare?");
 });
