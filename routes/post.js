@@ -121,13 +121,16 @@ function dontShowPost(req, res){
 }
 
 // SHOW POST
-router.get("/:post", function(req, res){
+router.get("/:post", async function(req, res){
     Post.findById(req.params.post).
     populate("corso").
-    populate("commenti").
+    populate({path: "commenti", options: { sort: { 'dataCreazione': -1 } }}).
     populate("autore").
     populate("allegati").
-    exec(function(err, post){
+    exec(async function(err, post){
+        for(let i = 0; i < post.commenti.length; i++){
+            await post.commenti[i].populate("autore").execPopulate();
+        }
         if(err){
             req.flash("error", err.message);
             res.status(500).redirect("/");

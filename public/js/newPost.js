@@ -32,6 +32,13 @@ $("#new-post-form").on("submit", function(){
     $("#hiddenImgField").val(JSON.stringify(img));
     $("#quill-input").val(quill.root.innerHTML);
     $("#quill-input-JSON").val(JSON.stringify(quill.getContents()));
+    if($(".ql-editor").text().length < 30 || $(".ql-editor").text().length > 1500){
+        alert("Il contenuto deve avere tra 30 e 1500 caratteri");
+        return false;
+    } else if($("#titolo").val().length < 5 || $("#titolo").val().length > 30){
+        alert("Il titolo deve avere tra 5 e 30 caratteri");
+        return false;
+    }
 });
 
 $("#upload-file").on("click", function(){

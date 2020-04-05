@@ -436,12 +436,7 @@ p:hover .delete {
     text-decoration: none;
 }
 
-.img-profilo {
-    max-width: 2rem;
-    border-radius: 0.5rem;
-}
-
-.img-corso {
+.img-profilo, .img-corso {
     max-width: 2rem;
     border-radius: 0.5rem;
 }
@@ -476,4 +471,12 @@ p:hover .delete {
 #contenuto {
     word-wrap: break-word;
     white-space: pre-wrap;
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.comment p {
+    margin-bottom: 0;
 }

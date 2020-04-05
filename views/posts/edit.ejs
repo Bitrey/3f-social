@@ -14,7 +14,15 @@
             </div>
             <div class="modal-body">
                 <form id="uploadForm" action="/fileupload" method="post" enctype="multipart/form-data">
-                    <input type="file" aria-describedby="max-size-label" id="attachment" name="attachment" style="border: 1px solid #DEE2E6; box-shadow: 0 0 5px #DEE2E6;"><br>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="file-input-label">File scelto</span>
+                        </div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="attachment" name="attachment" aria-describedby="file-input-label">
+                            <label class="custom-file-label" for="attachment">Clicca per scegliere il file</label>
+                        </div>
+                    </div>
                     <div style="display: inline-block;">
                         <button type="submit" id="upload-file" class="btn btn-dark"><i class="fas fa-upload"></i> Carica</button>
                         <small id="max-size-label">Premi per allegare un file, dimensione massima: 10MB</small>
