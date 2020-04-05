@@ -1,11 +1,11 @@
 $(".download").on("click", function(){
     try {
-        $('.downloadForm').submit(function(){
+        $(".downloadForm").submit(function(){
 
                 $(this).ajaxSubmit({
 
                     error: function(xhr){
-                        status('Errore: ' + xhr.status);
+                        status("Errore: " + xhr.status);
                         alert("Errore");
                     },
 
@@ -27,12 +27,12 @@ $(".download").on("click", function(){
 $(".file-title").each(function(){
     if($(this).text().length > 16){
         var text = $(this).text();
-        text = text.substr(0, 16) + '...';
+        text = text.substr(0, 16) + "...";
         $(this).text(text);
     }
 });
 
-$('#font-slider').on('input', function(){
+$("#font-slider").on("input", function(){
     let fontSize = ($(this).val() / 20) + "rem";
     $("#contenuto").css("fontSize", fontSize);
 });
@@ -86,4 +86,87 @@ $(".like-comment").on("click", function(){
 
 $(".dislike-comment").on("click", function(){
     castVote(this, "dislike");
+});
+
+$("input[type=radio][name=comment-order]").change(function(){
+    window.location.href = window.location.href.split("?")[0] + "?invertComments=" + !!$("#comment-inverse").is(":checked") + "&sortComments=" + $(this).val() + "&scrollTop=" + $(document).scrollTop();
+});
+
+$("#comment-inverse").change(function(){
+    window.location.href = window.location.href.split("?")[0] + "?invertComments=" + !!this.checked + "&sortComments=" + $("input[name=comment-order]:checked").val() + "&scrollTop=" + $(document).scrollTop();
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const scrollTop = urlParams.get("scrollTop");
+if(scrollTop){
+    $(document).scrollTop(scrollTop);
+}
+
+$(".edit-comment-btn").on("click", function(){
+    let comment = $(this).parent().parent().children(".comment");
+    let textarea = $(this).parent().parent().children(".edit-comment-div");
+    textarea.children("textarea").val($.trim(comment.text()));
+    textarea.show();
+    $(this).parent().hide();
+    comment.hide();
+});
+
+$(".edit-comment-cancel").on("click", function(){
+    let comment = $(this).parent().parent().parent().children(".comment");
+    let textarea = $(this).parent().parent().parent().children(".edit-comment-div");
+    textarea.hide();
+    $(this).parent().parent().parent().children(".comment-settings").show();
+    comment.show();
+});
+
+$(".edit-comment-confirm").on("click", function(){
+    let asyncThis = this;
+    let comment = $(this).parent().parent().parent().children(".comment");
+    let textarea = $(this).parent().parent().parent().children(".edit-comment-div");
+    $.ajax({
+        method: "PUT",
+        url: `/comments/${$(this).data("comment")}`,
+        data: { contenuto: $.trim(textarea.children("textarea").val()) },
+        success: function(data, textStatus, xhr){
+            let response = JSON.parse(xhr.responseText);
+            let date = new Date(response.data);
+            comment.html(response.contenuto);
+            comment.parent().children("small").text(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`);
+            textarea.hide();
+            $(asyncThis).parent().parent().parent().children(".comment-settings").show();
+            comment.show();
+        },
+        error: function(xhr, textStatus, errorThrown){
+            alert(`Errore ${xhr.status} ${errorThrown}: ${xhr.responseText}`);
+        }
+    });
+});
+
+let commentToDelete;
+$(".delete-comment-btn").on("click", function(){
+    commentToDelete = $(this).data("comment");
+});
+
+$("#delete-comment").on("click", function(){
+    let asyncComment = commentToDelete;
+    let deleteText = $(this).text();
+    let asyncThis = this;
+    $(this).html(`<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>`);
+    $.ajax({
+        method: "DELETE",
+        url: `/comments/${asyncComment}`,
+        success: function(data, textStatus, xhr){
+            $(`#${asyncComment}`).parent().parent().remove();
+            if($.trim($(".comment-list").html()).length <= 0){
+                $(".comment-sorting").hide();
+            }
+        },
+        error: function(xhr, textStatus, errorThrown){
+            alert(`Errore ${xhr.status} ${errorThrown}: ${xhr.responseText}`);
+        },
+        complete: function(){
+            $(asyncThis).text(deleteText);
+            $("#modal-delete-comment").modal("hide");
+        }
+    });
 });

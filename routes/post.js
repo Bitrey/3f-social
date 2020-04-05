@@ -108,7 +108,7 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
 
 function showPost(req, res, post){
     if(post){
-        res.render("posts/view", { post: post, corso: post.corso });
+        res.render("posts/view", { post: post, corso: post.corso, query: req.query });
     } else {
         req.flash("error", "Post non trovato");
         res.status(404).redirect("back");
@@ -122,9 +122,19 @@ function dontShowPost(req, res){
 
 // SHOW POST
 router.get("/:post", async function(req, res){
+    let sortBy = req.query.sortComments;
+    if(sortBy == "likes"){
+        sortBy = "likeRatio";
+    } else {
+        sortBy = "dataCreazione";
+    }
+    let invert = -1;
+    if(req.query.invertComments == "true"){
+        invert = 1;
+    }
     Post.findById(req.params.post).
     populate("corso").
-    populate({path: "commenti", options: { sort: { 'dataCreazione': -1 } }}).
+    populate({path: "commenti", options: { sort: { [`${sortBy}`]: [invert] } }}).
     populate("autore").
     populate("allegati").
     exec(async function(err, post){

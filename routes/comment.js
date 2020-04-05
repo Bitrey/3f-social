@@ -106,6 +106,7 @@ function commentVote(thing, req, res){
         if(oppositeVote){
             foundComment[antithing].pull(req.user._id);
         }
+        foundComment.likeRatio = foundComment.like.length - foundComment.dislike.length;
         foundComment.save(function(err){
             if(err){
                 console.log(err);
@@ -126,6 +127,60 @@ router.post("/:id/like", middleware.isLoggedIn, function(req, res){
 
 router.post("/:id/dislike", middleware.isLoggedIn, function(req, res){
     commentVote("dislike", req, res);
+});
+
+router.put("/:id", middleware.isLoggedIn, function(req, res){
+    Comment.findById(req.params.id).
+    exec(function(err, foundComment){
+        if(err){
+            console.log(err);
+            res.sendStatus(500);
+            return false;
+        } else if(!foundComment){
+            res.sendStatus(404);
+            return false;
+        } else if(!(foundComment.autore.equals(req.user._id))){
+            res.sendStatus(401);
+            return false;
+        }
+        foundComment.contenuto = DOMPurify.sanitize(marked(req.body.contenuto, {breaks: true}), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+        'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ]});
+        foundComment.dataCreazione = Date.now();
+        foundComment.save(function(err){
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+                return false;
+            }
+            res.json({contenuto: foundComment.contenuto, data: foundComment.dataCreazione});
+        })
+    });
+});
+
+router.delete("/:id", middleware.isLoggedIn, function(req, res){
+    Comment.findById(req.params.id).
+    exec(function(err, foundComment){
+        if(err){
+            console.log(err);
+            res.sendStatus(500);
+            return false;
+        } else if(!foundComment){
+            res.sendStatus(404);
+            return false;
+        } else if(!(foundComment.autore.equals(req.user._id))){
+            res.sendStatus(401);
+            return false;
+        }
+        foundComment.deleteOne(function(err){
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+                return false;
+            }
+            res.sendStatus(200);
+        });
+    });
 });
 
 module.exports = router;
