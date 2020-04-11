@@ -163,6 +163,7 @@ var quill = new Quill('#editor', {
 $('.ql-formula').attr("data-toggle", "tooltip").attr("data-placement", "top").prop("title", "Usa un LaTeX editor per un risultato migliore").tooltip();
 
 $(document).on("click", ".delete-attachment", function(){
+    let foundFile = false;
     attachments.forEach(function(file, i){
         if(file.name == $(this).data("file")){
             foundFile = true;
