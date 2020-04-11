@@ -4,7 +4,7 @@ const path = require("path");
 
 var storage = multer.diskStorage({
     destination: function(req, file, callback){
-        callback(null, path.join(__dirname + "uploads"));
+        callback(null, './uploads');
     },
     filename: function(req, file, callback){
         callback(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
@@ -17,6 +17,7 @@ router.post('/', function(req, res){
     try {
         upload(req, res, function(err){
             if(err){
+                console.error(err);
                 return res.status(500).json({msg: err.toString()});
             }
             if(!req.file){
