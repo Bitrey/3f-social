@@ -140,29 +140,34 @@ app.get("/thankyou", function(req, res){
 
 // Delete unused attachments
 let fileDeleteSchedule = schedule.scheduleJob("00 * * * *", function(){
-    const directoryPath = path.join(__dirname, 'uploads');
-    fs.readdir(directoryPath, function(err, files){
-        if(err){
-            return console.error('Unable to scan directory: ' + err);
-        }
-    
-        Attachment.find({}, function(err, foundAttachments){
+    try {
+        const directoryPath = path.join(__dirname, 'uploads');
+        fs.readdir(directoryPath, function(err, files){
             if(err){
-                return console.error(err);
+                return console.error('Unable to scan directory: ' + err);
             }
-            let attachments = foundAttachments.map(x => x.indirizzo);
-    
-            files.forEach(function(file){
-                if(attachments.indexOf(file) < 0){
-                    fs.unlink(path.join(directoryPath, file), function(err){
-                        if(err){
-                            return console.error(err);
-                        };
-                    });
+        
+            Attachment.find({}, function(err, foundAttachments){
+                if(err){
+                    return console.error(err);
                 }
+                let attachments = foundAttachments.map(x => x.indirizzo);
+        
+                files.forEach(function(file){
+                    if(attachments.indexOf(file) < 0){
+                        fs.unlink(path.join(directoryPath, file), function(err){
+                            if(err){
+                                return console.error(err);
+                            };
+                        });
+                    }
+                });
             });
         });
-    });
+    } catch(err){
+        console.log("Impossibile pulire la cartella uploads/");
+        console.error(err);
+    }
 });
 
 
