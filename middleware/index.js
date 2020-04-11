@@ -124,7 +124,7 @@ middlewareObj.userInCourse = function(req, res, next){
                 req.flash("error", `L'ID corso inserito (${req.params.id}) non è valido`);
                 res.status(400).redirect("back");
             } else {
-                console.log(err);
+                console.error(err);
                 req.flash("error", "Errore nel caricamento del corso");
                 res.status(500).redirect("back");
             }
@@ -134,7 +134,7 @@ middlewareObj.userInCourse = function(req, res, next){
             User.findById(req.user.id).
             exec(function(err, foundUser){
                 if(err){
-                    console.log(err);
+                    console.error(err);
                     req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
                     res.status(500).redirect("back");
                     return false;

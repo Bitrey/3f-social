@@ -16,10 +16,10 @@ const upload = multer({ storage: storage, limits: {fileSize: 10000000} }).single
 router.post('/', function(req, res){
     upload(req, res, function(err){
         if(err){
-            return res.json({msg: err.toString()});
+            return res.status(500).json({msg: err.toString()});
         }
-        if(req.file == undefined){
-            return res.json({msg: "Nessun file selezionato"});
+        if(!req.file){
+            return res.status(400).json({msg: "Nessun file selezionato"});
         }
         res.json({msg: "Immagine caricata!", name: String(req.file.filename), originalName: req.file.originalname, size: Number(req.file.size), ext: String(path.extname(req.file.originalname))});
     });

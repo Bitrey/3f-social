@@ -1,12 +1,22 @@
 var mongoose = require("mongoose");
 
 var messaggiSchema = new mongoose.Schema({
-    corso: String,
-    autore: {
+    mittente: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    contenuto: { type: String, default: "Errore nel salvataggio del messaggio dio ortaggio" },
+    destinatario: {
+        adUtente: { type: Boolean, default: false },
+        utente: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        corso: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course"
+        },
+    },
+    contenuto: { type: String, default: "Errore nel salvataggio del messaggio" },
     dataCreazione: { type: Date, default: Date.now },
 });
 

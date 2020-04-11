@@ -1,12 +1,12 @@
 let post = JSON.parse($("#post-text").text());
 $("#post-text").remove();
 
-var img = {
+let img = {
     tipo: post.immagine.tipo,
     indirizzo: post.immagine.indirizzo
 };
 
-var quill = new Quill('#editor', {
+let quill = new Quill('#editor', {
     modules: {
         syntax: true,
         toolbar: [
@@ -33,7 +33,7 @@ $(document).ready(function(){
 
 function imageExists(url){
     try {
-        var imgTry = new Image();
+        let imgTry = new Image();
         imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $(".new-post-img").show(); $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide")};
         imgTry.onerror = function(){ alert("Immagine non valida!"); };
         imgTry.src = url;
@@ -43,7 +43,7 @@ function imageExists(url){
 }
 
 $("#url-post-img").on("click", function(){
-    var link = prompt("Inserisci l'URL dell'immagine");
+    let link = prompt("Inserisci l'URL dell'immagine");
     if(link){
         imageExists(link);
     }
@@ -77,7 +77,7 @@ $("#edit-post-form").on("submit", function(){
     }
 });
 
-$("#upload-file").on("click", function(){
+$("#upload-file").on("click", function(e){
     try {
         if(!$("#attachment")[0].files[0]){
             $("#status").empty().text("Nessun file selezionato");
@@ -86,13 +86,12 @@ $("#upload-file").on("click", function(){
             $("#status").empty().text("Il file supera il limite di 10MB");
             return false;
         } else {
-            $('#uploadForm').submit(function(){
+            $('#uploadForm').one("submit", function(e){
                 $("#status").empty().text("Caricamento file...");
                 $(this).ajaxSubmit({
                     error: function(xhr){
                         $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                     },
-    
                     success: function(response){
                         $("#status").empty().text(response.msg);
                         if(response.msg == "File caricato!"){
@@ -105,12 +104,15 @@ $("#upload-file").on("click", function(){
                             $("#allegato-modal").modal('hide');
                             $("#show-attachment-div").show();
                             $("#attachments-div").append(`<div class="card m-2"> <div class="card-body"> <h5 class="card-title file-title" data-file="${response.name}/${response.originalName}">${response.originalName}</h5> <h6 class="card-subtitle mb-2 text-muted">Dimensione: ${formatBytes(response.size)}</h6> <h6 class="card-subtitle mb-2 text-muted">Estensione: ${response.ext}</h6> <button type="button" class="btn btn-light download-btn"><i class="fas fa-file-download"></i> Scarica</button></div></div>`);
+                            truncateFileNames();
                         }
                     }
                 });
+                e.stopPropagation();
                 // Annulla rinfrescamento pagina
                 return false;
             });
+            e.stopPropagation();
         }
     } catch(e){
         $("#status").empty().text("Errore: " + e.toString());
@@ -119,7 +121,7 @@ $("#upload-file").on("click", function(){
 
 function formatBytes(a,b){
     if(0==a)return"0 Bytes";
-    var c=1024,
+    let c=1024,
     d=b||2,
     e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],
     f=Math.floor(Math.log(a)/Math.log(c));
@@ -140,7 +142,7 @@ $("#upload-img").on("click", function(){
             $("#status-img").empty().text("L'immagine supera il limite di 10MB");
             return false;
         } else {
-            $('#imgForm').submit(function(){
+            $('#imgForm').one("submit", function(){
                 $("#status-img").empty().text("Caricamento file...");
                 $(this).ajaxSubmit({
 
@@ -177,7 +179,7 @@ $("#rimuovi-immagine").on("click", function(){
 
 $(".download-btn").on("click", function(){
     try {
-        $('.downloadForm').submit(function(){
+        $('.downloadForm').one("submit", function(){
                 $(this).ajaxSubmit({
                     error: function(xhr){
                         status('Errore: ' + xhr.status);
@@ -198,3 +200,55 @@ $(".download-btn").on("click", function(){
 });
 // data-toggle="tooltip" data-placement="top" title="Tooltip on top"
 $('.ql-formula').attr("data-toggle", "tooltip").attr("data-placement", "top").prop("title", "Usa un LaTeX editor per un risultato migliore").tooltip();
+
+function truncateFileNames(){
+    $(".file-title").each(function(){
+        if($(this).text().length > 16){
+            var text = $(this).text();
+            text = text.substr(0, 16) + "...";
+            $(this).text(text);
+        }
+    });
+}
+
+let fileToDelete;
+
+$(".delete-attachment").on("click", function(){
+    fileToDelete = $(this).data("file");
+    $("#deleteFileModal").modal("show");
+});
+
+$("#confirm-delete-file").on("click", function(){
+    let asyncThis = $(this);
+    let oldHTML = asyncThis.html();
+    asyncThis.html(`<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Eliminazione...</span></div>`);
+    $.ajax({
+        url: "/filedelete",
+        method: "DELETE",
+        data: {
+            post: post,
+            attachmentId: fileToDelete
+        },
+        success: function(){
+            $(`#${fileToDelete}`).remove();
+            let foundFile = false;
+            attachments.forEach(function(file, i){
+                if(file._id == fileToDelete){
+                    foundFile = true;
+                    attachments.splice(i, 1);
+                    return false;
+                }
+                if(!foundFile){
+                    alert("Errore: impossibile trovare il file");
+                }
+            });
+        },
+        error: function(xhr, textStatus, errorThrown){
+            alert(`Errore ${xhr.status} ${errorThrown}: ${xhr.responseText}`);
+        },
+        complete: function(){
+            asyncThis.html(oldHTML);
+            $("#deleteFileModal").modal("hide");
+        }
+    });
+});

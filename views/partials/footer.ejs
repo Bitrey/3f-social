@@ -43,7 +43,7 @@
         });
         
 
-        $(".show-profile").on("click", function(){
+        $('body').on('click', ".show-profile", function(e){
         $("#profileModal").modal("show");
             $.ajax({
                 type: "GET",

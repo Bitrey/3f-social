@@ -50,26 +50,24 @@ $("#upload-file").on("click", function(){
             $("#status").empty().text("Il file supera il limite di 10MB");
             return false;
         } else {
-            $('#uploadForm').submit(function(){
+            $('#uploadForm').one("submit", function(){
                 $("#status").empty().text("Caricamento file...");
                 $(this).ajaxSubmit({
                     error: function(xhr){
                         $("#status").empty().text(`Errore! Stato: ${xhr.status}, testo: ${xhr.statusText}`);
                     },
-
                     success: function(response){
                         $("#status").empty().text(response.msg);
-                        if(response.msg == "File caricato!"){
-                            attachments.push({
-                                name: response.name,
-                                originalName: response.originalName,
-                                size: response.size,
-                                ext: response.ext
-                            });
-                            $("#allegato-modal").modal('hide');
-                            $("#show-attachment-div").show();
-                            $("#attachments-div").append(`<div class="card m-2"> <div class="card-body"> <h5 class="card-title file-title" data-file="${response.name}/${response.originalName}">${response.originalName}</h5> <h6 class="card-subtitle mb-2 text-muted">Dimensione: ${formatBytes(response.size)}</h6> <h6 class="card-subtitle mb-2 text-muted">Estensione: ${response.ext}</h6> <button type="button" class="btn btn-light download-btn"><i class="fas fa-file-download"></i> Scarica</button></div></div>`);
-                        }
+                        attachments.push({
+                            name: response.name,
+                            originalName: response.originalName,
+                            size: response.size,
+                            ext: response.ext
+                        });
+                        $("#allegato-modal").modal('hide');
+                        $("#show-attachment-div").show();
+                        $("#attachments-div").append(`<div class="card m-2"> <div class="card-body"> <h5 class="card-title file-title" data-file="${response.name}/${response.originalName}">${response.originalName}</h5> <h6 class="card-subtitle mb-2 text-muted">Dimensione: ${formatBytes(response.size)}</h6> <h6 class="card-subtitle mb-2 text-muted">Estensione: ${response.ext}</h6> <button type="button" data-file="${response.name}" class="btn btn-danger delete-attachment"><i class="fas fa-trash-alt"></i> Elimina</button></div></div>`);
+                        truncateFileNames();
                     }
                 });
                 // Annulla rinfrescamento pagina
@@ -80,6 +78,16 @@ $("#upload-file").on("click", function(){
         $("#status").empty().text("Errore: " + e.toString());
     }
 });
+
+function truncateFileNames(){
+    $(".file-title").each(function(){
+        if($(this).text().length > 16){
+            var text = $(this).text();
+            text = text.substr(0, 16) + "...";
+            $(this).text(text);
+        }
+    });
+}
 
 function formatBytes(a,b){
     if(0==a)return"0 Bytes";
@@ -104,7 +112,7 @@ $("#upload-img").on("click", function(){
             $("#status-img").empty().text("L'immagine supera il limite di 10MB");
             return false;
         } else {
-            $('#imgForm').submit(function(){
+            $('#imgForm').one("submit", function(){
                 $("#status-img").empty().text("Caricamento file...");
                 $(this).ajaxSubmit({
 
@@ -153,3 +161,17 @@ var quill = new Quill('#editor', {
 });
 // data-toggle="tooltip" data-placement="top" title="Tooltip on top"
 $('.ql-formula').attr("data-toggle", "tooltip").attr("data-placement", "top").prop("title", "Usa un LaTeX editor per un risultato migliore").tooltip();
+
+$(document).on("click", ".delete-attachment", function(){
+    attachments.forEach(function(file, i){
+        if(file.name == $(this).data("file")){
+            foundFile = true;
+            attachments.splice(i, 1);
+            $(this).parent().parent().remove();
+            return false;
+        }
+        if(!foundFile){
+            alert("Errore: impossibile trovare il file");
+        }
+    });
+});

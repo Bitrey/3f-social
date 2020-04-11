@@ -25,7 +25,7 @@ router.get("/:id", function(req, res){
         sort( {"corsi.dataCreazione": '-1'} ).
         exec(function(err, foundUser){
             if(err){
-                console.log(err);
+                console.error(err);
                 res.status(500).send("Errore nella ricerca dell'utente");
                 return false;
             }
@@ -40,7 +40,7 @@ router.get("/:id", function(req, res){
     console.log("Ricevuta richiesta normale!");
     User.findById(req.params.id, function(err, foundUser){
         if(err){
-            console.log(err);
+            console.error(err);
             req.flash("error", "Errore nella ricerca dell'utente.");
             res.status(500).redirect("back");
             return false;
@@ -57,7 +57,7 @@ router.get("/:id", function(req, res){
 router.put("/", middleware.isLoggedIn, function(req, res){
     User.findByIdAndUpdate(req.user.id, req.body.profile, function(err, updatedUser){
         if(err){
-            console.log(err);
+            console.error(err);
             req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
             res.status(500).redirect("back");
         } else {
@@ -66,7 +66,7 @@ router.put("/", middleware.isLoggedIn, function(req, res){
                 updatedUser.immagine = JSON.parse(req.body.profile.img);
                 updatedUser.save(function(err, saved){
                     if(err){
-                        console.log(err);
+                        console.error(err);
                         req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                         res.status(500).redirect("back");
                     } else {
@@ -75,7 +75,7 @@ router.put("/", middleware.isLoggedIn, function(req, res){
                     }
                 });
             } catch(err){
-                console.log(err);
+                console.error(err);
                 req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                 res.status(500).redirect("back");
             }

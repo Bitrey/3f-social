@@ -21,9 +21,16 @@ var postSchema = new mongoose.Schema({
             ref: "Comment"
         }
     ],
-    like: { type: Number, default: 0 },
+    likeRatio: { type: Number, default: 0 },
+    like: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    dislike: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     dataCreazione: { type: Date, default: Date.now },
-    dislike: { type: Number, default: 0 },
     immagine: {
         tipo: { type: String, default: "none" },
         indirizzo: { type: String, default: "/uploads/default.jpg" }

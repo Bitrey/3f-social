@@ -17,7 +17,6 @@ var attachmentSchema = new mongoose.Schema({
 });
 
 attachmentSchema.pre('deleteOne', { document: true, query: false }, async function(next){
-    console.log("ATTACHMENT DELETEONE MIDDLEWARE CALLED");
     let asyncThis = this;
     try {
         await asyncThis.populate("proprietario").execPopulate();

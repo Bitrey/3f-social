@@ -15,7 +15,7 @@ router.post("/:post", middleware.isLoggedIn, function(req, res){
     Post.findById(req.params.post).
     exec(function(err, foundPost){
         if(err){
-            console.log(err);
+            console.error(err);
             res.sendStatus(500);
             return false;
         } else if(!foundPost){
@@ -28,7 +28,7 @@ router.post("/:post", middleware.isLoggedIn, function(req, res){
         Course.findById(foundPost.corso).
         exec(function(err, foundCourse){
             if(err){
-                console.log(err);
+                console.error(err);
                 res.sendStatus(500);
                 return false;
             } else if(!foundCourse){
@@ -48,23 +48,24 @@ router.post("/:post", middleware.isLoggedIn, function(req, res){
             }
             let comment = new Comment({
                 autore: req.user._id,
+                post: foundPost._id,
                 contenuto: DOMPurify.sanitize(marked(req.body.contenuto, {breaks: true}), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
                 'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
                 'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ]})
             });
             comment.save(function(err){
                 if(err){
-                    console.log(err);
+                    console.error(err);
                     res.sendStatus(500);
                     return false;
                 }
                 foundPost.commenti.push(comment._id);
-                foundPost.save(function(err){if(err){console.log(err);}});
+                foundPost.save(function(err){if(err){console.error(err);}});
                 User.findById(req.user._id).
                 exec(function(err, foundUser){
-                    if(err){console.log(err); return false;}
+                    if(err){console.error(err); return false;}
                     foundUser.commenti.push(comment._id);
-                    foundUser.save(function(err){if(err){console.log(err);}});
+                    foundUser.save(function(err){if(err){console.error(err);}});
                 });
                 res.sendStatus(201);
             });
@@ -76,7 +77,7 @@ function commentVote(thing, req, res){
     Comment.findById(req.params.id).
     exec(function(err, foundComment){
         if(err){
-            console.log(err);
+            console.error(err);
             res.sendStatus(500);
             return false;
         } else if(!foundComment){
@@ -109,7 +110,7 @@ function commentVote(thing, req, res){
         foundComment.likeRatio = foundComment.like.length - foundComment.dislike.length;
         foundComment.save(function(err){
             if(err){
-                console.log(err);
+                console.error(err);
                 res.sendStatus(500);
                 return false;
             }
@@ -133,7 +134,7 @@ router.put("/:id", middleware.isLoggedIn, function(req, res){
     Comment.findById(req.params.id).
     exec(function(err, foundComment){
         if(err){
-            console.log(err);
+            console.error(err);
             res.sendStatus(500);
             return false;
         } else if(!foundComment){
@@ -149,7 +150,7 @@ router.put("/:id", middleware.isLoggedIn, function(req, res){
         foundComment.dataCreazione = Date.now();
         foundComment.save(function(err){
             if(err){
-                console.log(err);
+                console.error(err);
                 res.sendStatus(500);
                 return false;
             }
@@ -162,7 +163,7 @@ router.delete("/:id", middleware.isLoggedIn, function(req, res){
     Comment.findById(req.params.id).
     exec(function(err, foundComment){
         if(err){
-            console.log(err);
+            console.error(err);
             res.sendStatus(500);
             return false;
         } else if(!foundComment){
@@ -174,7 +175,7 @@ router.delete("/:id", middleware.isLoggedIn, function(req, res){
         }
         foundComment.deleteOne(function(err){
             if(err){
-                console.log(err);
+                console.error(err);
                 res.sendStatus(500);
                 return false;
             }

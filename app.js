@@ -7,26 +7,21 @@ const bodyParser = require("body-parser");
 const methodOverride = require("method-override");
 const flash = require("connect-flash");
 const i18n = require("i18n-express");
-var socket = require("socket.io");
-const marked = require('marked');
-const createDOMPurify = require('dompurify');
-const { JSDOM } = require('jsdom');
-const window = new JSDOM('').window;
-const DOMPurify = createDOMPurify(window);
+const schedule = require('node-schedule');
+const fs = require('fs');
+const path = require('path');
+let socket = require("socket.io");
 
 // Models
-const User = require("./models/user");
-const Post = require("./models/post");
-const Comment = require("./models/comment");
-const Message = require("./models/message");
+const Attachment = require("./models/attachment");
 
 // Routes
 const indexRoutes = require("./routes/index");
-const courseRoutes = require("./routes/course");
 const postRoutes = require("./routes/post");
 const commentRoutes = require("./routes/comment");
 const fileUploader = require("./routes/file-upload");
 const fileDownloader = require("./routes/file-download");
+const fileDelete = require("./routes/file-delete");
 const imgUploader = require("./routes/img-upload");
 
 // Middleware
@@ -121,10 +116,10 @@ app.use(express.static(__dirname + "/public"));
 // Upload and download attachments
 app.use('/fileupload', fileUploader);
 app.use('/filedownload', fileDownloader);
+app.use('/filedelete', fileDelete);
 app.use('/imgupload', imgUploader);
 // ROUTES SET UP
 app.use('/', indexRoutes);
-app.use('/courses', courseRoutes);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/posts', postRoutes);
@@ -147,16 +142,39 @@ app.get("/thankyou", function(req, res){
     res.render("thankyou");
 });
 
-app.get("*", function(req, res){
-    res.status(404).send("Mannaggia alla Peppina, dove vuoi andare?");
+// Delete unused attachments
+let fileDeleteSchedule = schedule.scheduleJob("00 * * * *", function(){
+    const directoryPath = path.join(__dirname, 'uploads');
+    fs.readdir(directoryPath, function(err, files){
+        if(err){
+            return console.error('Unable to scan directory: ' + err);
+        }
+    
+        Attachment.find({}, function(err, foundAttachments){
+            if(err){
+                return console.error(err);
+            }
+            let attachments = foundAttachments.map(x => x.indirizzo);
+    
+            files.forEach(function(file){
+                if(attachments.indexOf(file) < 0){
+                    fs.unlink(path.join(directoryPath, file), function(err){
+                        if(err){
+                            return console.error(err);
+                        };
+                    });
+                }
+            });
+        });
+    });
 });
+
 
 const server = app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Server partito!");
 });
 
-// Socket setup
-var io = socket(server);
+let io = socket(server);
 
 io.use(passportSocketIo.authorize({
     cookieParser: cookieParser, //optional your cookie-parser middleware function. Defaults to require('cookie-parser')
@@ -182,94 +200,10 @@ function onAuthorizeFail(data, message, error, accept){
     }
 }
 
-// Chat
-io.on("connection", function(socket){
-    Message.find({}).
-    populate("autore").
-    exec(function(err, messages){
-        if(err){
-            console.log(err);
-            socket.emit("err", err);
-        } else {
-            socket.emit("pastMsg", messages);
-        }
-    });
-    socket.on("chat", function(data){
-        if(data.message.length > 120){
-            socket.emit("error-msg", "Il messaggio era più lungo di 120 caratteri e non è stato inviato");
-            return false;
-        }
-        let contenuto = DOMPurify.sanitize(marked(data.message, {breaks: true}), {ALLOWED_TAGS: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
-        'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ]});
-        if(contenuto.length <= 0){
-            socket.emit("error-msg", "Il messaggio era troppo corto e non è stato inviato");
-            return false;
-        }
-        let messageObj = new Message({
-            autore: socket.request.user._id,
-            contenuto: contenuto,
-            dataCreazione: Date.now()
-        });
-        
-        if(data.username != socket.request.user.username){
-            let newUsername = data.username;
-            let oldUsername = socket.request.user.username;
-            User.findByIdAndUpdate(socket.request.user._id, { username: data.username }, function(err, newUser){
-                if(err){
-                    console.log(err);
-                    socket.emit("error", err);
-                } else {
-                    socket.emit("changeOwnUsername", newUsername);
-                    io.sockets.emit("changeUsername", {
-                        newUsername: newUsername,
-                        oldUsername: oldUsername
-                    });
-                }
-            });
-        }
-        messageObj.save(function(err){if(err){console.log(err);}});
-        messageObj.populate("autore").execPopulate().then(function(populated){
-            populated.autore.messaggi.push(messageObj._id);
-            populated.autore.save(function(err){if(err){console.log(err);}});
-        }, function(err){
-            console.log("Error while populating user in messageObj");
-            console.log(err);
-        });
-        Message.find({}).sort('-dataCreazione').exec(function(err, foundMessages){
-            if(err){
-                console.log(err);
-            } else {
-                // Rimuovi i documenti prima di 100 messaggi
-                if(foundMessages.length > 100){
-                    for(var i = 100; i < foundMessages.length; i++){
-                        foundMessages[i].remove();
-                    }
-                }
-            }
-        });
-        io.sockets.emit("chat", {
-            autore: data.username,
-            contenuto: messageObj.contenuto,
-            dataCreazione: messageObj.dataCreazione
-        });
-    });
+module.exports = { io: io }
+const courseRoutes = require("./routes/course");
+app.use('/courses', courseRoutes);
 
-    socket.on("typing", function(data){
-        socket.broadcast.emit("typing", data);
-    });
-
-    socket.on("notyping", function(){
-        socket.broadcast.emit("notyping");
-    });
-
-    socket.on("cancella", function(data){
-        Message.findOneAndRemove({date: data}, function(err, deleted){
-            if(err){
-                console.log(err);
-            } else {
-                io.emit("cancella", deleted);
-            }
-        });
-    });
+app.get("*", function(req, res){
+    res.status(404).send("Dove vuoi andare?");
 });

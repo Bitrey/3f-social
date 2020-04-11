@@ -13,7 +13,7 @@ const DOMPurify = createDOMPurify(window);
 router.get("/:course/new", middleware.isLoggedIn, function(req, res){
     Course.findById(req.params.course, function(err, foundCourse){
         if(err){
-            console.log(err);
+            console.error(err);
             req.flash("error", "Errore nella ricerca del corso");
             res.status(500).redirect("back");
             return false;
@@ -25,7 +25,7 @@ router.get("/:course/new", middleware.isLoggedIn, function(req, res){
 router.post("/:course", middleware.isLoggedIn, async function(req, res){
     Course.findById(req.params.course, function(err, foundCourse){
         if(err){
-            console.log(err);
+            console.error(err);
             req.flash("error", "Errore nella ricerca del corso");
             res.status(500).redirect("back");
             return false;
@@ -33,7 +33,7 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
         User.findById(req.user.id, async function(err, foundUser){
             if(err){
                 req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
-                console.log(err);
+                console.error(err);
                 res.status(500).redirect("back");
             } else {
                 let userInCourseFlag = false;
@@ -59,8 +59,8 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                     contenutoJSON: req.body.quillJSON,
                     soloFermi: false,
                     commenti: [],
-                    like: 0,
-                    dislike: 0,
+                    like: [],
+                    dislike: [],
                     immagine: JSON.parse(req.body.img),
                     allegati: []
                 });
@@ -76,11 +76,11 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                             estensione: attachment.ext
                         });
                         // Salva nuovo allegato
-                        await attachment.save(function(err, saved){if(err){console.log(err);}});
+                        await attachment.save(function(err, saved){if(err){console.error(err);}});
                         // Aggiungi e salva nuovo allegato all'utente
                         await foundUser.allegati.push(attachment._id);
                         // L'utente viene comunque salvato dopo
-                        // await foundUser.save(function(err){if(err){console.log(err);}});
+                        // await foundUser.save(function(err){if(err){console.error(err);}});
                         // Aggiungi nuovo allegato al post
                         await newPost.allegati.push(attachment._id);
                     });
@@ -88,15 +88,15 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                 // Salva il post
                 newPost.save(function(err, savedPost){
                     if(err){
-                        console.log(err);
-                        req.flash("error", "Si è verificato un errore nel salvataggio, mannaggia alla Peppina");
+                        console.error(err);
+                        req.flash("error", "Si è verificato un errore nel salvataggio");
                         res.status(500).redirect("back");
                     } else {
                         // Salva post in utente e corso
                         foundUser.contenuti.push(newPost._id);
-                        foundUser.save(function(err){if(err){console.log(err);}});
+                        foundUser.save(function(err){if(err){console.error(err);}});
                         foundCourse.contenuti.push(newPost._id);
-                        foundCourse.save(function(err){if(err){console.log(err);}});
+                        foundCourse.save(function(err){if(err){console.error(err);}});
                         req.flash("success", "Nuovo post aggiunto!");
                         res.redirect("/posts/" + savedPost._id);
                     }
@@ -177,7 +177,7 @@ router.get("/:id/edit", middleware.isPostOwner, function(req, res){
     exec(function(err, foundPost){
         if(err){
             req.flash("error", err.message);
-            console.log(err);
+            console.error(err);
             res.status(500).redirect("back");
         } else {
             res.render("posts/edit", { post: foundPost, postJSON: JSON.stringify(foundPost), corso: foundPost.corso });
@@ -190,13 +190,13 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
     Post.findByIdAndUpdate(req.params.id, req.body.post, async function(err, updatedPost){
         if(err){
             req.flash("error", err.msg);
-            console.log(err);
+            console.error(err);
             res.status(500).redirect("back");
         } else {
             User.findById(req.user.id, async function(err, foundUser){
                 if(err){
                     req.flash("error", "Errore nella ricerca dell'utente. Hai un profilo buggato?");
-                    console.log(err);
+                    console.error(err);
                     res.status(500).redirect("back");
                 } else {
                     updatedPost.immagine = JSON.parse(req.body.post.img);
@@ -219,10 +219,10 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
                                     estensione: attachment.ext
                                 });
                                 // Salva nuovo allegato
-                                await attachment.save(function(err, saved){if(err){console.log(err);}});
+                                await attachment.save(function(err, saved){if(err){console.error(err);}});
                                 // Aggiungi e salva nuovo allegato all'utente
                                 await foundUser.allegati.push(attachment._id);
-                                await foundUser.save(function(err){if(err){console.log(err);}});
+                                await foundUser.save(function(err){if(err){console.error(err);}});
                                 // Aggiungi nuovo allegato al post
                                 await updatedPost.allegati.push(attachment._id);
                             }
@@ -237,8 +237,8 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
                     // updatedPost.contenuto = req.body.post.quill;
                     updatedPost.save(function(err, saved){
                         if(err){
-                            req.flash("error", "Errore nel salvataggio del file, mannaggia alla Peppina!");
-                            console.log(err);
+                            req.flash("error", "Errore nel salvataggio del file");
+                            console.error(err);
                             res.status(500).redirect("back");
                         } else {
                             req.flash("success", "Post modificato con successo");
@@ -255,14 +255,14 @@ router.delete("/:course/:id", middleware.isPostOwner, async function(req, res){
     Post.findById(req.params.id).
     exec(async function(err, foundPost){
         if(err){
-            console.log(err);
+            console.error(err);
             req.flash("error", "Errore nella ricerca del post");
             res.status(500).redirect("back");
         } else {
             if(foundPost){
                 foundPost.deleteOne(function(err){
                     if(err){
-                        console.log(err);
+                        console.error(err);
                         req.flash("error", "Errore nell'eliminazione del post");
                         res.status(500).redirect("back");
                         return false;

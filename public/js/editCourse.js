@@ -50,7 +50,7 @@ $("#upload-img").on("click", function(){
             $("#status-img").empty().text("L'immagine supera il limite di 10MB");
             return false;
         } else {
-            $('#imgForm').submit(function(){
+            $('#imgForm').one("submit", function(){
                 $("#status-img").empty().text("Caricamento file...");
                 $(this).ajaxSubmit({
 

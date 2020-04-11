@@ -44,7 +44,7 @@
 </div>
 <script>
     let codiceMostrato = false;
-    $("#mostra-codice-h1").on("click", function () {
+    $("#mostra-codice-h1").on("click", function(){
         if (codiceMostrato) {
             codiceMostrato = false;
             $("#codice-corso-h1").hide();
@@ -56,12 +56,14 @@
         }
     });
     // Se l'utente esce dal modal, nascondi il codice
-    $("#mostraCodiceModal").on("hidden.bs.modal", function () {
+    $("#mostraCodiceModal").on("hidden.bs.modal", function(){
         codiceMostrato = false;
         $("#codice-corso-h1").hide();
         $("#mostra-codice-h1").children("span").text("Mostra codice");
     });
-    $("#genera-nuovo-codice").on("click", function () {
+    $("#genera-nuovo-codice").on("click", function(){
+        let html = $("#genera-nuovo-codice").html();
+        $("#genera-nuovo-codice").html(`<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>`);
         $.ajax({
             type: "GET",
             url: "/courses/newcode?corso=<%= corso._id %>",
@@ -72,6 +74,9 @@
             success: function (data, textStatus, xhr) {
                 $("#errore-modal-text").hide();
                 $("#codice-corso-h1").text(data);
+            },
+            complete: function(){
+                $("#genera-nuovo-codice").html(html);
             }
         });
     });
@@ -145,13 +150,12 @@
         </div>
         <div id="chat-buttons" style="display: none;">
             <% if(utente){ %>
-            <input id="username" type="text" placeholder="Username" maxlength="16" value="<%= utente.username %>"
+            <input id="username" type="text" placeholder="Username" maxlength="20" value="<%= utente.username %>"
                 required>
             <% } else { %>
-            <input id="username" type="text" placeholder="Username" maxlength="16" required>
+            <input id="username" type="text" placeholder="Username" maxlength="20" required>
             <% } %>
             <textarea id="message" type="text" placeholder="Messaggio" maxlength="120" required></textarea>
-            <button id="img"><i class="fas fa-image"></i> Immagine...</button>
             <button id="send"><i class="fas fa-paper-plane"></i> Invia</button>
         </div>
     </div>
@@ -208,6 +212,8 @@
     </div>
     <% }}) %>
 </div>
+
+<script>let corsoId = "<%= corso._id %>"</script>
 
 <script src="/js/jquery.truncate.js"></script>
 <script type="module" src="/js/chat.js"></script>

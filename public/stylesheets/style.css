@@ -296,11 +296,11 @@ input, textarea{
 }
 
 #send:disabled{
-    background: #1f8896;
+    background: rgb(20, 91, 153);
 }
 
 #send:hover{
-    background: #2297a7;
+    background: rgb(29, 106, 173);
 }
 
 #img{

@@ -31,6 +31,10 @@ var courseSchema = new mongoose.Schema({
         readable: true,
         capitalization: "uppercase"
     })},
+    stanzaSocket: {
+        type: String,
+        default: randomstring.generate()
+    },
     pubblico: { type: Boolean, default: true },
     chatGlobale: { type: Boolean, default: true },
     chatPrivata: { type: Boolean, default: true },
@@ -38,7 +42,13 @@ var courseSchema = new mongoose.Schema({
     immagine: {
         tipo: { type: String, default: "local" },
         indirizzo: { type: String, default: "/uploads/default.jpg" }
-    }
+    },
+    messaggi: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message"
+        }
+    ]
 });
 
 courseSchema.pre('deleteOne', { document: true, query: false }, async function(next){

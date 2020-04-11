@@ -56,9 +56,9 @@
                     <div class="col-6 col-lg-12">
                         <% if(post.autore){ %>
                             <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem;">
-                                    <img style="max-width: 3rem; border-radius: 0.5rem;"
-                                        src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
-                                        <h5>
+                                <img style="max-width: 3rem; border-radius: 0.5rem;"
+                                    src="<%= (post.autore.immagine.tipo == "local") ? "/uploads/" + post.autore.immagine.indirizzo : post.autore.immagine.indirizzo %>">
+                                <h5 class="ml-1">
                                     <span class="username-post-span back-link text-muted show-profile" data-profile="<%= post.autore._id %>"><%= post.autore.username %></span>
                                 </h5>
                             </div>

@@ -1,6 +1,6 @@
 $(".download").on("click", function(){
     try {
-        $(".downloadForm").submit(function(){
+        $(".downloadForm").one("submit", function(){
 
                 $(this).ajaxSubmit({
 

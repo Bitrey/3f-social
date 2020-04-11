@@ -1,21 +1,22 @@
-var socket = io.connect();
+let socket = io("/chat").connect();
 $(".chat-alert").hide();
 $(".error-div").hide();
 // Query DOM
 
 socket.on("connect", function(){
     $("#chat-buttons").css("display", "block");
+    socket.emit("joinRoom", {corsoId: corsoId});
 });
 
-var chat_window = document.getElementById("chat-window");
+let chat_window = document.getElementById("chat-window");
 
-var message = document.getElementById("message"),
+let message = document.getElementById("message"),
     username = document.getElementById("username"),
     btn = document.getElementById("send"),
     output = document.getElementById("output"),
     feedback = document.getElementById("feedback");
 
-var spamTimer = false;
+let spamTimer = false;
 function inviaMsg() {
     if(!spamTimer){
         $("#send").attr("disabled", true);
@@ -30,6 +31,8 @@ function inviaMsg() {
         if (username.value !== "" && message.value !== "") {
             $(".chat-alert").hide();
             socket.emit("chat", {
+                adUtente: false,
+                corsoId: corsoId,
                 message: message.value,
                 username: username.value
             });
@@ -85,17 +88,17 @@ $("#message").keydown(function(e){
     }
 });
 
-var unread = 0;
+let unread = 0;
 
 function getOreMinuti(dataString){
-    var date = new Date(Date.parse(dataString));
+    let date = new Date(Date.parse(dataString));
     return `${(date.getHours()<10?'0':'') + date.getHours()}:${(date.getMinutes()<10?'0':'') + date.getMinutes()}`;
 }
 
 let pastDay, pastMonth, pastYear;
 
 // Listen for events
-socket.on("chat", function(data) {
+socket.on("chat", function(data){
     $(".no-chat-message").remove();
     let scrollFlag = false;
         // Stampa differenza di giorni, se presente
@@ -110,9 +113,9 @@ socket.on("chat", function(data) {
     }
     feedback.innerHTML = "";
     if(data.socket_id == socket.id){
-        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span></div>";
+        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username show-profile' data-profile='" + data.idProfilo + "'>" + data.mittente + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span><span class='delete'><i class='fa fa-trash' aria-hidden='true'></i></span></div>";
     } else {
-        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username'>" + data.autore + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span></div>";
+        output.innerHTML += "<div class='chat-message' id='" + data.dataCreazione + "'><p><strong class='chat-username show-profile' data-profile='" + data.idProfilo + "'>" + data.mittente + "</strong><small> " + getOreMinuti(data.dataCreazione) + "</small></p><span class='chat-content'>" + data.contenuto + "</span></div>";
     }
     if(scrollFlag){
         chat_window.scrollTop = chat_window.scrollHeight;
@@ -157,51 +160,37 @@ socket.on("pastMsg", function(messages){
     for(let i = 0; i < messages.length; i++){
         unread++;
         document.title = "(" + unread + ") 3F Chat";
-        if(i > 1){
-            // Stampa differenza di giorni, se presente
-            currentDate = new Date(Date.parse(messages[i].dataCreazione));
-            let pastDate = new Date(Date.parse(messages[i - 1].dataCreazione));
-            pastDay = pastDate.getDate();
-            pastMonth = pastDate.getMonth();
-            pastYear = pastDate.getFullYear();
-            if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
-                let month = currentDate.getMonth() + 1;
-                let year = currentDate.getFullYear();
-                output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
-            }
+
+        // Stampa differenza di giorni, se presente
+        currentDate = new Date(Date.parse(messages[i].dataCreazione));
+        let pastDate;
+        if(messages[i - 1]){
+            pastDate = new Date(Date.parse(messages[i - 1].dataCreazione));
+        } else {
+            pastDate = currentDate;
         }
+        pastDay = pastDate.getDate();
+        pastMonth = pastDate.getMonth();
+        pastYear = pastDate.getFullYear();
+        if(currentDate.getDate() > pastDay || currentDate.getMonth() > pastMonth || currentDate.getFullYear() > pastYear){
+            let month = currentDate.getMonth() + 1;
+            let year = currentDate.getFullYear();
+            output.innerHTML += `<p class="date-separator">${currentDate.getDate()}/${month}/${year}</p>`;
+        }
+
         // Controlla se utente esiste
-        let username;
-        if(messages[i].autore){
-            username = "<span class='username-chat-span'>" + messages[i].autore.username + "</span>";
+        let username, idProfilo;
+        if(messages[i].mittente){
+            username = "<span class='username-chat-span'>" + messages[i].mittente.username + "</span>";
+            idProfilo = messages[i].mittente._id;
+            output.innerHTML += "<div class='chat-message' id='" + messages[i].dataCreazione + "'><p><strong class='chat-username show-profile' data-profile='" + idProfilo + "'>" + username + "</strong><small> " + getOreMinuti(messages[i].dataCreazione) + "</small></p><span class='chat-content'>" + messages[i].contenuto + "</span></div>";
         } else {
             username = "<span class='text-muted'><i class='fas fa-user-slash'></i> Utente non trovato</span>"
+            output.innerHTML += "<div class='chat-message' id='" + messages[i].dataCreazione + "'><p><strong class='chat-username'>" + username + "</strong><small> " + getOreMinuti(messages[i].dataCreazione) + "</small></p><span class='chat-content'>" + messages[i].contenuto + "</span></div>";
         }
-        output.innerHTML += "<div class='chat-message' id='" + messages[i].dataCreazione + "'><p><strong class='chat-username'>" + username + "</strong><small> " + getOreMinuti(messages[i].dataCreazione) + "</small></p><span class='chat-content'>" + messages[i].contenuto + "</span></div>";
     }
     chat_window.scrollTop = chat_window.scrollHeight;
 });
-
-$(".hideMe").hide();
-
-var sfondo = false;
-
-function magia(){
-    $(".hideMe").toggle();
-    if(sfondo == false){
-        $("#chat-window").css("background", "#ffffff88");
-        $("#chat-window").css("background-image", "url('https://s5.gifyu.com/images/ezgif-2-52ade8a765d5.gif')");
-        $("#footer-img-left").attr("src", "https://www.googleapis.com/drive/v3/files/1K8QMR8ETZbb0kP0pGRl8noQB-XaR78nn?alt=media&key=AIzaSyCzJtUQTqW3tZTuLnq4b8EvfZlZqhaw5Hw");
-        $("#footer-img-right").attr("src", "https://www.googleapis.com/drive/v3/files/1K8QMR8ETZbb0kP0pGRl8noQB-XaR78nn?alt=media&key=AIzaSyCzJtUQTqW3tZTuLnq4b8EvfZlZqhaw5Hw");
-        sfondo = true;
-    } else {
-        $("#chat-window").css("background", "#f9f9f9");
-        $("#chat-window").css("background-image", "");
-        $("#footer-img-left").attr("src", "https://i.imgur.com/P60WYPZ.png");
-        $("#footer-img-right").attr("src", "https://i.imgur.com/lDIspTu.png");
-        sfondo = false;
-    }
-}
 
 $("#output").on("click", ".delete", function(){
     socket.emit("cancella", $(this).parent().attr("id"));
@@ -209,46 +198,9 @@ $("#output").on("click", ".delete", function(){
 });
 
 socket.on("cancella", function(data){
-    var element = document.getElementById(data.date);
+    let element = document.getElementById(data.date);
     element.parentNode.removeChild(element);
 });
-
-var imgPrompt = false;
-$("#img").on("click", function(){
-    if($("#username").val() == ""){
-        displayError("Scrivi lo username!");
-    } else {
-        imgPrompt = prompt("Inserisci il link dell'immagine");
-        if(imgPrompt){
-            try {
-                var img = new Image();
-                img.src = imgPrompt;
-                img.onload = function(){
-                    $(".chat-alert").hide();
-                    socket.emit("chat", {
-                        message: "<img style='width: auto; max-width: 80%; max-height: 300px; display: block;' src='" + imgPrompt + "'",
-                        username: username.value
-                    });
-                }
-                img.onerror = function(){
-                    displayError("Immagine non valida!");
-                }
-            } catch(e){
-                displayError("Si è verificato un errore: " + e);
-            }
-        }
-    }
-});
-
-function isUrlImage(uri){
-    uri = uri.split('?')[0];
-    var parts = uri.split('.');
-    var extension = parts[parts.length-1];
-    var imageTypes = ['jpg','jpeg','tiff','png','gif','bmp'];
-    if(imageTypes.indexOf(extension) !== -1) {
-        return true;   
-    }
-}
 
 let inError = false;
 function displayError(message){
@@ -270,6 +222,10 @@ socket.on("error", function(message){
     } else {
         $("#inner-output").html('<div class="p-3"><h5><i class="fas fa-comment-slash"></i> Connessione al socket rifiutata</h5><p style="border-bottom: none">Per usare la chat devi autenticarti <i class="fas fa-sign-in-alt"></i></p><small>' + message + '</div>');
     }
+});
+
+socket.on("prova", function(){
+    alert("CIAO");
 });
 
 socket.on("connect_error", function(message){
@@ -309,3 +265,9 @@ socket.on("error-msg", function(msg){
     output.innerHTML += "<div class='chat-message'><p><strong style='color: red;'>Errore</strong></p><span class='chat-content'>" + msg + "</span></div>";
     chat_window.scrollTop = chat_window.scrollHeight;
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+const showCode = urlParams.get('showCode');
+if(showCode == "true"){
+    $('#mostraCodiceModal').modal('show');
+}
