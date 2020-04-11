@@ -129,10 +129,6 @@ app.get("/info", function(req, res){
     res.render("info");
 });
 
-app.get("/test", function(req, res){
-    res.render("tests/course-list");
-});
-
 // Common routes
 app.get("/login", function(req, res){
     res.redirect("/auth/login");
