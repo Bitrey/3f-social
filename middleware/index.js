@@ -115,9 +115,10 @@ middlewareObj.isLoggedIn = function(req, res, next){
 
 middlewareObj.userInCourse = function(req, res, next){
     Course.findById(req.params.id).
-    populate({ path: "contenuti", populate: { path: "autore", model: "User" } }).
-    populate("amministratori").
-    populate("partecipanti").
+    populate("immagine").
+    populate({ path: "contenuti", populate: [{ path: "autore", model: "User", populate: { path: "immagine", model: "Image" } }, {  path: "immagine", model: "Image" }] }).
+    populate({ path: "amministratori", populate: { path: "immagine", model: "Image" } }).
+    populate({ path: "partecipanti", populate: { path: "immagine", model: "Image" } }).
     exec(function(err, foundCourse){
         if(err){
             if(err.name == "CastError"){

@@ -65,10 +65,9 @@
                         <% } else { %>
                             <h5 class="text-muted"><i class="fas fa-user-slash"></i> Utente non trovato</h5>
                         <% } %>
-                        <% if(post.immagine.tipo == "local"){ %>
-                            <img src="/uploads/<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
-                        <% } else if(post.immagine.tipo == "url") { %>
-                            <img src="<%= post.immagine.indirizzo %>" alt="Immagine post" class="new-post-img">
+                        <% if(post.immagine && post.immagine.tipo != "none"){ %>
+                            <img src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
+                                alt="Immagine post" class="new-post-img">
                         <% } %>
                     </div>
                 </div>
@@ -179,16 +178,20 @@
                     <% date = commento.dataCreazione %>
                     <div class="card bg-light mb-3 mx-lg-5">
                         <div class="card-header">
+                            <% if(commento.autore){ %>
                             <img src="<%= (commento.autore.immagine.tipo == "local") ? "/uploads/" + commento.autore.immagine.indirizzo : commento.autore.immagine.indirizzo %>"
                                 alt="Immagine autore" class="img-profilo">
                             <span class="username-post-span back-link show-profile" data-profile="<%= commento.autore._id %>"><%= commento.autore.username %></span>
+                            <% } else { %>
+                            <span class="username-post-span text-muted"><i class="fas fa-user-slash"></i> Utente non trovato</span>
+                            <% } %>
                         </div>
                         <div class="card-body">
                             <small class="text-muted"><%= date.getDate() %>/<%= date.getMonth() + 1 %>/<%= date.getFullYear() %> <%= date.getHours() %>:<%= date.getMinutes() %></small>
                             <div class="card-text comment">
                                 <%- commento.contenuto %>
                             </div>
-                            <% if(utente && commento.autore.equals(utente._id)){ %>
+                            <% if(utente && commento.autore && commento.autore.equals(utente._id)){ %>
                             <div class="form-group edit-comment-div" style="display: none;">
                                 <textarea class="form-control" id="edit-comment" rows="2" minlength="5" maxlength="500"
                                     placeholder="Inserisci la modifica del commento"></textarea>

@@ -103,7 +103,7 @@ function successURL(success){
 
 function imageExists(url){
     try {
-        var imgTry = new Image();
+        let imgTry = new Image();
         imgTry.onload = function(){
             img.tipo = "url";
             img.indirizzo = url;

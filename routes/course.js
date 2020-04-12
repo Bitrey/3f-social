@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Course = require("../models/course");
 const User = require("../models/user");
+const Image = require("../models/image");
 const middleware = require("../middleware");
 const randomstring = require("randomstring");
 const Message = require("../models/message");
@@ -13,7 +14,8 @@ const DOMPurify = createDOMPurify(window);
 
 router.get("/", middleware.isLoggedIn, function(req, res){
     User.findById(req.user.id).
-    populate("corsi").
+    populate({ path: "corsi", populate: { path: "immagine", model: "Image" } }).
+    populate("immagine").
     exec(function(err, foundUser){
         if(err){
             console.error(err);
@@ -45,6 +47,7 @@ router.post("/", middleware.isLoggedIn, function(req, res){
         params.pubblico = setFromCheckboxValue(req.body.course.pubblico);
         params.chatGlobale = setFromCheckboxValue(req.body.course.chatGlobale);
         params.chatPrivata = setFromCheckboxValue(req.body.course.chatPrivata);
+        let image = new Image(JSON.parse(req.body.course.img));
         let newCourse = new Course({
             amministratori: [ foundUser._id ],
             partecipanti: [ foundUser._id ],
@@ -55,8 +58,11 @@ router.post("/", middleware.isLoggedIn, function(req, res){
             pubblico: params.pubblico,
             chatGlobale: params.chatGlobale,
             chatPrivata: params.chatPrivata,
-            immagine: JSON.parse(req.body.course.img)
+            immagine: image._id
         });
+        image.documento = newCourse._id;
+        image.modello = "Course";
+        image.save();
         newCourse.save(function(err, savedCourse){
             if(err){
                 console.error(err);
@@ -123,16 +129,17 @@ router.get("/newcode", function(req, res){
     });
 });
 
-router.get("/:id", middleware.isLoggedIn, middleware.userInCourse, function(req, res){
+router.get("/:id", middleware.isLoggedIn, middleware.userInCourse, async function(req, res){
     res.render("courses/view", { corso: req.course, hideHome: true, admin: checkAdmin(req.course, req.user) });
 });
 
-router.get("/:id/edit", middleware.isLoggedIn, middleware.userInCourse, function(req, res){
+router.get("/:id/edit", middleware.isLoggedIn, middleware.userInCourse, async function(req, res){
     if(!checkAdmin(req.course, req.user)){
         req.flash("error", "Non sei autorizzato");
         res.status(401).redirect("back");
         return false;
     }
+    await req.course.populate("immagine").execPopulate();
     res.render("courses/edit", { corso: req.course, corsoJSON: JSON.stringify(req.course) });
 });
 
@@ -201,19 +208,34 @@ router.post("/join", middleware.isLoggedIn, async function(req, res){
     });
 });
 
-router.put("/:id", middleware.isLoggedIn, middleware.userInCourse, function(req, res){
+router.put("/:id", middleware.isLoggedIn, middleware.userInCourse, async function(req, res){
     if(!checkAdmin(req.course, req.user)){
         res.send("Non sei autorizzato!");
         return false;
     }
-    Course.findByIdAndUpdate(req.course._id, req.body.course, function(err, updatedCourse){
+    Course.findByIdAndUpdate(req.course._id, req.body.course, async function(err, updatedCourse){
         if(err){
             console.error(err);
             req.flash("error", "Errore nel salvataggio della modifica del corso");
             res.status(500).redirect("back");
             return false;
         }
-        updatedCourse.immagine = JSON.parse(req.body.course.img);
+        await updatedCourse.populate("immagine").execPopulate();
+
+        let imageReq = JSON.parse(req.body.course.img);
+        updatedCourse.immagine.tipo = imageReq.tipo;
+        updatedCourse.immagine.indirizzo = imageReq.indirizzo;
+        updatedCourse.immagine.modello = "Course";
+        updatedCourse.immagine.documento = updatedCourse._id;
+        updatedCourse.immagine.save(function(err){
+            if(err){
+                console.error(err);
+                req.flash("error", "Errore nel salvataggio dell'immagine nella modifica del corso");
+                res.status(500).redirect("back");
+                return false;
+            }
+        });
+
         updatedCourse.pubblico = setFromCheckboxValue(req.body.course.pubblico);
         updatedCourse.chatGlobale = setFromCheckboxValue(req.body.course.chatGlobale);
         updatedCourse.chatPrivata = setFromCheckboxValue(req.body.course.chatPrivata);

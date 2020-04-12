@@ -14,6 +14,7 @@ let socket = require("socket.io");
 
 // Models
 const Attachment = require("./models/attachment");
+const Image = require("./models/image");
 
 // Routes
 const indexRoutes = require("./routes/index");
@@ -151,10 +152,46 @@ let fileDeleteSchedule = schedule.scheduleJob("00 * * * *", function(){
                 if(err){
                     return console.error(err);
                 }
+                
                 let attachments = foundAttachments.map(x => x.indirizzo);
         
                 files.forEach(function(file){
                     if(attachments.indexOf(file) < 0){
+                        fs.unlink(path.join(directoryPath, file), function(err){
+                            if(err){
+                                return console.error(err);
+                            };
+                        });
+                    }
+                });
+            });
+        });
+    } catch(err){
+        console.log("Impossibile pulire la cartella uploads/");
+        console.error(err);
+    }
+});
+
+// Delete unused images
+let imageDeleteSchedule = schedule.scheduleJob("00 * * * *", function(){
+    try {
+        const directoryPath = path.join(__dirname, 'public', 'uploads');
+        fs.readdir(directoryPath, function(err, files){
+            if(err){
+                return console.error('Unable to scan directory: ' + err);
+            }
+
+            Image.find({ tipo: "local" }, function(err, foundImages){
+                if(err){
+                    return console.error(err);
+                }
+
+                // Sintassi dell'indirizzo di un'immagine: "/uploads/default.jpg"
+                // Prendi solo l'ultimo
+                let images = foundImages.map(x => x.indirizzo);
+
+                files.forEach(function(file){
+                    if(images.indexOf(file) < 0 && file != "default.jpg" && file != "user.png"){
                         fs.unlink(path.join(directoryPath, file), function(err){
                             if(err){
                                 return console.error(err);

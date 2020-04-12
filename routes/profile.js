@@ -2,14 +2,16 @@ const router = require('express').Router();
 const middleware = require("../middleware");
 const User = require("../models/user");
 
-router.get("/", middleware.isLoggedIn, function(req, res){
+router.get("/", middleware.isLoggedIn, async function(req, res){
+    await req.user.populate("immagine").execPopulate();
     res.render('profile/view', {
         residenzaJSON: JSON.stringify(req.user.residenza),
         immagineJSON: JSON.stringify(req.user.immagine)
     });
 });
 
-router.get('/edit', middleware.isLoggedIn, function(req, res){
+router.get('/edit', middleware.isLoggedIn, async function(req, res){
+    await req.user.populate("immagine").execPopulate();
     res.render('profile/edit', {
         residenzaJSON: JSON.stringify(req.user.residenza),
         immagineJSON: JSON.stringify(req.user.immagine)
@@ -21,7 +23,8 @@ router.get('/edit', middleware.isLoggedIn, function(req, res){
 router.get("/:id", function(req, res){
     if(req.xhr){
         User.findById(req.query.id).
-        populate("corsi").
+        populate("immagine").
+        populate({path: "corsi", populate: { path: "immagine", model: "Image" } }).
         sort( {"corsi.dataCreazione": '-1'} ).
         exec(function(err, foundUser){
             if(err){
@@ -54,25 +57,30 @@ router.get("/:id", function(req, res){
     });
 });
 
-router.put("/", middleware.isLoggedIn, function(req, res){
-    User.findByIdAndUpdate(req.user.id, req.body.profile, function(err, updatedUser){
+router.put("/", middleware.isLoggedIn, async function(req, res){
+    User.findByIdAndUpdate(req.user.id, req.body.profile, async function(err, updatedUser){
         if(err){
             console.error(err);
             req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
             res.status(500).redirect("back");
         } else {
             try {
+                await updatedUser.populate("immagine").execPopulate();
+                let imageReq = JSON.parse(req.body.profile.img);
+                updatedUser.immagine.tipo = imageReq.tipo;
+                updatedUser.immagine.indirizzo = imageReq.indirizzo;
+                updatedUser.immagine.modello = "User";
+                updatedUser.immagine.documento = updatedUser._id;
+                updatedUser.immagine.save(function(err){ if(err) return console.error(err); });
                 updatedUser.residenza = JSON.parse(req.body.profile.residenza);
-                updatedUser.immagine = JSON.parse(req.body.profile.img);
-                updatedUser.save(function(err, saved){
+                updatedUser.save(function(err){
                     if(err){
                         console.error(err);
                         req.flash("error", "Errore nel salvataggio delle nuove informazioni!");
                         res.status(500).redirect("back");
-                    } else {
-                        req.flash("success", "Informazioni profilo aggiornate");
-                        res.redirect("/profile");
-                    }
+                    };
+                    req.flash("success", "Informazioni profilo aggiornate");
+                    res.redirect("/profile");
                 });
             } catch(err){
                 console.error(err);

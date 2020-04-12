@@ -117,7 +117,7 @@
                 <div class="form-group">
                     <div class="row" style="align-content: center; justify-content: center; align-items: center;">
                         <div class="col-6 col-lg-12">
-                            <img src="<%= (post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
+                            <img src="<%= (post.immagine && post.immagine.tipo == "local") ? "/uploads/" + post.immagine.indirizzo : post.immagine.indirizzo %>"
                                 alt="Immagine post" class="new-post-img">
                             <input type='hidden' id='hiddenImgField' name='post[img]' value=''>
                         </div>

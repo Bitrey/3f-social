@@ -33,8 +33,8 @@ var pollSchema = new mongoose.Schema({
     dataCreazione: { type: Date, default: Date.now },
     dislike: { type: Number, default: 0 },
     immagine: {
-        tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/uploads/default.jpeg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image"
     },
     votiVisibiliDopoVotazione: { type: Boolean, default: false },
     votoCambiabile: { type: Boolean, default: false },

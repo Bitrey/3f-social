@@ -32,8 +32,8 @@ var postSchema = new mongoose.Schema({
     }],
     dataCreazione: { type: Date, default: Date.now },
     immagine: {
-        tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/uploads/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image"
     },
     allegati: [
         {

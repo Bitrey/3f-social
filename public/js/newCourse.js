@@ -13,7 +13,7 @@ $(document).ready(function(){
 
 function imageExists(url){
     try {
-        var imgTry = new Image();
+        let imgTry = new Image();
         imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide")};
         imgTry.onerror = function(){ alert("Immagine non valida!"); };
         imgTry.src = url;
@@ -23,7 +23,7 @@ function imageExists(url){
 }
 
 $("#url-post-img").on("click", function(){
-    var link = prompt("Inserisci l'URL dell'immagine");
+    let link = prompt("Inserisci l'URL dell'immagine");
     if(link){
         imageExists(link);
     }

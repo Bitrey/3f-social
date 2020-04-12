@@ -238,10 +238,10 @@ $("#confirm-delete-file").on("click", function(){
                     attachments.splice(i, 1);
                     return false;
                 }
-                if(!foundFile){
-                    alert("Errore: impossibile trovare il file");
-                }
             });
+            if(!foundFile){
+                alert("Errore: impossibile trovare il file");
+            }
         },
         error: function(xhr, textStatus, errorThrown){
             alert(`Errore ${xhr.status} ${errorThrown}: ${xhr.responseText}`);
@@ -252,3 +252,9 @@ $("#confirm-delete-file").on("click", function(){
         }
     });
 });
+
+document.querySelector('.custom-file-input').addEventListener('change',function(e){
+    var fileName = document.getElementById("attachment").files[0].name;
+    var nextSibling = e.target.nextElementSibling
+    nextSibling.innerText = fileName
+})

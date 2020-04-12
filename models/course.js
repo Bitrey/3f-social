@@ -40,8 +40,8 @@ var courseSchema = new mongoose.Schema({
     chatPrivata: { type: Boolean, default: true },
     dataCreazione: { type: Date, default: Date.now },
     immagine: {
-        tipo: { type: String, default: "local" },
-        indirizzo: { type: String, default: "/uploads/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image"
     },
     messaggi: [
         {

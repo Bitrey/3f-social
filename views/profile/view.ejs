@@ -13,9 +13,11 @@
     <p>Cognome: <strong><%= utente.cognome %></strong></p>
     <p>Email: <strong><%= utente.email %></strong></p>
     <p>Username: <strong><%= utente.username %></strong></p>
-    <p>Biografia: <strong><%= utente.biografia %></strong></p>
+    <% if(utente.biografia){ %>
+        <p>Biografia: <strong><%= utente.biografia %></strong></p>
+    <% } %>
     <% if(utente.residenza.regione){ %>
-        <div class="residenza-div mt-1" style="display: flex; align-items: center;" aria-label="breadcrumb">
+        <div class="residenza-div mt-1 justify-content-center" style="display: flex; align-items: center;" aria-label="breadcrumb">
             <p class="mr-2">Città / Comune: </p>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" id="breadcrumb-regione"><%= utente.residenza.regione %></li>

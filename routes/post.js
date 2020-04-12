@@ -3,6 +3,7 @@ const router = express.Router();
 const Course = require("../models/course");
 const Post = require("../models/post");
 const User = require("../models/user");
+const Image = require("../models/image");
 const Attachment = require("../models/attachment");
 const middleware = require("../middleware");
 const createDOMPurify = require('dompurify');
@@ -47,6 +48,7 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                     res.status(401).redirect("back");
                     return false;
                 }
+                let image = new Image(JSON.parse(req.body.img));
                 // Crea nuovo post
                 let newPost = new Post({
                     corso: foundCourse._id,
@@ -61,9 +63,12 @@ router.post("/:course", middleware.isLoggedIn, async function(req, res){
                     commenti: [],
                     like: [],
                     dislike: [],
-                    immagine: JSON.parse(req.body.img),
+                    immagine: image._id,
                     allegati: []
                 });
+                image.documento = newPost._id;
+                image.modello = "Post";
+                image.save(function(err){ if(err){ return console.error(err); } })
                 if(req.body.attachments){
                     let parsedAttachments = JSON.parse(req.body.attachments);
                     await parsedAttachments.forEach(async function(attachment){
@@ -134,12 +139,14 @@ router.get("/:post", async function(req, res){
     }
     Post.findById(req.params.post).
     populate("corso").
+    populate("immagine").
     populate({path: "commenti", options: { sort: { [`${sortBy}`]: [invert] } }}).
-    populate("autore").
+    populate({ path: "autore", populate: { path: "immagine", model: "Image" } }).
     populate("allegati").
     exec(async function(err, post){
+        await req.user.populate("immagine").execPopulate();
         for(let i = 0; i < post.commenti.length; i++){
-            await post.commenti[i].populate("autore").execPopulate();
+            await post.commenti[i].populate({ path: "autore", populate: { path: "immagine", model: "Image" } }).execPopulate();
         }
         if(err){
             req.flash("error", err.message);
@@ -174,6 +181,7 @@ router.get("/:id/edit", middleware.isPostOwner, function(req, res){
     Post.findById(req.params.id).
     populate("corso").
     populate("allegati").
+    populate("immagine").
     exec(function(err, foundPost){
         if(err){
             req.flash("error", err.message);
@@ -199,7 +207,22 @@ router.put("/:id", middleware.isPostOwner, function(req, res){
                     console.error(err);
                     res.status(500).redirect("back");
                 } else {
-                    updatedPost.immagine = JSON.parse(req.body.post.img);
+                    await updatedPost.populate("immagine").execPopulate();
+
+                    let imageReq = JSON.parse(req.body.post.img);
+                    updatedPost.immagine.tipo = imageReq.tipo;
+                    updatedPost.immagine.indirizzo = imageReq.indirizzo;
+                    updatedPost.immagine.modello = "Post";
+                    updatedPost.immagine.documento = updatedPost._id;
+                    updatedPost.immagine.save(function(err){
+                        if(err){
+                            console.error(err);
+                            req.flash("error", "Errore nel salvataggio dell'immagine nella modifica del corso");
+                            res.status(500).redirect("back");
+                            return false;
+                        }
+                    });
+
                     if(req.body.post.attachments){
                         let parsedAttachments = JSON.parse(req.body.post.attachments);
                         await parsedAttachments.forEach(async function(attachment){

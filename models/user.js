@@ -16,8 +16,8 @@ var userSchema = new mongoose.Schema({
     email: { type: String, default: "email" },
     username: { type: String, default: "username" },
     immagine: {
-        tipo: { type: String, default: "none" },
-        indirizzo: { type: String, default: "/uploads/default.jpg" }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image"
     },
     residenza: {
         regione: { type: String, default: "" },

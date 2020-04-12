@@ -9,7 +9,7 @@ $(document).ready(function(){
 
 function imageExists(url){
     try {
-        var imgTry = new Image();
+        let imgTry = new Image();
         imgTry.onload = function(){ img.tipo = "url"; img.indirizzo = url; $(".new-post-img").show(); $("#hiddenImgField").val(url); $(".new-post-img").attr("src", url); $("#cambia-img-modal").modal("hide")};
         imgTry.onerror = function(){ alert("Immagine non valida!"); };
         imgTry.src = url;
@@ -19,7 +19,7 @@ function imageExists(url){
 }
 
 $("#url-post-img").on("click", function(){
-    var link = prompt("Inserisci l'URL dell'immagine");
+    let link = prompt("Inserisci l'URL dell'immagine");
     if(link){
         imageExists(link);
     }
@@ -163,16 +163,27 @@ var quill = new Quill('#editor', {
 $('.ql-formula').attr("data-toggle", "tooltip").attr("data-placement", "top").prop("title", "Usa un LaTeX editor per un risultato migliore").tooltip();
 
 $(document).on("click", ".delete-attachment", function(){
+    let asyncThis = $(this);
     let foundFile = false;
+    let fileName = asyncThis.attr("data-file");
     attachments.forEach(function(file, i){
-        if(file.name == $(this).data("file")){
+        if(file.name == fileName){
             foundFile = true;
             attachments.splice(i, 1);
-            $(this).parent().parent().remove();
+            asyncThis.parent().parent().remove();
+            if($.trim($("#attachments-div").text()).length < 10){
+                $("#show-attachment-div").hide();
+            }
             return false;
         }
-        if(!foundFile){
-            alert("Errore: impossibile trovare il file");
-        }
     });
+    if(!foundFile){
+        alert("Errore: impossibile trovare il file");
+    }
 });
+
+document.querySelector('.custom-file-input').addEventListener('change',function(e){
+    var fileName = document.getElementById("attachment").files[0].name;
+    var nextSibling = e.target.nextElementSibling
+    nextSibling.innerText = fileName
+})
